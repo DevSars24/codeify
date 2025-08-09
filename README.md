@@ -1,22 +1,8 @@
 # Frontend Project - React + Vite + Tailwind + AI Code Reviewer
 
-frontend/
-├── node_modules/            # Project dependencies
-├── public/                  # Static assets (e.g., favicon, images)
-├── src/                     # Source code
-├── src/components/          # Reusable React components
-├── src/components/Navbar.jsx # Navigation bar with dark mode toggle
-├── src/App.css              # Custom styles for the main app
-├── src/App.jsx              # Main app component with editor and AI response
-├── src/index.css            # Global styles (Tailwind CSS)
-├── src/main.jsx             # Entry point for React app
-├── .gitignore               # Files and directories to ignore in Git
-├── eslint.config.js         # ESLint configuration for code linting
-├── index.html               # HTML entry point
-├── package-lock.json        # Dependency lock file
-├── package.json             # Project metadata and scripts
-├── README.md                # Project documentation (this file)
-├── vite.config.js           # Vite configuration
+
+<pre> ```bash frontend/ ├── node_modules/ # Project dependencies ├── public/ # Static assets (e.g., favicon, images) ├── src/ # Source code │ ├── components/ # Reusable React components │ │ └── Navbar.jsx # Navigation bar with dark mode toggle │ ├── App.css # Custom styles for the main app │ ├── App.jsx # Main app component with editor and AI response │ ├── index.css # Global styles (Tailwind CSS) │ └── main.jsx # Entry point for React app ├── .gitignore # Files and directories to ignore in Git ├── eslint.config.js # ESLint configuration for code linting ├── index.html # HTML entry point ├── package-lock.json # Dependency lock file ├── package.json # Project metadata and scripts ├── README.md # Project documentation (this file) └── vite.config.js # Vite configuration ``` </pre>
+
 ## Overview
 
 This project is a React-based frontend application built using Vite as the build tool. It features:
@@ -50,3 +36,10 @@ This project is a React-based frontend application built using Vite as the build
 
    ```bash
    cd frontend
+
+✍️ Author
+Saurabh Singh Rajput
+2nd Year, IIIT Bhagalpur
+Self-taught programmer | Code-curious | Believer in code readability | Strives for the best
+
+"When something is important enough, you do it even if the odds are not in your favor." – Elon Musk
