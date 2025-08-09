@@ -1,23 +1,22 @@
 # Frontend Project - React + Vite + Tailwind + AI Code Reviewer
 
 frontend/
-├── node_modules/
-├── public/
-├── src/
-│   ├── components/
-│   │   └── Navbar.jsx
-│   ├── App.css
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
-├── .gitignore
-├── eslint.config.js
-├── index.html
-├── package-lock.json
-├── package.json
-├── README.md
-└── vite.config.js
-
+├── node_modules/            # Project dependencies
+├── public/                  # Static assets (e.g., favicon, images)
+├── src/                     # Source code
+├── src/components/          # Reusable React components
+├── src/components/Navbar.jsx # Navigation bar with dark mode toggle
+├── src/App.css              # Custom styles for the main app
+├── src/App.jsx              # Main app component with editor and AI response
+├── src/index.css            # Global styles (Tailwind CSS)
+├── src/main.jsx             # Entry point for React app
+├── .gitignore               # Files and directories to ignore in Git
+├── eslint.config.js         # ESLint configuration for code linting
+├── index.html               # HTML entry point
+├── package-lock.json        # Dependency lock file
+├── package.json             # Project metadata and scripts
+├── README.md                # Project documentation (this file)
+├── vite.config.js           # Vite configuration
 ## Overview
 
 This project is a React-based frontend application built using Vite as the build tool. It features:
