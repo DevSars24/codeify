@@ -38,7 +38,7 @@ const customStyles = {
   }),
 };
 
-/* -------------------- MARKDOWN RENDERER -------------------- */
+/* -------------------- MARKDOWN -------------------- */
 const MarkdownRenderer = ({ children }: { children: string }) => (
   <Markdown
     components={{
@@ -49,11 +49,7 @@ const MarkdownRenderer = ({ children }: { children: string }) => (
             style={oneDark}
             language={match[1]}
             PreTag="div"
-            customStyle={{
-              borderRadius: "10px",
-              padding: "16px",
-              fontSize: "14px",
-            }}
+            customStyle={{ borderRadius: 10, padding: 16 }}
           >
             {String(children).replace(/\n$/, "")}
           </SyntaxHighlighter>
@@ -79,10 +75,7 @@ export default function Home() {
     useState<"editor" | "response">("editor");
 
   async function runAICommand(cmd: string) {
-    if (!code.trim()) {
-      alert("Please enter code first");
-      return;
-    }
+    if (!code.trim()) return alert("Please enter code first");
 
     setLoading(true);
     setResponse("");
@@ -100,7 +93,7 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || "AI Error");
 
       setResponse(data.text);
-      setMobileView("response"); // auto switch on mobile
+      setMobileView("response"); // mobile auto-switch
     } catch (err: any) {
       setResponse(`❌ ERROR: ${err.message}`);
       setMobileView("response");
@@ -151,54 +144,49 @@ export default function Home() {
           ))}
         </div>
       </div>
-{/* MAIN CONTENT */}
-<div className="flex-1 flex flex-col md:flex-row gap-4 p-3 md:p-6 overflow-hidden">
 
-  {/* EDITOR */}
-  <div
-    className={`w-full md:w-1/2 ${
-      mobileView === "response" ? "hidden md:block" : "block"
-    }`}
-  >
-    <div className="h-[70vh] md:h-full border border-zinc-800 rounded overflow-hidden">
-      <Editor
-        height="100%"
-        theme="vs-dark"
-        language={language.value}
-        value={code}
-        onChange={(v: string | undefined) => setCode(v || "")}
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          scrollBeyondLastLine: false,
-        }}
-      />
-    </div>
-  </div>
+      {/* MAIN CONTENT */}
+      <div className="flex-1 flex flex-col md:flex-row gap-4 p-3 md:p-6 overflow-hidden">
 
-  {/* RESPONSE */}
-  <div
-    className={`w-full md:w-1/2 border border-zinc-800 rounded overflow-hidden flex flex-col ${
-      mobileView === "editor" ? "hidden md:flex" : "flex"
-    }`}
-  >
-    <div className="px-4 py-3 border-b border-zinc-800 font-semibold">
-      AI Response
-    </div>
-
-    <div className="flex-1 overflow-y-auto p-4">
-      {loading ? (
-        <div className="h-full flex items-center justify-center">
-          <RingLoader color="#a855f7" size={60} />
+        {/* EDITOR — always visible on desktop */}
+        <div
+          className={`w-full md:w-1/2 ${
+            mobileView === "response" ? "hidden md:block" : "block"
+          }`}
+        >
+          <div className="h-[70vh] md:h-full border border-zinc-800 rounded overflow-hidden">
+            <Editor
+              height="100%"
+              theme="vs-dark"
+              language={language.value}
+              value={code}
+              onChange={(v: string | undefined) => setCode(v || "")}
+              options={{ minimap: { enabled: false }, fontSize: 14 }}
+            />
+          </div>
         </div>
-      ) : (
-        <MarkdownRenderer>{response}</MarkdownRenderer>
-      )}
-    </div>
-  </div>
-</div>
 
+        {/* RESPONSE — always visible on desktop */}
+        <div
+          className={`w-full md:w-1/2 border border-zinc-800 rounded flex flex-col ${
+            mobileView === "editor" ? "hidden md:flex" : "flex"
+          }`}
+        >
+          <div className="px-4 py-3 border-b border-zinc-800 font-semibold">
+            AI Response
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4">
+            {loading ? (
+              <div className="h-full flex items-center justify-center">
+                <RingLoader color="#a855f7" size={60} />
+              </div>
+            ) : (
+              <MarkdownRenderer>{response}</MarkdownRenderer>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
-
