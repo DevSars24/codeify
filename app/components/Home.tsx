@@ -36,42 +36,25 @@ const customStyles = {
     ...base,
     color: "#fff",
   }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isFocused ? "#27272a" : "#18181b",
-    color: "#fff",
-  }),
 };
 
-/* -------------------- MARKDOWN RENDERER -------------------- */
+/* -------------------- MARKDOWN -------------------- */
 const MarkdownRenderer = ({ children }: { children: string }) => (
   <Markdown
     components={{
-      code({
-        inline,
-        className,
-        children,
-      }: {
-        inline?: boolean;
-        className?: string;
-        children: ReactNode;
-      }) {
+      code({ inline, className, children }: any) {
         const match = /language-(\w+)/.exec(className || "");
         return !inline && match ? (
           <SyntaxHighlighter
             style={oneDark}
             language={match[1]}
             PreTag="div"
-            customStyle={{
-              borderRadius: "10px",
-              padding: "16px",
-              fontSize: "14px",
-            }}
+            customStyle={{ borderRadius: 10, padding: 16 }}
           >
             {String(children).replace(/\n$/, "")}
           </SyntaxHighlighter>
         ) : (
-          <code className="bg-zinc-800 px-2 py-1 rounded text-sm">
+          <code className="bg-zinc-800 px-2 py-1 rounded">
             {children}
           </code>
         );
@@ -88,7 +71,8 @@ export default function Home() {
   const [code, setCode] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mobileView, setMobileView] = useState<"editor" | "response">("editor");
+  const [mobileView, setMobileView] =
+    useState<"editor" | "response">("editor");
 
   async function runAICommand(cmd: string) {
     if (!code.trim()) {
@@ -109,13 +93,10 @@ export default function Home() {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      if (!res.ok) throw new Error(data.error);
 
       setResponse(data.text);
-      setMobileView("response"); // auto switch on mobile
+      setMobileView("response");
     } catch (err: any) {
       setResponse(`❌ ERROR: ${err.message}`);
       setMobileView("response");
@@ -128,14 +109,14 @@ export default function Home() {
     <div className="flex flex-col h-screen bg-zinc-950 text-white">
 
       {/* MOBILE TABS */}
-      <div className="md:hidden flex border-b border-zinc-800 sticky top-0 bg-zinc-950 z-20">
+      <div className="md:hidden flex border-b border-zinc-800 bg-zinc-950">
         {["editor", "response"].map((tab) => (
           <button
             key={tab}
             onClick={() => setMobileView(tab as any)}
-            className={`flex-1 py-3 text-sm font-semibold ${
+            className={`flex-1 py-3 font-semibold ${
               mobileView === tab
-                ? "border-b-2 border-purple-500 text-purple-400"
+                ? "text-purple-400 border-b-2 border-purple-500"
                 : "text-zinc-400"
             }`}
           >
@@ -145,23 +126,22 @@ export default function Home() {
       </div>
 
       {/* CONTROLS */}
-      <div className="p-4 flex flex-col gap-3 border-b border-zinc-800">
+      <div className="p-4 border-b border-zinc-800">
         <Select
           value={language}
-          onChange={(val: { value: string; label: string } | null) =>
-            val && setLanguage(val)
+          onChange={(v: { value: string; label: string } | null) =>
+            v && setLanguage(v)
           }
           options={options}
           styles={customStyles}
         />
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:flex gap-2">
+        <div className="grid grid-cols-2 gap-2 mt-3">
           {["review", "explain", "improve", "bugs", "fix"].map((cmd) => (
             <button
               key={cmd}
               onClick={() => runAICommand(cmd)}
-              disabled={loading}
-              className="px-3 py-2 rounded bg-zinc-800 hover:bg-zinc-700 text-sm disabled:opacity-50"
+              className="bg-zinc-800 rounded py-2 text-sm"
             >
               {cmd.toUpperCase()}
             </button>
@@ -169,47 +149,43 @@ export default function Home() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 overflow-hidden">
+      {/* CONTENT */}
+      <div className="flex-1 p-4 overflow-hidden">
 
-        {/* EDITOR */}
-        <div
-          className={`w-full md:w-1/2 border border-zinc-800 rounded overflow-hidden
-          ${mobileView === "response" ? "hidden md:block" : "block"}`}
-        >
+        {/* MOBILE TEXTAREA */}
+        {mobileView === "editor" && (
+          <textarea
+            className="md:hidden w-full h-full bg-zinc-900 text-white p-4 rounded outline-none"
+            placeholder="Write your code here..."
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
+        )}
+
+        {/* DESKTOP MONACO */}
+        <div className="hidden md:block h-full border border-zinc-800 rounded">
           <Editor
             height="100%"
             theme="vs-dark"
             language={language.value}
             value={code}
-            onChange={(val: string | undefined) => setCode(val || "")}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              scrollBeyondLastLine: false,
-            }}
+            onChange={(v: string | undefined) => setCode(v || "")}
+            options={{ minimap: { enabled: false }, fontSize: 14 }}
           />
         </div>
 
         {/* RESPONSE */}
-        <div
-          className={`w-full md:w-1/2 border border-zinc-800 rounded flex flex-col overflow-hidden
-          ${mobileView === "editor" ? "hidden md:flex" : "flex"}`}
-        >
-          <div className="px-4 py-3 border-b border-zinc-800 font-semibold">
-            AI Response
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4">
+        {mobileView === "response" && (
+          <div className="h-full overflow-y-auto p-4">
             {loading ? (
-              <div className="h-full flex items-center justify-center">
-                <RingLoader color="#a855f7" size={60} />
+              <div className="flex justify-center items-center h-full">
+                <RingLoader color="#a855f7" />
               </div>
             ) : (
               <MarkdownRenderer>{response}</MarkdownRenderer>
             )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
