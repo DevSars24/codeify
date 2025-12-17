@@ -15,29 +15,23 @@ export async function POST(req: Request) {
       process.env.GEMINI_API_KEY as string
     );
 
-    // ✅ BEST PRODUCTION MODEL
     const model = genAI.getGenerativeModel({
-      model: "models/gemini-flash-latest",
+      model: "gemini-flash-lite-latest",
     });
+    
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
-    return new Response(
-      JSON.stringify({ text }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ text }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (err: any) {
     console.error("Gemini error:", err);
-
     return new Response(
-      JSON.stringify({
-        error: "AI service temporarily busy. Please retry.",
-      }),
-      { status: 503 }
+      JSON.stringify({ error: err.message }),
+      { status: 500 }
     );
   }
 }
