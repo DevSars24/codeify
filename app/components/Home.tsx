@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Editor from "@monaco-editor/react";
 import Select from "react-select";
 import Markdown from "react-markdown";
@@ -49,7 +49,11 @@ const MarkdownRenderer = ({ children }: { children: string }) => (
             style={oneDark}
             language={match[1]}
             PreTag="div"
-            customStyle={{ borderRadius: 10, padding: 16 }}
+            customStyle={{
+              borderRadius: 10,
+              padding: 16,
+              marginBottom: 12,
+            }}
           >
             {String(children).replace(/\n$/, "")}
           </SyntaxHighlighter>
@@ -93,7 +97,7 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || "AI Error");
 
       setResponse(data.text);
-      setMobileView("response"); // mobile auto-switch
+      setMobileView("response");
     } catch (err: any) {
       setResponse(`❌ ERROR: ${err.message}`);
       setMobileView("response");
@@ -103,10 +107,10 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-zinc-950 text-white">
+    <div className="flex flex-col h-dvh bg-zinc-950 text-white overflow-hidden">
 
       {/* MOBILE TABS */}
-      <div className="md:hidden flex border-b border-zinc-800">
+      <div className="md:hidden flex shrink-0 border-b border-zinc-800">
         {["editor", "response"].map((tab) => (
           <button
             key={tab}
@@ -123,7 +127,7 @@ export default function Home() {
       </div>
 
       {/* CONTROLS */}
-      <div className="p-4 border-b border-zinc-800 space-y-3">
+      <div className="shrink-0 p-4 border-b border-zinc-800 space-y-3">
         <Select
           value={language}
           onChange={(v: any) => v && setLanguage(v)}
@@ -146,37 +150,42 @@ export default function Home() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col md:flex-row gap-4 p-3 md:p-6 overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-4 p-3 md:p-6 overflow-hidden">
 
-        {/* EDITOR — always visible on desktop */}
+        {/* EDITOR */}
         <div
-          className={`w-full md:w-1/2 ${
-            mobileView === "response" ? "hidden md:block" : "block"
+          className={`flex-1 min-h-0 ${
+            mobileView === "response" ? "hidden md:flex" : "flex"
           }`}
         >
-          <div className="h-[70vh] md:h-full border border-zinc-800 rounded overflow-hidden">
+          <div className="flex-1 min-h-0 border border-zinc-800 rounded overflow-hidden">
             <Editor
               height="100%"
               theme="vs-dark"
               language={language.value}
               value={code}
               onChange={(v: string | undefined) => setCode(v || "")}
-              options={{ minimap: { enabled: false }, fontSize: 14 }}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                scrollBeyondLastLine: false,
+              }}
             />
           </div>
         </div>
 
-        {/* RESPONSE — always visible on desktop */}
+        {/* RESPONSE */}
         <div
-          className={`w-full md:w-1/2 border border-zinc-800 rounded flex flex-col ${
+          className={`flex-1 min-h-0 border border-zinc-800 rounded flex flex-col ${
             mobileView === "editor" ? "hidden md:flex" : "flex"
           }`}
         >
-          <div className="px-4 py-3 border-b border-zinc-800 font-semibold">
+          <div className="px-4 py-3 border-b border-zinc-800 font-semibold shrink-0">
             AI Response
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
+          {/* SCROLL AREA */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-20">
             {loading ? (
               <div className="h-full flex items-center justify-center">
                 <RingLoader color="#a855f7" size={60} />
