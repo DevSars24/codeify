@@ -54,9 +54,7 @@ export default function Navbar() {
                 </div>
 
                 <Link href="/home">
-                  <Badge variant="secondary" className="cursor-pointer">
-                    Dashboard
-                  </Badge>
+                 
                 </Link>
 
                 <UserButton afterSignOutUrl="/" />

@@ -7,6 +7,8 @@ import HeroSection from "@/components/HeroSection";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import photo from "@/assets/photo.png";
+import { SignedIn } from "@clerk/nextjs";
+
 
 export default function LandingPage() {
   const router = useRouter();
@@ -35,16 +37,16 @@ export default function LandingPage() {
               Code anywhere, anytime, with clarity.
             </p>
 
-            <Button
-              size="lg"
-              className="px-12 py-6 text-lg bg-purple-600 hover:bg-purple-700"
-              onClick={() => {
-                if (!isSignedIn) router.push("/sign-in");
-                else router.push("/welcome");
-              }}
-            >
-              Start Coding →
-            </Button>
+           <SignedIn>
+  <Button
+    size="lg"
+    className="px-12 py-6 text-lg bg-purple-600 hover:bg-purple-700"
+    onClick={() => router.push("/welcome")}
+  >
+    Start Coding →
+  </Button>
+</SignedIn>
+
           </div>
 
           {/* IMAGE */}
