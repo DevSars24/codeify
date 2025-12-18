@@ -33,10 +33,13 @@ export default function Navbar() {
             {/* LOGGED OUT */}
             <SignedOut>
               <div className="flex gap-3">
-          
+                <SignInButton mode="modal">
+                  <Button variant="ghost">Sign in</Button>
+                </SignInButton>
+
                 <SignUpButton mode="modal">
                   <Button className="bg-purple-600 hover:bg-purple-700">
-                    Sign Up
+                    Get Started
                   </Button>
                 </SignUpButton>
               </div>
