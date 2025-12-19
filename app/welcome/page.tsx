@@ -103,14 +103,34 @@ export default function WelcomePage() {
             stressful.
           </p>
 
-          {/* CTA */}
-          <Button
-            size="lg"
-            className="px-10 py-6 text-lg bg-purple-600 hover:bg-purple-700 transition-all hover:scale-105"
-            onClick={() => router.push("/home")}
-          >
-            Start Coding Playground →
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+  <Button
+    size="lg"
+    className="px-10 py-6 text-lg bg-purple-600 hover:bg-purple-700 transition-all hover:scale-105"
+    onClick={() => router.push("/home")}
+  >
+    Start Coding Playground →
+  </Button>
+
+  <Button
+    size="lg"
+    variant="outline"
+    className="px-10 py-6 text-lg border-purple-500 text-purple-400 hover:bg-purple-950 transition-all hover:scale-105"
+    onClick={() => router.push("/dsa")}
+  >
+    Practice DSA
+  </Button>
+
+  <Button
+    size="lg"
+    variant="outline"
+    className="px-10 py-6 text-lg border-cyan-500 text-cyan-400 hover:bg-cyan-950 transition-all hover:scale-105"
+    onClick={() => router.push("/dev")}
+  >
+    Let’s Practice Dev
+  </Button>
+</div>
+
 
           <p className="text-zinc-600 text-sm mt-6">
             Everything runs online — anytime, anywhere 🚀
