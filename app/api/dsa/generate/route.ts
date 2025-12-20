@@ -1,24 +1,38 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+/* ---------- ERROR CHECK ---------- */
 function isQuotaOrOverloadError(error: any) {
-  const msg = error?.message?.toLowerCase() || "";
+  const msg = error?.message?.toLowerCase?.() || "";
   return (
     msg.includes("quota") ||
     msg.includes("429") ||
     msg.includes("exceeded") ||
     msg.includes("too many requests") ||
-    msg.includes("resource") ||
     msg.includes("overloaded") ||
     msg.includes("unavailable")
   );
 }
 
+/* ---------- SERVER DOWN ---------- */
+function serverDownResponse(message?: string) {
+  return new Response(
+    JSON.stringify({
+      error: "Service Temporarily Unavailable",
+      message:
+        message ||
+        "The server is currently overloaded. Please try again later.",
+    }),
+    { status: 503 }
+  );
+}
+
+/* ---------- API ---------- */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { topic, count } = body;
 
-    /* ---------------- STRONG VALIDATION ---------------- */
+    /* ✅ VALIDATION */
     if (
       typeof topic !== "string" ||
       topic.trim().length < 2 ||
@@ -36,7 +50,7 @@ export async function POST(req: Request) {
     }
 
     if (!process.env.GEMINI_API_KEY) {
-      return serverDownResponse();
+      return serverDownResponse("AI service not configured.");
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -45,22 +59,32 @@ export async function POST(req: Request) {
     });
 
     const prompt = `
-You are a senior DSA problem setter.
+You are Kautilya Saarthi — a senior DSA problem setter.
 
-Return ONLY valid JSON.
-No markdown.
-No explanation.
+Rules:
+- Generate interview-quality DSA problems
+- No solutions, no hints
+- Clear problem statements
+- Each problem must have examples
+- Return ONLY valid JSON
+- No markdown, no explanation
 
-Generate ${count} ${topic} DSA questions.
+Generate ${count} DSA problems on topic: ${topic}
 
 JSON format:
 {
   "questions": [
     {
       "id": 1,
-      "title": "",
-      "description": "",
-      "examples": []
+      "title": "Problem title",
+      "description": "Problem description",
+      "examples": [
+        {
+          "input": "",
+          "output": "",
+          "explanation": ""
+        }
+      ]
     }
   ]
 }
@@ -70,75 +94,40 @@ JSON format:
     try {
       result = await model.generateContent(prompt);
     } catch (aiError: any) {
-      console.error("GEMINI GENERATE ERROR:", aiError);
-
+      console.error("DSA GENERATE AI ERROR:", aiError);
       if (isQuotaOrOverloadError(aiError)) {
         return serverDownResponse();
       }
-
-      return new Response(
-        JSON.stringify({
-          error: "Question generation failed",
-          message: "Please try again after some time.",
-        }),
-        { status: 200 }
-      );
+      return serverDownResponse("Failed to generate questions.");
     }
 
     const rawText = result?.response?.text?.();
+    if (!rawText) return serverDownResponse();
 
-    if (!rawText || typeof rawText !== "string") {
-      return serverDownResponse();
-    }
-
-    console.log("RAW GENERATE RESPONSE:", rawText);
-
-    /* ---------------- CLEAN JSON ---------------- */
-    const cleaned = rawText
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+    const cleaned = rawText.replace(/```json|```/g, "").trim();
 
     let parsed;
     try {
       parsed = JSON.parse(cleaned);
     } catch {
-      return serverDownResponse();
+      console.error("JSON PARSE FAILED:", cleaned);
+      return serverDownResponse("Invalid AI response format.");
     }
 
-    if (!Array.isArray(parsed.questions)) {
-      return serverDownResponse();
+    if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+      return serverDownResponse("No questions generated.");
     }
 
     return new Response(
       JSON.stringify({
         topic,
-        total: count,
+        total: parsed.questions.length,
         questions: parsed.questions,
       }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
+      { status: 200 }
     );
-
   } catch (error) {
     console.error("DSA GENERATE FATAL:", error);
     return serverDownResponse();
   }
-}
-
-/* ---------------- CENTRALIZED SERVER-DOWN RESPONSE ---------------- */
-
-function serverDownResponse() {
-  return new Response(
-    JSON.stringify({
-      error: "Service Temporarily Unavailable",
-      message:
-        "Due to high traffic, the server is currently overloaded. " +
-        "Please try again after some time. " +
-        "If the issue persists, contact the site owner Saurabh Singh immediately to restore the service.",
-    }),
-    { status: 200 }
-  );
 }
