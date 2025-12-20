@@ -41,24 +41,29 @@ export async function POST(req: Request) {
     });
 
     const prompt = `
-You are a competitive programming judge.
-
-Return ONLY valid JSON.
-
-Question:
-${question}
-
-User Code (${language}):
-${code}
-
-JSON:
-{
-  "verdict": "Accepted | Wrong Answer",
-  "score": 0 or 1,
-  "feedback": "short explanation"
-}
-`.trim();
-
+    You are Kautilya Saarthi, a strict judge.
+    
+    Rules:
+    - Do NOT give full code
+    - Be extremely brief
+    - One or two sentences only
+    
+    Question:
+    ${question}
+    
+    User Code (${language}):
+    ${code}
+    
+    Return ONLY valid JSON.
+    
+    JSON:
+    {
+      "verdict": "Accepted | Wrong | Partial",
+      "score": 0 or 1,
+      "feedback": "One short hint or mistake summary (max 20 words)."
+    }
+    `.trim();
+    
     let result;
     try {
       result = await model.generateContent(prompt);
