@@ -1,7 +1,20 @@
 "use client";
 
+import { Suspense } from "react";
 import ContestDsa from "@/components/ContestDsa";
 
 export default function ContestPage() {
-  return <ContestDsa />;
+  return (
+    <Suspense fallback={<Loading />}>
+      <ContestDsa />
+    </Suspense>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-white">
+      Loading contest...
+    </div>
+  );
 }
