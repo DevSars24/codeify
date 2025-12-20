@@ -1,236 +1,163 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Dsa() {
-  /* ================= DATA ================= */
-
-  const challenges = [
-    {
-      id: "beginner",
-      level: "Beginner",
-      title: "Strings & Arrays",
-      desc:
-        "Build a rock-solid foundation in arrays and strings while learning key optimization techniques.",
-      topics: [
-        "Array traversal & in-place updates",
-        "Frequency arrays & hashing",
-        "String manipulation techniques",
-        "Palindrome & anagram checks",
-        "Two pointers",
-        "Sliding window (fixed & variable)",
-        "Prefix sum & difference array",
-        "Subarray sum patterns",
-        "Kadane’s algorithm",
-        "Binary search on arrays",
-        "Binary search on answer",
-        "Matrix traversal",
-        "Rotate / transpose matrix",
-        "Sorting-based logic",
-        "Edge case handling",
-      ],
-      patterns: ["Two Pointers", "Sliding Window", "Prefix Sum", "Binary Search"],
-      badge: "bg-emerald-500/15 text-emerald-300",
-      glow: "hover:shadow-emerald-500/30",
-    },
-    {
-      id: "intermediate",
-      level: "Intermediate",
-      title: "Linear Data Structures",
-      desc:
-        "Understand stacks, queues, linked lists and hashing with real interview-style patterns.",
-      topics: [
-        "Hash maps & sets",
-        "Collision handling (concept)",
-        "Stacks (LIFO)",
-        "Valid parentheses",
-        "Monotonic stack",
-        "Histogram problems",
-        "Queues & deque",
-        "Linked list traversal",
-        "Reverse linked list",
-        "Fast & slow pointers",
-        "Cycle detection & removal",
-        "Merge sorted lists",
-        "LRU cache concept",
-        "Expression evaluation",
-        "Dummy node techniques",
-      ],
-      patterns: ["Monotonic Stack", "Hashing", "Two Pointers"],
-      badge: "bg-sky-500/15 text-sky-300",
-      glow: "hover:shadow-sky-500/30",
-    },
-    {
-      id: "advanced",
-      level: "Advanced",
-      title: "Trees & Graphs",
-      desc:
-        "Master recursion, tree traversals and graph algorithms used in real systems.",
-      topics: [
-        "Recursion fundamentals",
-        "Binary tree basics",
-        "Tree traversals (DFS)",
-        "Level order (BFS)",
-        "Height & diameter",
-        "Balanced trees",
-        "Lowest common ancestor",
-        "Path sum problems",
-        "BST properties",
-        "Graph representations",
-        "BFS & DFS in graphs",
-        "Cycle detection",
-        "Topological sort",
-        "Union-Find",
-        "Connected components",
-      ],
-      patterns: ["DFS/BFS", "Recursion", "Visited logic"],
-      badge: "bg-indigo-500/15 text-indigo-300",
-      glow: "hover:shadow-indigo-500/30",
-    },
-    {
-      id: "expert",
-      level: "Expert",
-      title: "DP & Competitive Edge",
-      desc:
-        "Crack hard problems using DP, greedy strategies and advanced optimizations.",
-      topics: [
-        "DP mindset",
-        "State & transition design",
-        "Memoization vs tabulation",
-        "1D & 2D DP",
-        "Knapsack variants",
-        "LIS & LCS",
-        "DP on strings",
-        "DP on trees",
-        "Space optimization",
-        "Greedy principles",
-        "Interval scheduling",
-        "Heaps & priority queues",
-        "Top-K problems",
-        "Bit manipulation",
-        "Meet-in-the-middle",
-      ],
-      patterns: ["Dynamic Programming", "Greedy", "Heaps", "Bit Tricks"],
-      badge: "bg-rose-500/15 text-rose-300",
-      glow: "hover:shadow-rose-500/30",
-    },
-  ];
-
-  const insights = [
-    "DSA is about patterns, not question count.",
-    "Think first. Code later.",
-    "Struggle means growth.",
-    "Brute force is the first step to optimization.",
-    "Consistency beats talent every time.",
-    "Interviewers value clarity over perfection.",
-  ];
-
-  const [currentInsight, setCurrentInsight] = useState(0);
+export default function DsaGamingPlatform() {
+  const [topic, setTopic] = useState("Arrays");
+  const [count, setCount] = useState(5);
+  const [language, setLanguage] = useState("C++");
+  const [typedText, setTypedText] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
+    const full =
+      "transforms complex Data Structures & Algorithms into a calm, focused and game-like experience.";
+    let i = 0;
     const id = setInterval(() => {
-      setCurrentInsight((p) => (p + 1) % insights.length);
-    }, 4500);
+      setTypedText(full.slice(0, i));
+      i++;
+      if (i > full.length) clearInterval(id);
+    }, 28);
     return () => clearInterval(id);
   }, []);
 
-  /* ================= UI ================= */
-
   return (
-    <div className="relative min-h-screen overflow-hidden px-6 pt-24 pb-20 text-white">
+    <div className="relative min-h-screen px-4 pt-24 pb-16 text-white overflow-hidden">
 
-      {/* 🌈 WARM AURORA BACKGROUND */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617]" />
-      <div className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-amber-400/20 rounded-full blur-[120px]" />
-      <div className="absolute top-1/3 -right-32 w-[420px] h-[420px] bg-rose-400/20 rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 left-1/3 w-[420px] h-[420px] bg-indigo-400/20 rounded-full blur-[120px]" />
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 -z-20 bg-[url('/assets/dsa-contest.jpg')] bg-cover bg-center" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-[#0b1020]/70 to-black/90" />
 
-      {/* HEADER */}
-      <div className="max-w-5xl mx-auto text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-amber-300 via-rose-300 to-indigo-300 bg-clip-text text-transparent">
-          DSA Practice Arena
+      {/* AURORA */}
+      <div className="absolute top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-[180px]" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-[180px]" />
+
+      {/* HERO */}
+      <div className="max-w-xl mx-auto text-center mb-10 animate-fade">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4">
+          Welcome to{" "}
+          <span className="bg-gradient-to-r from-zinc-200 to-zinc-400 bg-clip-text text-transparent">
+            DSA Gaming Platform
+          </span>
         </h1>
-        <p className="text-zinc-300 text-lg">
-          Structured levels, core patterns & interview-ready problem solving.
+
+        <p className="text-zinc-400 text-sm sm:text-base">
+          <span className="font-semibold text-white">SARS </span>
+          {typedText}
+          <span className="ml-1 animate-blink">|</span>
         </p>
       </div>
 
-      {/* CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-20">
-        {challenges.map((c) => (
-          <div
-            key={c.id}
-            className={`rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-7 transition-all duration-300 hover:-translate-y-1 ${c.glow}`}
+      {/* CONTEST CARD */}
+      <div className="max-w-sm mx-auto mb-14 animate-slide-up">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.035] backdrop-blur-3xl p-5 space-y-5">
+
+          {/* TOPIC */}
+          <div>
+            <label className="block text-xs text-zinc-500 mb-1 uppercase">
+              DSA Topic
+            </label>
+            <select
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-sm"
+            >
+              <option>Arrays</option>
+              <option>Strings</option>
+              <option>Linked List</option>
+              <option>Stack & Queue</option>
+              <option>Trees</option>
+              <option>Graphs</option>
+              <option>Dynamic Programming</option>
+            </select>
+          </div>
+
+          {/* QUESTIONS */}
+          <div>
+            <label className="block text-xs text-zinc-500 mb-1 uppercase">
+              Questions
+            </label>
+            <div className="flex gap-3">
+              {[5, 10, 15].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => setCount(n)}
+                  className={`flex-1 py-2 rounded-xl text-sm font-semibold ${
+                    count === n
+                      ? "bg-white text-black"
+                      : "bg-white/10 text-zinc-300"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* LANGUAGE */}
+          <div>
+            <label className="block text-xs text-zinc-500 mb-1 uppercase">
+              Language
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              {["C++", "Java", "JavaScript"].map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLanguage(l)}
+                  className={`py-2 rounded-xl text-sm font-semibold ${
+                    language === l
+                      ? "bg-white text-black"
+                      : "bg-white/10 text-zinc-300"
+                  }`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ✅ SINGLE START CONTEST BUTTON */}
+          <button
+            onClick={() =>
+              router.push(
+                `/contestdsa?topic=${topic}&count=${count}&language=${language}`
+              )
+            }
+            className="w-full py-3 rounded-xl bg-white text-black font-bold text-sm"
           >
-            <span className={`inline-block mb-3 px-3 py-1 rounded-full text-xs font-semibold ${c.badge}`}>
-              {c.level}
-            </span>
-
-            <h3 className="text-xl font-semibold text-white mb-2">
-              {c.title}
-            </h3>
-
-            <p className="text-zinc-300 text-sm mb-5 leading-relaxed">
-              {c.desc}
-            </p>
-
-            <div className="mb-5">
-              <p className="text-xs uppercase tracking-wide text-zinc-400 mb-2">
-                Core Topics
-              </p>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm text-zinc-200 max-h-40 overflow-y-auto pr-1">
-                {c.topics.map((t, i) => (
-                  <li key={i}>• {t}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mb-6">
-              <p className="text-xs uppercase tracking-wide text-zinc-400 mb-2">
-                Patterns
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {c.patterns.map((p) => (
-                  <span
-                    key={p}
-                    className="text-xs px-3 py-1 rounded-full bg-white/10 text-zinc-200"
-                  >
-                    {p}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <button className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 transition font-semibold text-sm">
-              Start {c.level} Practice
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* REAL TALK */}
-      <div className="max-w-xl mx-auto text-center">
-        <h2 className="text-lg font-semibold text-zinc-100 mb-6">
-          Real Talk (Senior Insight)
-        </h2>
-
-        <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 transition-all duration-500">
-          <p className="text-zinc-200 italic text-sm leading-relaxed">
-            “{insights[currentInsight]}”
-          </p>
-
-          <div className="flex justify-center gap-2 mt-5">
-            {insights.map((_, i) => (
-              <span
-                key={i}
-                className={`w-2 h-2 rounded-full ${
-                  i === currentInsight ? "bg-white" : "bg-white/40"
-                }`}
-              />
-            ))}
-          </div>
+            Start Contest
+          </button>
         </div>
       </div>
+
+      {/* WHY SECTIONS */}
+      <div className="max-w-md mx-auto mb-8 animate-fade-delayed">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center">
+          <h3 className="font-semibold mb-2">Why SARS?</h3>
+          <p className="text-zinc-400 text-sm">
+            Learn DSA through levels, focus-driven UI and contest-style practice.
+          </p>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes fade {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fade 0.9s ease-out; }
+        .animate-slide-up { animation: slideUp 0.9s ease-out; }
+        .animate-blink { animation: blink 1s infinite; }
+        @keyframes blink {
+          0%,100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
