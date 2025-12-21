@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ContestAttempt {
+  id              String   @id @default(uuid())
+  userId          String
+  topic           String
+  totalQuestions  Int
+  correctAnswers  Int
+  accuracy        Int
+  createdAt       DateTime @default(now())
+}
+
+
