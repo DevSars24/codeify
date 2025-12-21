@@ -5,13 +5,11 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
-  SignInButton,
   SignUpButton,
   useUser,
 } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export default function Navbar() {
   const { user } = useUser();
@@ -22,7 +20,7 @@ export default function Navbar() {
         <div className="mt-3 rounded-2xl border border-zinc-800 bg-black/70 backdrop-blur-xl">
           <div className="flex h-16 items-center justify-between px-6">
 
-            {/* Brand */}
+            {/* LEFT — Brand */}
             <Link
               href="/"
               className="text-lg font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
@@ -30,36 +28,26 @@ export default function Navbar() {
               Code Saarthi
             </Link>
 
-            {/* LOGGED OUT */}
-            <SignedOut>
-              <div className="flex gap-3">
+            {/* RIGHT — Nav + Auth */}
+            <div className="flex items-center gap-6">
+
              
 
+              {/* LOGGED OUT */}
+              <SignedOut>
                 <SignUpButton mode="modal">
                   <Button className="bg-purple-600 hover:bg-purple-700">
                     Sign Up
                   </Button>
                 </SignUpButton>
-              </div>
-            </SignedOut>
+              </SignedOut>
 
-            {/* LOGGED IN */}
-            <SignedIn>
-              <div className="flex items-center gap-6">
-                <div className="hidden md:block text-sm text-right">
-                  <p className="text-zinc-400">Welcome to Saarthi</p>
-                  <p className="font-medium text-purple-400">
-                    {user?.firstName}
-                  </p>
-                </div>
-
-                <Link href="/home">
-                 
-                </Link>
-
+              {/* LOGGED IN */}
+              <SignedIn>
                 <UserButton afterSignOutUrl="/" />
-              </div>
-            </SignedIn>
+              </SignedIn>
+
+            </div>
 
           </div>
         </div>
