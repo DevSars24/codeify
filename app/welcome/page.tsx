@@ -127,7 +127,7 @@ export default function WelcomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slideUp animation-delay-800">
           <Button
   size="lg"
-  onClick={() => router.push("/welcome")}
+  onClick={() => router.push("/home")}
   className="
     mt-2 px-10 py-5 text-lg font-semibold
     text-white
@@ -144,9 +144,10 @@ export default function WelcomePage() {
   "
 >
   <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-    Start Coding Playground →
+    Start syntax Playground →
   </span>
 </Button>
+
 
             <Button
               size="lg"
