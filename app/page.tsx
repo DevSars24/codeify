@@ -54,13 +54,31 @@ export default function LandingPage() {
             </div>
 
             <SignedIn>
-              <Button
-                size="lg"
-                className="reveal reveal-4 mt-2 px-10 py-5 text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all shadow-lg hover:shadow-purple-500/40 hover:scale-105"
-                onClick={() => router.push("/welcome")}
-              >
-                Start Coding Playground →
-              </Button>
+             
+            <Button
+  size="lg"
+  onClick={() => router.push("/welcome")}
+  className="
+    mt-2 px-10 py-5 text-lg font-semibold
+    text-white
+    bg-black/40 backdrop-blur-xl
+    border border-white/10
+    rounded-2xl
+    shadow-lg shadow-black/40
+    transition-all duration-300 ease-out
+    hover:bg-black/55
+    hover:border-purple-400/40
+    hover:shadow-purple-500/30
+    hover:scale-[1.04]
+    active:scale-[0.98]
+  "
+>
+  <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+    Start Coding Playground →
+  </span>
+</Button>
+
+             
             </SignedIn>
           </div>
 
