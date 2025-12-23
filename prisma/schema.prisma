@@ -1,0 +1,22 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+model ContestAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  topic     String
+  total     Int
+  correct   Int
+  accuracy  Int
+  language  String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
