@@ -1,163 +1,272 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import Editor from "@monaco-editor/react";
 
-export default function DsaGamingPlatform() {
-  const [topic, setTopic] = useState("Arrays");
-  const [count, setCount] = useState(5);
-  const [language, setLanguage] = useState("C++");
-  const [typedText, setTypedText] = useState("");
-  const router = useRouter();
+/* ================= TYPES ================= */
+type Question = {
+  id: number;
+  title: string;
+  description: string;
+};
 
+type MobileView = "editor" | "response";
+
+/* ================= COMPONENT ================= */
+export default function ContestDsa() {
+  const params = useSearchParams();
+
+  // 🔒 HARD LOCK — single question contest
+  const topic = params.get("topic") || "Arrays";
+  const initialLang = params.get("language") || "C++";
+  const language =
+    initialLang === "C++" ? "cpp" : initialLang.toLowerCase();
+
+  /* ================= STATE ================= */
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [code, setCode] = useState("");
+  const [verdict, setVerdict] = useState("");
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [mobileView, setMobileView] =
+    useState<MobileView>("editor");
+
+  /* ================= FETCH SINGLE QUESTION ================= */
   useEffect(() => {
-    const full =
-      "transforms complex Data Structures & Algorithms into a calm, focused and game-like experience.";
-    let i = 0;
-    const id = setInterval(() => {
-      setTypedText(full.slice(0, i));
-      i++;
-      if (i > full.length) clearInterval(id);
-    }, 28);
-    return () => clearInterval(id);
-  }, []);
+    async function fetchQuestion() {
+      try {
+        setLoading(true);
+        setError("");
 
-  return (
-    <div className="relative min-h-screen px-4 pt-24 pb-16 text-white overflow-hidden">
+        const res = await fetch("/api/dsa/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ topic, count: 1 }),
+        });
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-20 bg-[url('/assets/dsa-contest.jpg')] bg-cover bg-center" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-[#0b1020]/70 to-black/90" />
+        const data = await res.json();
 
-      {/* AURORA */}
-      <div className="absolute top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-[180px]" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-[180px]" />
+        if (!res.ok || !Array.isArray(data.questions) || !data.questions[0]) {
+          throw new Error("Failed to load question");
+        }
 
-      {/* HERO */}
-      <div className="max-w-xl mx-auto text-center mb-10 animate-fade">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-          Welcome to{" "}
-          <span className="bg-gradient-to-r from-zinc-200 to-zinc-400 bg-clip-text text-transparent">
-            DSA Gaming Platform
-          </span>
-        </h1>
+        setQuestion(data.questions[0]);
+      } catch (err: any) {
+        setError(err.message || "Unable to load contest.");
+      } finally {
+        setLoading(false);
+      }
+    }
 
-        <p className="text-zinc-400 text-sm sm:text-base">
-          <span className="font-semibold text-white">SARS </span>
-          {typedText}
-          <span className="ml-1 animate-blink">|</span>
-        </p>
-      </div>
+    fetchQuestion();
+  }, [topic]);
 
-      {/* CONTEST CARD */}
-      <div className="max-w-sm mx-auto mb-14 animate-slide-up">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.035] backdrop-blur-3xl p-5 space-y-5">
+  /* ================= SUBMIT SOLUTION ================= */
+  async function submitSolution() {
+    if (!question) return;
 
-          {/* TOPIC */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              DSA Topic
-            </label>
-            <select
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              className="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-sm"
-            >
-              <option>Arrays</option>
-              <option>Strings</option>
-              <option>Linked List</option>
-              <option>Stack & Queue</option>
-              <option>Trees</option>
-              <option>Graphs</option>
-              <option>Dynamic Programming</option>
-            </select>
+    if (!code.trim()) {
+      setVerdict("❌ Please write some code before submitting.");
+      setMobileView("response");
+      return;
+    }
+
+    try {
+      setVerdict("⏳ Evaluating...");
+
+      const res = await fetch("/api/dsa/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: question.description,
+          code,
+          language: initialLang,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Evaluation failed");
+      }
+
+      setVerdict(`${data.verdict}\n\n${data.feedback}`);
+      setScore(data.score === 1 ? 1 : 0);
+      setMobileView("response");
+    } catch (err: any) {
+      setVerdict(err.message || "⚠️ Evaluation failed.");
+      setMobileView("response");
+    }
+  }
+
+  /* ================= SAVE RESULT ON FINISH ================= */
+  useEffect(() => {
+    if (!finished || !question) return;
+
+    async function saveContest() {
+      try {
+        await fetch("/api/contest/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: "temp-user", // 🔁 replace with Clerk later
+            topic,
+            total: 1,
+            correct: score,
+            accuracy: score === 1 ? 100 : 0,
+            language: initialLang,
+          }),
+        });
+      } catch (err) {
+        console.error("Failed to save contest", err);
+      }
+    }
+
+    saveContest();
+  }, [finished, score, topic, initialLang, question]);
+
+  /* ================= FINAL RESULT SCREEN ================= */
+  if (finished) {
+    return (
+      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-white px-6">
+        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 text-center">
+          <h1 className="text-xl font-bold text-green-400">
+            🎉 Contest Completed
+          </h1>
+
+          <div className="text-sm text-zinc-300 space-y-2 text-left">
+            <p>📘 Total Questions: <b>1</b></p>
+            <p>✅ Correct Answers: <b>{score}</b></p>
+            <p>❌ Wrong Answers: <b>{score === 1 ? 0 : 1}</b></p>
+            <p>🎯 Accuracy: <b>{score === 1 ? 100 : 0}%</b></p>
           </div>
 
-          {/* QUESTIONS */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Questions
-            </label>
-            <div className="flex gap-3">
-              {[5, 10, 15].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCount(n)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-semibold ${
-                    count === n
-                      ? "bg-white text-black"
-                      : "bg-white/10 text-zinc-300"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* LANGUAGE */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Language
-            </label>
-            <div className="grid grid-cols-3 gap-3">
-              {["C++", "Java", "JavaScript"].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLanguage(l)}
-                  className={`py-2 rounded-xl text-sm font-semibold ${
-                    language === l
-                      ? "bg-white text-black"
-                      : "bg-white/10 text-zinc-300"
-                  }`}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* ✅ SINGLE START CONTEST BUTTON */}
-          <button
-            onClick={() =>
-              router.push(
-                `/contestdsa?topic=${topic}&count=${count}&language=${language}`
-              )
-            }
-            className="w-full py-3 rounded-xl bg-white text-black font-bold text-sm"
-          >
-            Start Contest
-          </button>
-        </div>
-      </div>
-
-      {/* WHY SECTIONS */}
-      <div className="max-w-md mx-auto mb-8 animate-fade-delayed">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center">
-          <h3 className="font-semibold mb-2">Why SARS?</h3>
-          <p className="text-zinc-400 text-sm">
-            Learn DSA through levels, focus-driven UI and contest-style practice.
+          <p className="text-xs text-zinc-500 mt-4">
+            Result saved successfully 🚀
           </p>
         </div>
       </div>
+    );
+  }
 
-      <style jsx>{`
-        @keyframes fade {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade { animation: fade 0.9s ease-out; }
-        .animate-slide-up { animation: slideUp 0.9s ease-out; }
-        .animate-blink { animation: blink 1s infinite; }
-        @keyframes blink {
-          0%,100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-      `}</style>
+  /* ================= LOADING / ERROR ================= */
+  if (loading) {
+    return (
+      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-white">
+        Preparing contest...
+      </div>
+    );
+  }
+
+  if (error || !question) {
+    return (
+      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-red-400 px-6 text-center">
+        ❌ {error || "No question available."}
+      </div>
+    );
+  }
+
+  /* ================= MAIN UI ================= */
+  return (
+    <div className="h-dvh bg-zinc-950 text-white flex flex-col overflow-hidden">
+
+      {/* HEADER */}
+      <div className="shrink-0 p-3 border-b border-zinc-800">
+        <h1 className="font-bold text-sm">
+          {topic} Contest • 1 Question
+        </h1>
+        <p className="text-xs text-zinc-400">
+          Language • {initialLang}
+        </p>
+      </div>
+
+      {/* MOBILE TABS */}
+      <div className="md:hidden flex border-b border-zinc-800">
+        {(["editor", "response"] as MobileView[]).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setMobileView(tab)}
+            className={`flex-1 py-3 text-sm font-semibold ${
+              mobileView === tab
+                ? "text-purple-400 border-b-2 border-purple-500"
+                : "text-zinc-400"
+            }`}
+          >
+            {tab.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      {/* QUESTION */}
+      <div className="shrink-0 border-b border-zinc-800 bg-zinc-900/40 p-3">
+        <h2 className="font-semibold text-sm">{question.title}</h2>
+        <p className="text-xs text-zinc-300 mt-1">
+          {question.description}
+        </p>
+      </div>
+
+      {/* BODY */}
+      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+
+        {/* EDITOR */}
+        <div
+          className={`md:flex-1 border-b md:border-b-0 md:border-r border-zinc-800
+            ${mobileView === "response" ? "hidden md:flex" : "flex"}
+          `}
+        >
+          <Editor
+            theme="vs-dark"
+            language={language}
+            value={code}
+            onChange={(v: string | undefined) => setCode(v ?? "")}
+
+            height="100%"
+            options={{
+              minimap: { enabled: false },
+              fontSize: 13,
+              automaticLayout: true,
+              scrollBeyondLastLine: false,
+            }}
+          />
+        </div>
+
+        {/* RESPONSE */}
+        <div
+          className={`md:w-96 flex flex-col min-h-0
+            ${mobileView === "editor" ? "hidden md:flex" : "flex"}
+          `}
+        >
+          <div className="shrink-0 p-4 border-b border-zinc-800 space-y-2">
+            <button
+              onClick={submitSolution}
+              className="w-full bg-purple-600 py-2 rounded font-semibold"
+            >
+              Submit
+            </button>
+
+            <button
+              onClick={() => setFinished(true)}
+              className="w-full bg-green-600 py-2 rounded"
+            >
+              Finish Contest
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4">
+            <h3 className="font-semibold mb-2 text-sm">
+              Kautilya Saarthi
+            </h3>
+            <pre className="text-xs whitespace-pre-wrap text-zinc-300">
+              {verdict || "Submit your code to receive guidance."}
+            </pre>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

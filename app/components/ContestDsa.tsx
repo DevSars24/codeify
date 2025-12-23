@@ -20,19 +20,19 @@ export default function ContestDsa() {
   const topic = params.get("topic") || "Arrays";
   const count = Number(params.get("count") || 1);
   const initialLang = params.get("language") || "C++";
-  const language =
+  const editorLang =
     initialLang === "C++" ? "cpp" : initialLang.toLowerCase();
 
   /* ================= STATE ================= */
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [code, setCode] = useState("");
-  const [verdict, setVerdict] = useState("");
+  const [code, setCode] = useState<string>("");
+  const [verdict, setVerdict] = useState<string>("");
   const [scores, setScores] = useState<number[]>([]);
   const [finished, setFinished] = useState(false);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
   const [mobileView, setMobileView] =
     useState<MobileView>("editor");
@@ -52,19 +52,23 @@ export default function ContestDsa() {
           body: JSON.stringify({ topic, count }),
         });
 
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err?.message || "Question generation failed");
+        }
+
         const data = await res.json();
 
-        if (!res.ok || !Array.isArray(data.questions)) {
-          throw new Error(
-            data?.message || data?.error || "Failed to load questions"
-          );
+        if (!Array.isArray(data.questions) || data.questions.length === 0) {
+          throw new Error("No questions received");
         }
 
         setQuestions(data.questions);
         setScores(new Array(data.questions.length).fill(0));
         setCurrentIndex(0);
       } catch (err: any) {
-        setError(err.message || "Unable to load contest.");
+        console.error("FETCH QUESTION ERROR:", err);
+        setError(err.message || "Unable to load contest");
       } finally {
         setLoading(false);
       }
@@ -78,7 +82,7 @@ export default function ContestDsa() {
     if (!currentQuestion) return;
 
     if (!code.trim()) {
-      setVerdict("❌ Please write some code before submitting.");
+      setVerdict("❌ Please write code before submitting.");
       setMobileView("response");
       return;
     }
@@ -98,6 +102,10 @@ export default function ContestDsa() {
 
       const data = await res.json();
 
+      if (!res.ok) {
+        throw new Error(data?.error || "Evaluation failed");
+      }
+
       setVerdict(`${data.verdict}\n\n${data.feedback}`);
 
       setScores((prev) => {
@@ -107,13 +115,52 @@ export default function ContestDsa() {
       });
 
       setMobileView("response");
-    } catch {
-      setVerdict("⚠️ Evaluation failed.");
+    } catch (err: any) {
+      console.error("SUBMIT ERROR:", err);
+      setVerdict(err.message || "⚠️ Evaluation failed.");
       setMobileView("response");
     }
   }
 
-  /* ================= FINAL RESULT ================= */
+  /* ================= SAVE CONTEST ================= */
+  useEffect(() => {
+    if (!finished || questions.length === 0) return;
+
+    const total = questions.length;
+    const correct = scores.reduce((a, b) => a + b, 0);
+    const accuracy =
+      total > 0 ? Math.round((correct / total) * 100) : 0;
+
+    async function saveContest() {
+      try {
+        console.log("🔥 Saving contest to DB");
+
+        const res = await fetch("/api/contest/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: "temp-user", // Clerk later
+            topic,
+            total,
+            correct,
+            accuracy,
+            language: initialLang,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          console.error("SAVE FAILED:", err);
+        }
+      } catch (err) {
+        console.error("SAVE ERROR:", err);
+      }
+    }
+
+    saveContest();
+  }, [finished]);
+
+  /* ================= FINISH SCREEN ================= */
   if (finished) {
     const total = questions.length;
     const correct = scores.reduce((a, b) => a + b, 0);
@@ -122,7 +169,7 @@ export default function ContestDsa() {
       total > 0 ? Math.round((correct / total) * 100) : 0;
 
     return (
-      <div className="h-dvh bg-zinc-950 text-white flex items-center justify-center px-6">
+      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-white px-6">
         <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 text-center">
           <h1 className="text-xl font-bold text-green-400">
             🎉 Contest Completed
@@ -135,8 +182,8 @@ export default function ContestDsa() {
             <p>🎯 Accuracy: <b>{accuracy}%</b></p>
           </div>
 
-          <p className="text-xs text-zinc-500 mt-4">
-            Keep practicing — consistency wins 🚀
+          <p className="text-xs text-zinc-500">
+            Result saved successfully 🚀
           </p>
         </div>
       </div>
@@ -154,7 +201,7 @@ export default function ContestDsa() {
 
   if (error) {
     return (
-      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-red-400 text-center px-6">
+      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-red-400 px-6 text-center">
         ❌ {error}
       </div>
     );
@@ -171,9 +218,8 @@ export default function ContestDsa() {
   /* ================= MAIN UI ================= */
   return (
     <div className="h-dvh bg-zinc-950 text-white flex flex-col overflow-hidden">
-
       {/* HEADER */}
-      <div className="shrink-0 p-3 border-b border-zinc-800">
+      <div className="p-3 border-b border-zinc-800">
         <h1 className="font-bold text-sm">
           {topic} Contest • {questions.length} Questions
         </h1>
@@ -200,7 +246,7 @@ export default function ContestDsa() {
       </div>
 
       {/* QUESTION */}
-      <div className="shrink-0 border-b border-zinc-800 bg-zinc-900/40 p-3">
+      <div className="border-b border-zinc-800 bg-zinc-900/40 p-3">
         <h2 className="font-semibold text-sm">
           {currentQuestion.title}
         </h2>
@@ -211,37 +257,33 @@ export default function ContestDsa() {
 
       {/* BODY */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0">
-
         {/* EDITOR */}
         <div
-          className={`md:flex-1 border-b md:border-b-0 md:border-r border-zinc-800
-            ${mobileView === "response" ? "hidden md:flex" : "flex"}
-          `}
+          className={`md:flex-1 border-r border-zinc-800 ${
+            mobileView === "response" ? "hidden md:flex" : "flex"
+          }`}
         >
-          <div className="w-full h-[calc(100dvh-260px)] md:h-full">
-            <Editor
-              theme="vs-dark"
-              language={language}
-              value={code}
-              onChange={(v: string | undefined) => setCode(v ?? "")}
-              height="100%"
-              options={{
-                minimap: { enabled: false },
-                fontSize: 13,
-                automaticLayout: true,
-                scrollBeyondLastLine: false,
-              }}
-            />
-          </div>
+          <Editor
+            theme="vs-dark"
+            language={editorLang}
+            value={code}
+            onChange={(v: string | undefined) => setCode(v ?? "")}
+            height="100%"
+            options={{
+              minimap: { enabled: false },
+              fontSize: 13,
+              automaticLayout: true,
+            }}
+          />
         </div>
 
         {/* RESPONSE */}
         <div
-          className={`md:w-96 flex flex-col min-h-0
-            ${mobileView === "editor" ? "hidden md:flex" : "flex"}
-          `}
+          className={`md:w-96 flex flex-col ${
+            mobileView === "editor" ? "hidden md:flex" : "flex"
+          }`}
         >
-          <div className="shrink-0 p-4 border-b border-zinc-800 space-y-2">
+          <div className="p-4 border-b border-zinc-800 space-y-2">
             <button
               onClick={submitSolution}
               className="w-full bg-purple-600 py-2 rounded font-semibold"
@@ -272,9 +314,6 @@ export default function ContestDsa() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4">
-            <h3 className="font-semibold mb-2 text-sm">
-              Kautilya Saarthi
-            </h3>
             <pre className="text-xs whitespace-pre-wrap text-zinc-300">
               {verdict || "Submit your code to receive guidance."}
             </pre>
