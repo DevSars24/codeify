@@ -4,140 +4,121 @@ import TypingText from "@/components/TypingText";
 import Counter from "@/components/Counter";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AboutDeveloperPage() {
   return (
-    <main className="min-h-screen bg-black text-white px-4 sm:px-6 pt-24 pb-20">
-      <div className="max-w-6xl mx-auto space-y-10 lg:space-y-16">
+    <main className="relative min-h-screen bg-black text-white overflow-hidden">
+
+      {/* ===== AURORA BACKGROUND (SOFT) ===== */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-purple-500/20 blur-[160px] rounded-full" />
+        <div className="absolute top-1/4 -right-40 w-[500px] h-[500px] bg-pink-500/20 blur-[160px] rounded-full" />
+        <div className="absolute -bottom-40 left-1/3 w-[500px] h-[500px] bg-cyan-500/20 blur-[160px] rounded-full" />
+      </div>
+
+      {/* Top & Bottom Fade */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-28 z-10 bg-gradient-to-b from-black to-transparent" />
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 h-28 z-10 bg-gradient-to-t from-black to-transparent" />
+
+      {/* ===== CONTENT ===== */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-24 space-y-24">
 
         {/* ================= HERO ================= */}
-        <GlassCard>
+        <section className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center space-y-6"
+            transition={{ duration: 0.5 }}
+            className="space-y-5"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white">
-              Hi, I’m{" "}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
+              Welcome to{" "}
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Saurabh Singh Rajput
+                Sars Workspace
               </span>
             </h1>
 
-            <div className="text-lg sm:text-xl md:text-2xl h-8 text-zinc-200">
+            <div className="text-lg sm:text-xl text-zinc-300 h-7">
               <TypingText
                 text={[
-                  "Self-taught Full-Stack Developer",
+                  "Full-Stack Developer",
                   "MERN Stack Engineer",
-                  "System Design Learner",
-                  "Learning by Building",
+                  "DSA & System Design Focused",
                 ]}
               />
             </div>
 
-            <p className="max-w-3xl mx-auto text-zinc-200 text-base sm:text-lg leading-relaxed">
-              I’m a{" "}
-              <span className="text-purple-400 font-medium">
-                self-taught full-stack developer
-              </span>{" "}
-              and a{" "}
-              <span className="text-pink-400 font-medium">
-                2nd-year CSE student
-              </span>{" "}
-              at IIIT Bhagalpur. I don’t just learn technologies — I{" "}
-              <span className="text-cyan-400 font-medium">
-                build systems, products, and real-world solutions
-              </span>.
+            <p className="text-zinc-300 leading-relaxed max-w-xl">
+              Self-taught full-stack developer and 2nd-year CSE student at IIIT Bhagalpur.
+              I build real products, strengthen DSA fundamentals, and design scalable systems.
             </p>
 
-            <p className="text-zinc-400 italic text-sm sm:text-base">
-              Learning happens best when you build, break, and rebuild things that matter.
-            </p>
+            {/* Small snippet (mobile friendly) */}
+            <pre className="bg-zinc-900/40 border border-zinc-700/40 rounded-lg p-3 text-xs max-w-sm">
+              <code className="text-green-400 font-mono">
+{`console.log("Entering Sars Workspace");`}
+              </code>
+            </pre>
           </motion.div>
-        </GlassCard>
+
+          {/* IMAGE */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative w-full h-64 sm:h-80 md:h-[420px]"
+          >
+            <Image
+              src="/assets/photo.png"
+              alt="Developer portrait"
+              fill
+              className="object-cover rounded-2xl border border-white/10"
+              priority
+            />
+          </motion.div>
+        </section>
 
         {/* ================= STATS ================= */}
-        <GlassCard>
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6"
-          >
-            <Counter value={500} label="DSA Problems Solved" />
-            <Counter value={500} label="GitHub Contributions" />
-            <Counter value={65} label="Repositories" />
-            <Counter value={18} label="Day Coding Streak" />
-          </motion.div>
-        </GlassCard>
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <Counter value={500} label="DSA Problems" />
+          <Counter value={500} label="GitHub Commits" />
+          <Counter value={65} label="Repositories" />
+          <Counter value={18} label="Day Streak" />
+        </section>
 
-        {/* ================= VISION ================= */}
-        <GlassCard>
-          <SectionTitle>Who I Am & What I Build</SectionTitle>
+        {/* ================= WORK AREAS ================= */}
+        <section className="space-y-10">
+          <SectionTitle>What I Work On</SectionTitle>
 
-          <p className="text-zinc-200 text-base sm:text-lg leading-relaxed text-center">
-            I actively work with the{" "}
-            <span className="text-purple-400 font-medium">MERN stack</span>, explore{" "}
-            <span className="text-pink-400 font-medium">
-              Low-Level & High-Level System Design
-            </span>, and continuously sharpen my{" "}
-            <span className="text-cyan-400 font-medium">
-              DSA & problem-solving skills
-            </span>.
-            Alongside this, I’m diving into AI/ML fundamentals — not for hype,
-            but to understand how intelligent systems can genuinely help people.
-          </p>
-
-          <p className="text-zinc-400 text-center">
-            Inspired by <b>Steve Jobs</b> and <b>Tony Stark</b>, I see code not as
-            syntax — but as a tool to create meaningful change.
-          </p>
-        </GlassCard>
-
-        {/* ================= WHAT I BUILD ================= */}
-        <GlassCard>
-          <SectionTitle>What I Love Working On</SectionTitle>
-
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {[
-              "Real-world products, not just demo apps",
-              "AI-assisted platforms like Codeify",
-              "Clean architecture & scalable systems",
-              "Developer tools & learning platforms",
-              "Collaborative projects where ideas matter",
+              "Data Structures & Algorithms",
+              "MERN Stack Applications",
+              "Backend APIs & Databases",
+              "System Design Fundamentals",
+              "Developer Tools & Platforms",
             ].map((item, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="
-                  rounded-2xl
-                  bg-zinc-800/60 backdrop-blur-md
-                  border border-white/10
-                  px-5 py-4
-                  text-zinc-100
-                  text-sm sm:text-base
-                  hover:border-purple-400/40
-                  hover:bg-zinc-800/80
-                  transition
-                "
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="flex items-start gap-3 text-zinc-200"
               >
-                {item}
-              </div>
+                <span className="mt-2 h-2 w-2 rounded-full bg-purple-400" />
+                <span>{item}</span>
+              </motion.div>
             ))}
           </div>
-
-          <p className="text-zinc-400 text-center text-sm sm:text-base">
-            I enjoy collaborating with people who care about quality, learning,
-            and long-term impact.
-          </p>
-        </GlassCard>
+        </section>
 
         {/* ================= PROFILES ================= */}
-        <GlassCard>
-          <SectionTitle>My Coding & Professional Profiles</SectionTitle>
+        <section className="space-y-8 text-center">
+          <SectionTitle>Coding Profiles</SectionTitle>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
             <ProfileLink label="LeetCode" href="https://leetcode.com/u/VXGxeHwq/" />
             <ProfileLink label="GeeksforGeeks" href="https://www.geeksforgeeks.org/user/saurabhsinvqv3/" />
             <ProfileLink label="Codolio" href="https://codolio.com/profile/sars" />
@@ -146,50 +127,40 @@ export default function AboutDeveloperPage() {
             <ProfileLink label="Portfolio" href="https://sars24.netlify.app" />
           </div>
 
-          <p className="text-zinc-400 text-center text-sm">
-            These profiles represent consistency, discipline, and real skill-building.
-          </p>
-        </GlassCard>
+          <pre className="bg-zinc-900/40 border border-zinc-700/40 rounded-lg p-3 text-xs inline-block">
+            <code className="text-pink-400 font-mono">
+{`connect(profile).then(build());`}
+            </code>
+          </pre>
+        </section>
 
         {/* ================= FINAL ================= */}
-        <GlassCard>
-          <p className="text-center text-lg sm:text-xl italic text-zinc-200">
-            I’m not chasing titles.
-            <br />
-            <span className="text-purple-400 font-semibold">
-              I’m building skills, systems, and products that stand the test of time.
-            </span>
-          </p>
-        </GlassCard>
+        <section className="text-center space-y-6">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-xl sm:text-2xl text-zinc-200 font-medium"
+          >
+            Focused on{" "}
+            <span className="text-purple-400">skills</span>,{" "}
+            <span className="text-pink-400">systems</span>, and{" "}
+            <span className="text-cyan-400">long-term growth</span>.
+          </motion.p>
+
+          <pre className="bg-zinc-900/40 border border-zinc-700/40 rounded-lg p-3 text-xs inline-block">
+            <code className="text-green-400 font-mono">
+{`while (learning) { build(); evolve(); }`}
+            </code>
+          </pre>
+        </section>
 
       </div>
     </main>
   );
 }
 
-/* ================= REUSABLE COMPONENTS ================= */
-
-function GlassCard({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="
-        bg-zinc-900/60 backdrop-blur-xl
-        border border-white/10
-        shadow-xl shadow-black/50
-
-        /* MOBILE */
-        rounded-3xl p-6 space-y-6
-
-        /* DESKTOP */
-        lg:rounded-2xl lg:p-10
-
-        transition-all
-      "
-    >
-      {children}
-    </div>
-  );
-}
+/* ================= REUSABLE ================= */
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -204,20 +175,9 @@ function ProfileLink({ label, href }: { label: string; href: string }) {
     <Link
       href={href}
       target="_blank"
-      className="
-        rounded-xl
-        border border-white/10
-        bg-zinc-800/60 backdrop-blur-md
-        px-3 py-2
-        text-center
-        text-zinc-200
-        hover:border-purple-400/40
-        hover:text-purple-400
-        transition
-      "
+      className="px-4 py-2 rounded-full border border-white/10 text-zinc-200 hover:text-purple-400 hover:border-purple-400/40 transition"
     >
       {label}
     </Link>
   );
 }
-

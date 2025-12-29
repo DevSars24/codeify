@@ -5,18 +5,17 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
 }
 
 model ContestAttempt {
   id        String   @id @default(cuid())
   userId    String
   topic     String
-  total     Int
-  correct   Int
   accuracy  Int
-  language  String
   createdAt DateTime @default(now())
+  correct   Int
+  language  String
+  total     Int
 
   @@index([userId])
 }
