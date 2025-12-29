@@ -86,10 +86,10 @@ export default function LandingPage() {
           <div className="reveal reveal-5 flex justify-center md:justify-end">
             <div className="relative group">
               <Image
-                src="/assets/photo.png"   
+                src="/assets/work.jpg"   
                 alt="Saurabh Singh Rajput"
-                width={320}
-                height={320}
+                width={700}
+                height={700}
                 priority
                 className="rounded-full border-4 border-zinc-800 shadow-2xl"
               />
