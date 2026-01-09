@@ -1,113 +1,89 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-function isOverloadError(error: any) {
+// Enhanced error detection for Gemini Quota/API issues
+function getSystemErrorMessage(error: any) {
   const msg = error?.message?.toLowerCase() || "";
-  return (
-    msg.includes("quota") ||
-    msg.includes("429") ||
-    msg.includes("exceeded") ||
-    msg.includes("too many requests") ||
-    msg.includes("resource") ||
-    msg.includes("overloaded") ||
-    msg.includes("unavailable")
-  );
+  if (msg.includes("api_key") || msg.includes("key not found")) 
+    return "API Configuration Error: Check your GEMINI_API_KEY environment variable.";
+  if (msg.includes("quota") || msg.includes("429")) 
+    return "Quota Exceeded: Your Gemini API free tier limit has been reached.";
+  if (msg.includes("overloaded") || msg.includes("503")) 
+    return "Model Overloaded: gemini-flash-lite-latest is currently busy. Try again in 10 seconds.";
+  return "Internal Judge Error: " + msg;
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { question, code, language } = body;
+    const { question, code, language } = await req.json();
 
-    if (
-      typeof question !== "string" ||
-      question.trim().length < 10 ||
-      typeof code !== "string" ||
-      code.trim().length < 5
-    ) {
+    // Edge Case: Empty Inputs
+    if (!question || !code) {
       return Response.json({
-        verdict: "Invalid Submission",
+        verdict: "Input Error",
         score: 0,
-        feedback: "Question or code is invalid.",
+        feedback: "The judge received empty code or question text.",
       });
     }
 
     if (!process.env.GEMINI_API_KEY) {
-      return serviceDownResponse();
+      return Response.json({
+        verdict: "Setup Error",
+        score: 0,
+        feedback: "GEMINI_API_KEY is missing from the server environment.",
+      });
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-flash-lite-latest",
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-lite-latest" });
 
+    // Strict prompt to ensure valid JSON and avoid prose
     const prompt = `
-    You are Kautilya Saarthi, a strict judge.
-    
-    Rules:
-    - Do NOT give full code
-    - Be extremely brief
-    - One or two sentences only
-    
-    Question:
-    ${question}
-    
-    User Code (${language}):
-    ${code}
-    
-    Return ONLY valid JSON.
-    
-    JSON:
-    {
-      "verdict": "Accepted | Wrong | Partial",
-      "score": 0 or 1,
-      "feedback": "One short hint or mistake summary (max 20 words)."
-    }
+      JUDGE TASK: Evaluate DSA Code.
+      QUESTION: ${question}
+      USER_CODE (${language}): ${code}
+
+      RULES:
+      1. One sentence feedback maximum.
+      2. No code snippets in feedback.
+      3. Return ONLY valid JSON.
+
+      FORMAT:
+      {
+        "verdict": "Accepted" | "Wrong Answer" | "Time Limit Exceeded",
+        "score": 1 or 0,
+        "feedback": "string"
+      }
     `.trim();
-    
-    let result;
+
     try {
-      result = await model.generateContent(prompt);
-    } catch (err: any) {
-      if (isOverloadError(err)) return serviceDownResponse();
-      return judgeErrorResponse();
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const rawText = response.text();
+      
+      // Clean JSON in case model adds markdown backticks
+      const cleanedJson = rawText.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(cleanedJson);
+
+      return Response.json({
+        verdict: parsed.verdict || "Evaluated",
+        score: parsed.score ?? 0,
+        feedback: parsed.feedback || "Evaluation complete.",
+      });
+
+    } catch (apiErr: any) {
+      // Catch specific Gemini API Errors (Quota, Keys, Model Busy)
+      return Response.json({
+        verdict: "System Error",
+        score: 0,
+        feedback: getSystemErrorMessage(apiErr),
+      });
     }
 
-    const raw = result?.response?.text?.();
-    if (!raw) return judgeErrorResponse();
-
-    const cleaned = raw.replace(/```json|```/g, "").trim();
-
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch {
-      return judgeErrorResponse();
-    }
-
+  } catch (err: any) {
     return Response.json({
-      verdict: parsed.verdict || "Wrong Answer",
-      score: parsed.score === 1 ? 1 : 0,
-      feedback: parsed.feedback || "No feedback provided.",
+      verdict: "Request Error",
+      score: 0,
+      feedback: "Failed to process the request payload.",
     });
-
-  } catch (err) {
-    return serviceDownResponse();
   }
-}
-
-function serviceDownResponse() {
-  return Response.json({
-    verdict: "Judge Unavailable",
-    score: 0,
-    feedback:
-      "Due to high traffic, the server is temporarily overloaded. Please try again later. If the issue persists, contact the site owner Saurabh Singh immediately.",
-  });
-}
-
-function judgeErrorResponse() {
-  return Response.json({
-    verdict: "Evaluation Error",
-    score: 0,
-    feedback: "The judge failed to evaluate this submission.",
-  });
 }

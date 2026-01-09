@@ -3,29 +3,18 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const TOPICS = [
-  "Arrays",
-  "Strings",
-  "Stack",
-  "Queue",
-  "LinkedList",
-  "BinarySearch",
-  "Recursion",
-  "DP",
-];
+const TOPICS = ["Arrays", "Strings", "Stack", "Queue", "LinkedList", "BinarySearch", "Recursion", "DP"];
 
 export default function DsaPracticeArena() {
   const router = useRouter();
-
   const [topic, setTopic] = useState("Arrays");
-  const [level, setLevel] = useState("Basic"); // future use
+  const [level, setLevel] = useState("Basic");
   const [count, setCount] = useState(5);
   const [language, setLanguage] = useState("C++");
   const [typedText, setTypedText] = useState("");
 
   useEffect(() => {
-    const full =
-      "turns DSA practice into a structured, competitive and interview-ready experience.";
+    const full = "turns DSA practice into a structured, competitive and interview-ready experience.";
     let i = 0;
     const id = setInterval(() => {
       setTypedText(full.slice(0, i));
@@ -36,152 +25,111 @@ export default function DsaPracticeArena() {
   }, []);
 
   return (
-    <div className="relative min-h-screen px-4 pt-24 pb-16 text-white overflow-hidden">
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-br from-black via-[#0b1020] to-black" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/60 to-black" />
-
-      {/* AURORA */}
-      <div className="absolute top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-[180px]" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[180px]" />
-
-      {/* HERO */}
-      <div className="max-w-xl mx-auto text-center mb-10 animate-fade">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-          Welcome to{" "}
-          <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-            DSA Practice Arena
-          </span>
+    <div className="relative min-h-screen px-6 pt-32 pb-20 text-white bg-[#050505] font-sans selection:bg-purple-500/30">
+      {/* ARCHITECTURAL BACKGROUND */}
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_2px_2px,#111_1px,transparent_0)] bg-[size:40px_40px] opacity-20" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
+      
+      {/* HEADER SECTION */}
+      <div className="max-w-4xl mx-auto text-center mb-16 relative">
+        <div className="inline-block px-3 py-1 mb-6 rounded-full border border-white/5 bg-white/5 text-[10px] font-black tracking-[0.3em] uppercase text-zinc-500">
+          Neural System V2.0
+        </div>
+        <h1 className="text-5xl md:text-8xl font-black mb-8 tracking-tighter uppercase italic leading-none">
+          DSA <span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>ARENA</span>
         </h1>
-
-        <p className="text-zinc-400 text-sm sm:text-base">
-          <span className="font-semibold text-white">SARS </span>
+        <p className="text-zinc-500 text-sm md:text-xl font-medium tracking-tight max-w-xl mx-auto leading-relaxed">
+          <span className="text-white font-black tracking-widest mr-2">SARS</span>
           {typedText}
-          <span className="ml-1 animate-blink">|</span>
+          <span className="inline-block w-1.5 h-5 bg-purple-500 ml-1 animate-pulse align-middle" />
         </p>
       </div>
 
-      {/* PRACTICE CARD */}
-      <div className="max-w-sm mx-auto mb-14 animate-slide-up">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.035] backdrop-blur-3xl p-5 space-y-5">
+      {/* COMMAND CONSOLE (Cards) */}
+      <div className="max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+          <div className="relative p-[1px] rounded-[32px] bg-gradient-to-b from-white/10 to-transparent group overflow-hidden">
+            <div className="relative bg-[#0a0a0a] rounded-[31px] p-8 md:p-12 space-y-10 backdrop-blur-xl">
+              
+              {/* TOPIC SELECTOR - GRID STYLE */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-end">
+                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Select Domain</label>
+                  <span className="text-[10px] font-mono text-purple-500/50">ID: {topic.toUpperCase()}</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {TOPICS.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setTopic(t)}
+                      className={`py-3 px-2 rounded-xl text-[11px] font-bold border transition-all duration-300 ${
+                        topic === t 
+                        ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]" 
+                        : "bg-transparent border-white/5 text-zinc-500 hover:border-white/20"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          {/* TOPIC */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Topic
-            </label>
-            <select
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              className="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-sm"
-            >
-              {TOPICS.map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </div>
+              {/* LEVEL & LANGUAGE ROW */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Intensity</label>
+                  <div className="flex bg-black p-1 rounded-2xl border border-white/5">
+                    {["Basic", "Medium", "Hard"].map((l) => (
+                      <button
+                        key={l}
+                        onClick={() => setLevel(l)}
+                        className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${
+                          level === l ? "bg-zinc-800 text-white shadow-inner" : "text-zinc-600 hover:text-zinc-400"
+                        }`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-          {/* LEVEL */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Level
-            </label>
-            <div className="flex gap-3">
-              {["Basic", "Medium", "Advanced"].map((l) => (
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Environment</label>
+                  <select 
+                    value={language} 
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="w-full bg-black border border-white/5 rounded-2xl px-4 py-2 text-xs font-bold focus:border-purple-500 transition-all outline-none appearance-none cursor-pointer"
+                  >
+                    <option>C++</option>
+                    <option>Java</option>
+                    <option>Python</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* START ACTION */}
+              <div className="pt-4">
                 <button
-                  key={l}
-                  onClick={() => setLevel(l)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-semibold ${
-                    level === l
-                      ? "bg-white text-black"
-                      : "bg-white/10 text-zinc-300"
-                  }`}
+                  onClick={() => router.push(`/contestdsa?topic=${topic}&count=${count}&difficulty=${level}&language=${encodeURIComponent(language)}`)}
+                  className="group relative w-full py-5 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.4em] overflow-hidden transition-all hover:scale-[1.01] active:scale-95"
                 >
-                  {l}
+                  <span className="relative z-10">Initialize Sequence</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-10 transition-opacity" />
                 </button>
-              ))}
+              </div>
+
             </div>
           </div>
-
-          {/* QUESTIONS */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Questions
-            </label>
-            <div className="flex gap-3">
-              {[5, 10].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCount(n)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-semibold ${
-                    count === n
-                      ? "bg-white text-black"
-                      : "bg-white/10 text-zinc-300"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* LANGUAGE */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Language
-            </label>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-sm"
-            >
-              <option>C++</option>
-              <option>Java</option>
-              <option>Python</option>
-            </select>
-          </div>
-
-          {/* START DSA PRACTICE */}
-          <button
-            onClick={() =>
-              router.push(
-                `/contestdsa?topic=${topic}&count=${count}&language=${encodeURIComponent(
-                  language
-                )}`
-              )
-            }
-            className="w-full py-3 rounded-xl bg-white text-black font-bold text-sm"
-          >
-            🚀 Start DSA Practice
-          </button>
         </div>
       </div>
 
-      {/* WHY SECTION */}
-      <div className="max-w-md mx-auto mb-8 animate-fade-delayed">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center">
-          <h3 className="font-semibold mb-2">Why DSA Practice?</h3>
-          <p className="text-zinc-400 text-sm">
-            Build problem-solving depth with topic-focused contests and instant feedback.
-          </p>
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes fade {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+      <style jsx global>{`
+        @font-face {
+          font-family: 'Geist';
+          src: url('https://cdn.jsdelivr.net/font-geist/1.0.0/Geist-Variable.woff2') format('woff2');
         }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade { animation: fade 0.9s ease-out; }
-        .animate-slide-up { animation: slideUp 0.9s ease-out; }
-        .animate-blink { animation: blink 1s infinite; }
-        @keyframes blink {
-          0%,100% { opacity: 1; }
-          50% { opacity: 0; }
+        .stroke-text {
+          color: transparent;
         }
       `}</style>
     </div>
