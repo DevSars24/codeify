@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 
 /* ================= TYPES ================= */
-type MobileView = "editor" | "response";
-
 type Question = {
   id: number;
   title: string;
@@ -20,8 +18,7 @@ export default function ContestDsa() {
   const topic = params.get("topic") || "Arrays";
   const count = Number(params.get("count") || 1);
   const initialLang = params.get("language") || "C++";
-  const editorLang =
-    initialLang === "C++" ? "cpp" : initialLang.toLowerCase();
+  const editorLang = initialLang === "C++" ? "cpp" : initialLang.toLowerCase();
 
   /* ================= STATE ================= */
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -30,12 +27,8 @@ export default function ContestDsa() {
   const [verdict, setVerdict] = useState<string>("");
   const [scores, setScores] = useState<number[]>([]);
   const [finished, setFinished] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
-
-  const [mobileView, setMobileView] =
-    useState<MobileView>("editor");
 
   const currentQuestion = questions[currentIndex];
 
@@ -45,7 +38,6 @@ export default function ContestDsa() {
       try {
         setLoading(true);
         setError("");
-
         const res = await fetch("/api/dsa/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -58,7 +50,6 @@ export default function ContestDsa() {
         }
 
         const data = await res.json();
-
         if (!Array.isArray(data.questions) || data.questions.length === 0) {
           throw new Error("No questions received");
         }
@@ -67,29 +58,24 @@ export default function ContestDsa() {
         setScores(new Array(data.questions.length).fill(0));
         setCurrentIndex(0);
       } catch (err: any) {
-        console.error("FETCH QUESTION ERROR:", err);
         setError(err.message || "Unable to load contest");
       } finally {
         setLoading(false);
       }
     }
-
     fetchQuestions();
   }, [topic, count]);
 
   /* ================= SUBMIT ================= */
   async function submitSolution() {
     if (!currentQuestion) return;
-
     if (!code.trim()) {
       setVerdict("❌ Please write code before submitting.");
-      setMobileView("response");
       return;
     }
 
     try {
-      setVerdict("⏳ Evaluating...");
-
+      setVerdict("⏳ Evaluating your solution...");
       const res = await fetch("/api/dsa/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -101,225 +87,150 @@ export default function ContestDsa() {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || "Evaluation failed");
-      }
+      if (!res.ok) throw new Error(data?.error || "Evaluation failed");
 
       setVerdict(`${data.verdict}\n\n${data.feedback}`);
-
       setScores((prev) => {
         const updated = [...prev];
         updated[currentIndex] = data.score === 1 ? 1 : 0;
         return updated;
       });
-
-      setMobileView("response");
     } catch (err: any) {
-      console.error("SUBMIT ERROR:", err);
       setVerdict(err.message || "⚠️ Evaluation failed.");
-      setMobileView("response");
     }
   }
 
-  /* ================= SAVE CONTEST ================= */
-  useEffect(() => {
-    if (!finished || questions.length === 0) return;
+  /* ================= SCREENS ================= */
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white">Preparing contest...</div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-red-400 p-6 text-center">❌ {error}</div>;
 
-    const total = questions.length;
-    const correct = scores.reduce((a, b) => a + b, 0);
-    const accuracy =
-      total > 0 ? Math.round((correct / total) * 100) : 0;
-
-    async function saveContest() {
-      try {
-        console.log("🔥 Saving contest to DB");
-
-        const res = await fetch("/api/contest/save", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: "temp-user", // Clerk later
-            topic,
-            total,
-            correct,
-            accuracy,
-            language: initialLang,
-          }),
-        });
-
-        if (!res.ok) {
-          const err = await res.json();
-          console.error("SAVE FAILED:", err);
-        }
-      } catch (err) {
-        console.error("SAVE ERROR:", err);
-      }
-    }
-
-    saveContest();
-  }, [finished]);
-
-  /* ================= FINISH SCREEN ================= */
   if (finished) {
     const total = questions.length;
     const correct = scores.reduce((a, b) => a + b, 0);
-    const wrong = total - correct;
-    const accuracy =
-      total > 0 ? Math.round((correct / total) * 100) : 0;
-
+    const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
     return (
-      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-white px-6">
-        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4 text-center">
-          <h1 className="text-xl font-bold text-green-400">
-            🎉 Contest Completed
-          </h1>
-
-          <div className="text-sm text-zinc-300 space-y-2 text-left">
-            <p>📘 Total Questions: <b>{total}</b></p>
-            <p>✅ Correct Answers: <b>{correct}</b></p>
-            <p>❌ Wrong Answers: <b>{wrong}</b></p>
-            <p>🎯 Accuracy: <b>{accuracy}%</b></p>
+      <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white p-6">
+        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center shadow-2xl">
+          <h1 className="text-2xl font-bold text-purple-400 mb-6">Contest Completed!</h1>
+          <div className="grid grid-cols-2 gap-4 text-left mb-6">
+            <div className="bg-zinc-800/50 p-3 rounded-lg"><p className="text-xs text-zinc-400">Total</p><p className="font-bold">{total}</p></div>
+            <div className="bg-zinc-800/50 p-3 rounded-lg"><p className="text-xs text-zinc-400">Correct</p><p className="font-bold text-green-400">{correct}</p></div>
+            <div className="bg-zinc-800/50 p-3 rounded-lg"><p className="text-xs text-zinc-400">Accuracy</p><p className="font-bold">{accuracy}%</p></div>
+            <div className="bg-zinc-800/50 p-3 rounded-lg"><p className="text-xs text-zinc-400">Language</p><p className="font-bold">{initialLang}</p></div>
           </div>
-
-          <p className="text-xs text-zinc-500">
-            Result saved successfully 🚀
-          </p>
+          <button onClick={() => window.location.href = '/'} className="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded-xl font-bold transition-all">Back to Home</button>
         </div>
       </div>
     );
   }
 
-  /* ================= LOADING / ERROR ================= */
-  if (loading) {
-    return (
-      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-white">
-        Preparing contest...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-red-400 px-6 text-center">
-        ❌ {error}
-      </div>
-    );
-  }
-
-  if (!currentQuestion) {
-    return (
-      <div className="h-dvh flex items-center justify-center bg-zinc-950 text-zinc-400">
-        No questions available.
-      </div>
-    );
-  }
-
-  /* ================= MAIN UI ================= */
   return (
-    <div className="h-dvh bg-zinc-950 text-white flex flex-col overflow-hidden">
-      {/* HEADER */}
-      <div className="p-3 border-b border-zinc-800">
-        <h1 className="font-bold text-sm">
-          {topic} Contest • {questions.length} Questions
-        </h1>
-        <p className="text-xs text-zinc-400">
-          Q {currentIndex + 1}/{questions.length} • {initialLang}
-        </p>
-      </div>
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
+      {/* STICKY HEADER */}
+      <header className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div>
+            <h1 className="font-bold text-sm md:text-base text-purple-400">{topic} Contest</h1>
+            <p className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest">
+              Question {currentIndex + 1} of {questions.length} • {initialLang}
+            </p>
+          </div>
+          <div className="flex gap-2">
+             <div className="h-1.5 w-24 bg-zinc-800 rounded-full overflow-hidden mt-2 hidden md:block">
+                <div 
+                  className="h-full bg-purple-500 transition-all duration-500" 
+                  style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+                />
+             </div>
+          </div>
+        </div>
+      </header>
 
-      {/* MOBILE TABS */}
-      <div className="md:hidden flex border-b border-zinc-800">
-        {(["editor", "response"] as MobileView[]).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setMobileView(tab)}
-            className={`flex-1 py-3 text-sm font-semibold ${
-              mobileView === tab
-                ? "text-purple-400 border-b-2 border-purple-500"
-                : "text-zinc-400"
-            }`}
-          >
-            {tab.toUpperCase()}
-          </button>
-        ))}
-      </div>
+      <main className="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full">
+        
+        {/* LEFT COLUMN: QUESTION & EDITOR */}
+        <div className="flex-1 flex flex-col border-r border-zinc-800">
+          
+          {/* QUESTION DESCRIPTION */}
+          <section className="p-4 md:p-6 bg-zinc-900/30">
+            <h2 className="text-lg md:text-xl font-bold mb-3">{currentQuestion.title}</h2>
+            <div className="text-sm text-zinc-300 leading-relaxed prose prose-invert max-w-none">
+              {currentQuestion.description}
+            </div>
+          </section>
 
-      {/* QUESTION */}
-      <div className="border-b border-zinc-800 bg-zinc-900/40 p-3">
-        <h2 className="font-semibold text-sm">
-          {currentQuestion.title}
-        </h2>
-        <p className="text-xs text-zinc-300 mt-1">
-          {currentQuestion.description}
-        </p>
-      </div>
-
-      {/* BODY */}
-      <div className="flex-1 flex flex-col md:flex-row min-h-0">
-        {/* EDITOR */}
-        <div
-          className={`md:flex-1 border-r border-zinc-800 ${
-            mobileView === "response" ? "hidden md:flex" : "flex"
-          }`}
-        >
-          <Editor
-            theme="vs-dark"
-            language={editorLang}
-            value={code}
-            onChange={(v: string | undefined) => setCode(v ?? "")}
-            height="100%"
-            options={{
-              minimap: { enabled: false },
-              fontSize: 13,
-              automaticLayout: true,
-            }}
-          />
+          {/* EDITOR SECTION */}
+          <section className="border-t border-zinc-800 relative group">
+            <div className="bg-zinc-900 px-4 py-2 text-[10px] uppercase font-bold text-zinc-500 flex justify-between">
+              <span>Editor ({initialLang})</span>
+              <span className="text-purple-500">Auto-saving Enabled</span>
+            </div>
+            <div className="h-[400px] md:h-[500px] lg:h-[600px]">
+              <Editor
+                theme="vs-dark"
+                language={editorLang}
+                value={code}
+           onChange={(v: string | undefined) => setCode(v ?? "")}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  padding: { top: 20 },
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                }}
+              />
+            </div>
+          </section>
         </div>
 
-        {/* RESPONSE */}
-        <div
-          className={`md:w-96 flex flex-col ${
-            mobileView === "editor" ? "hidden md:flex" : "flex"
-          }`}
-        >
-          <div className="p-4 border-b border-zinc-800 space-y-2">
+        {/* RIGHT COLUMN: CONTROLS & RESPONSE */}
+        <aside className="md:w-[400px] flex flex-col bg-zinc-950">
+          <div className="sticky top-[73px] p-4 md:p-6 space-y-4 bg-zinc-950 border-b md:border-b-0 border-zinc-800">
             <button
               onClick={submitSolution}
-              className="w-full bg-purple-600 py-2 rounded font-semibold"
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg shadow-purple-900/20 active:scale-[0.98]"
             >
-              Submit
+              Submit Solution
             </button>
 
-            {currentIndex < questions.length - 1 ? (
-              <button
-                onClick={() => {
-                  setCurrentIndex((i) => i + 1);
-                  setCode("");
-                  setVerdict("");
-                  setMobileView("editor");
-                }}
-                className="w-full bg-zinc-800 py-2 rounded"
-              >
-                Next →
-              </button>
-            ) : (
-              <button
-                onClick={() => setFinished(true)}
-                className="w-full bg-green-600 py-2 rounded"
-              >
-                Finish Contest
-              </button>
-            )}
+            <div className="flex gap-3">
+                {currentIndex < questions.length - 1 ? (
+                  <button
+                    onClick={() => {
+                      setCurrentIndex((i) => i + 1);
+                      setCode("");
+                      setVerdict("");
+                      window.scrollTo(0,0);
+                    }}
+                    className="flex-1 bg-zinc-800 hover:bg-zinc-700 py-3 rounded-xl font-semibold transition-all"
+                  >
+                    Next Question →
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setFinished(true)}
+                    className="flex-1 bg-green-600 hover:bg-green-500 py-3 rounded-xl font-semibold transition-all"
+                  >
+                    Finish Contest
+                  </button>
+                )}
+            </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
-            <pre className="text-xs whitespace-pre-wrap text-zinc-300">
-              {verdict || "Submit your code to receive guidance."}
-            </pre>
+          {/* VERDICT AREA */}
+          <div className="p-4 md:p-6 flex-1">
+            <div className="rounded-xl bg-zinc-900/50 border border-zinc-800 p-4 min-h-[200px]">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase mb-3">Feedback & Verdict</h3>
+              <pre className="text-sm whitespace-pre-wrap text-zinc-300 font-sans italic">
+                {verdict || "Your results will appear here after submission..."}
+              </pre>
+            </div>
           </div>
-        </div>
-      </div>
+        </aside>
+      </main>
+
+      {/* MOBILE SPACING (to ensure content isn't hidden by bottom bars) */}
+      <div className="h-10 md:hidden" />
     </div>
   );
 }
