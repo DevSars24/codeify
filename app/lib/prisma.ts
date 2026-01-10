@@ -1,30 +1,15 @@
-import { PrismaClient } from "@prisma/client";
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
 
-const prismaClientSingleton = () => {
-  const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.DATABASE_URL;
 
-  if (!connectionString) {
-    throw new Error("❌ DATABASE_URL is missing from .env");
-  }
+const pool = new pg.Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
-  // Pool handles the actual connection string in Prisma 7+ with adapters
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-  return new PrismaClient({
-    adapter, // Direct connection is handled via the adapter
-    log: ["error", "warn"],
-  });
-};
+export const prisma = 
+  globalForPrisma.prisma || new PrismaClient({ adapter });
 
-declare const globalThis: {
-  prismaGlobal: ReturnType<typeof prismaClientSingleton> | undefined;
-} & typeof global;
-
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
-
-export default prisma;
-
-if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

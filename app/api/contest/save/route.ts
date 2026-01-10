@@ -1,45 +1,31 @@
-export const runtime = "nodejs";
-
+import { prisma }from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+
+export const dynamic = "force-dynamic"; // Build error se bachne ke liye
 
 export async function POST(req: Request) {
   try {
+    const { userId } = await auth();
+    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+
     const body = await req.json();
-    const { userId, topic, total, correct, accuracy, language } = body;
+    const { topic, correct, total, accuracy, language } = body;
 
-    // 🛑 Validation
-    if (!userId || !topic || !language) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
-
-    const saved = await prisma.contestAttempt.create({
+    const attempt = await prisma.contestAttempt.create({
       data: {
         userId,
         topic,
-        total: Number(total),
-        correct: Number(correct),
-        accuracy: Number(accuracy),
+        correct,
+        total,
+        accuracy,
         language,
       },
     });
 
-    return NextResponse.json({ success: true, id: saved.id }, { status: 201 });
-  } catch (error: any) {
-    console.error("❌ SAVE ERROR:", error);
-
-    // Handle Prisma errors by checking the error code directly
-    // This avoids needing the 'Prisma' namespace import
-    if (error?.code === "P2022") {
-      return NextResponse.json(
-        { error: "Database schema mismatch. Please run npx prisma db push." },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Failed to save contest", details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json(attempt);
+  } catch (error) {
+    console.error("SAVE_ERROR", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

@@ -1,21 +1,27 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+
+// ADD THIS MODEL
 model ContestAttempt {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String   // Clerk uses string IDs
   topic     String
-  accuracy  Int
-  createdAt DateTime @default(now())
-  correct   Int
   language  String
+  accuracy  Float
+  correct   Int
   total     Int
+  createdAt DateTime @default(now())
 
   @@index([userId])
 }
