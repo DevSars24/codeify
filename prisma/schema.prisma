@@ -3,16 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+
+// ADD THIS MODEL
 model ContestAttempt {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String   // Clerk uses string IDs
   topic     String
   language  String
-  accuracy  Int
+  accuracy  Float
   correct   Int
   total     Int
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }

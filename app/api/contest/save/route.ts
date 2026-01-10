@@ -1,6 +1,8 @@
-import prisma from "@/lib/prisma";
+import { prisma }from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic"; // Build error se bachne ke liye
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +20,6 @@ export async function POST(req: Request) {
         total,
         accuracy,
         language,
-        // aiReview field empty rahega ya remove kar sakte hain schema se
       },
     });
 
