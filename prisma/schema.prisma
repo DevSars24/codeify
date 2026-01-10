@@ -1,21 +1,18 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model ContestAttempt {
   id        String   @id @default(cuid())
   userId    String
   topic     String
-  accuracy  Int
-  createdAt DateTime @default(now())
-  correct   Int
   language  String
+  accuracy  Int
+  correct   Int
   total     Int
-
-  @@index([userId])
+  createdAt DateTime @default(now())
 }
