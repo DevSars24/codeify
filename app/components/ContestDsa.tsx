@@ -42,10 +42,10 @@ export default function ContestDsa() {
 
   const handleSaveAndNext = () => {
     // Save code for current question index
-    setSubmissions(prev => ({ ...prev, [currentIndex]: code }));
+    setSubmissions((prev: Record<number, string>) => ({ ...prev, [currentIndex]: code }));
     
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+      setCurrentIndex((prev: number) => prev + 1);
       setCode(submissions[currentIndex + 1] || ""); // Load existing or empty
       setMobileTab('problem');
     }
@@ -113,7 +113,7 @@ export default function ContestDsa() {
         </div>
 
         <div className="flex gap-1">
-          {questions.map((_, i) => (
+          {questions.map((_: any, i: number) => (
             <div key={i} className={`h-1 w-6 rounded-full transition-all ${i === currentIndex ? "bg-white" : submissions[i] ? "bg-purple-900" : "bg-zinc-800"}`} />
           ))}
         </div>

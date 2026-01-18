@@ -20,8 +20,8 @@ export default function TypingText({
 
     if (charIndex < currentWord.length) {
       const timeout = setTimeout(() => {
-        setDisplay((prev) => prev + currentWord[charIndex]);
-        setCharIndex((prev) => prev + 1);
+        setDisplay((prev: string) => prev + currentWord[charIndex]);
+        setCharIndex((prev: number) => prev + 1);
       }, 80);
 
       return () => clearTimeout(timeout);
@@ -29,7 +29,7 @@ export default function TypingText({
       const pause = setTimeout(() => {
         setDisplay("");
         setCharIndex(0);
-        setWordIndex((prev) => (prev + 1) % text.length);
+        setWordIndex((prev: number) => (prev + 1) % text.length);
       }, 1500);
 
       return () => clearTimeout(pause);

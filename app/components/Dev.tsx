@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 
 export default function DevPracticePlatform() {
@@ -61,7 +61,7 @@ export default function DevPracticePlatform() {
             </label>
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
               className="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-sm"
             >
               <option value="web">Web Development</option>

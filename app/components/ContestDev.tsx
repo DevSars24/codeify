@@ -94,7 +94,7 @@ export default function ContestDev() {
       const data = await res.json();
 
       setVerdict(`${data.verdict}\n\n${data.feedback}`);
-      setScores((prev) => {
+      setScores((prev: number[]) => {
         const next = [...prev];
         next[index] = data.score === 1 ? 1 : 0;
         return next;
@@ -110,7 +110,7 @@ export default function ContestDev() {
   /* ================= FINAL RESULT ================= */
   if (finished) {
     const total = tasks.length;
-    const correct = scores.reduce((a, b) => a + b, 0);
+    const correct = scores.reduce((a: number, b: number) => a + b, 0);
     const accuracy =
       total > 0 ? Math.round((correct / total) * 100) : 0;
 
@@ -193,7 +193,7 @@ export default function ContestDev() {
             {index < tasks.length - 1 ? (
               <button
                 onClick={() => {
-                  setIndex((i) => i + 1);
+                  setIndex((i: number) => i + 1);
                   setCode("");
                   setVerdict("");
                 }}
