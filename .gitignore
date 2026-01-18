@@ -25,3 +25,4 @@ Thumbs.db
 .idea
 
 /app/generated/prisma
+echo "dev.db" >> .gitignore
