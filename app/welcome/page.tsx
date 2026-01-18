@@ -78,7 +78,7 @@ export default function WelcomePage() {
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-900/20 blur-[120px] rounded-full" />
           
           {/* Subtle Stars */}
-          {stars.map((star, i) => (
+          {stars.map((star: any, i: number) => (
             <div
               key={i}
               className="absolute w-[1px] h-[1px] bg-white/40 rounded-full animate-twinkle"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Cpu, Zap, Layers, ListOrdered } from "lucide-react";
 
@@ -59,7 +59,7 @@ export default function DsaPracticeArena() {
               </h3>
               <input 
                 type="range" min="1" max="10" value={config.count}
-                onChange={(e) => setConfig({...config, count: parseInt(e.target.value)})}
+                 onChange={(e: ChangeEvent<HTMLInputElement>) => setConfig({...config, count: parseInt(e.target.value)})}
                 className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
               />
               <div className="flex justify-between mt-2 text-[10px] font-mono text-zinc-500">
