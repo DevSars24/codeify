@@ -1,188 +1,169 @@
 "use client";
+import React, { useMemo } from 'react';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from 'recharts';
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import Editor from "@monaco-editor/react";
-import { Terminal, ChevronLeft, Play, CheckCircle, Smartphone, BookOpen, Code2, Loader2 } from "lucide-react";
-
-export default function ContestDsa() {
-  const params = useSearchParams();
-  const router = useRouter();
+export default function HistoryDashboard({ attempts }: { attempts: any[] }) {
   
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [isFinishing, setIsFinishing] = useState(false);
-  
-  // Storage for user answers to evaluate at the end
-  const [submissions, setSubmissions] = useState<Record<number, string>>({});
-  const [mobileTab, setMobileTab] = useState<'problem' | 'editor'>('problem');
-
-  const q = questions[currentIndex];
-
-  useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        const res = await fetch("/api/dsa/generate", {
-          method: "POST",
-          body: JSON.stringify({ 
-            topic: params.get("topic"), 
-            difficulty: params.get("difficulty"),
-            count: params.get("count") 
-          }),
-        });
-        const data = await res.json();
-        setQuestions(data.questions || []);
-      } catch (err) { console.error(err); } 
-      finally { setLoading(false); }
-    }
-    fetchQuestions();
-  }, [params]);
-
-  const handleSaveAndNext = () => {
-    // Save code for current question index
-    setSubmissions((prev: Record<number, string>) => ({ ...prev, [currentIndex]: code }));
-    
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((prev: number) => prev + 1);
-      setCode(submissions[currentIndex + 1] || ""); // Load existing or empty
-      setMobileTab('problem');
-    }
-  };
-
-  const handleFinishContest = async () => {
-    setIsFinishing(true);
-    // Final save of the last question
-    const finalSubmissions = { ...submissions, [currentIndex]: code };
-    
-    try {
-      // Evaluate all at once via AI/Judge
-      const res = await fetch("/api/dsa/evaluate-all", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          topic: params.get("topic"),
-          language: params.get("language"),
-          questions: questions,
-          submissions: finalSubmissions
-        }),
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: "Evaluation failed" }));
-        throw new Error(errorData.error || `Evaluation failed with status ${res.status}`);
+  // 1. DYNAMIC DSA ANALYSIS: Processes every topic in your database
+  const dsaAnalysis = useMemo(() => {
+    const stats = attempts.reduce((acc: any, curr: any) => {
+      const topic = curr.topic.trim();
+      if (!acc[topic]) {
+        acc[topic] = { totalAcc: 0, count: 0, best: 0, worst: 100 };
       }
+      acc[topic].totalAcc += curr.accuracy;
+      acc[topic].count += 1;
+      acc[topic].best = Math.max(acc[topic].best, curr.accuracy);
+      acc[topic].worst = Math.min(acc[topic].worst, curr.accuracy);
+      return acc;
+    }, {});
 
-      const data = await res.json();
-      const { correct, total, accuracy } = data;
+    return Object.keys(stats).map(topic => ({
+      name: topic,
+      avg: Math.round(stats[topic].totalAcc / stats[topic].count),
+      attempts: stats[topic].count,
+      peak: stats[topic].best
+    })).sort((a, b) => b.avg - a.avg);
+  }, [attempts]);
 
-      // Save to History
-      const saveRes = await fetch("/api/contest/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          topic: params.get("topic"),
-          language: params.get("language"),
-          correct, total, accuracy
-        }),
-      });
-
-      if (!saveRes.ok) {
-        const errorData = await saveRes.json().catch(() => ({ error: "Save failed" }));
-        throw new Error(errorData.error || `Save failed with status ${saveRes.status}`);
-      }
-
-      router.push("/history"); // Redirect to history to see result
-    } catch (err: any) {
-      console.error("Finish Contest Error:", err);
-      alert(`Error: ${err.message || "Failed to finish contest. Please try again."}`);
-    } finally {
-      setIsFinishing(false);
-    }
-  };
-
-  if (loading) return <div className="h-screen bg-black flex items-center justify-center font-mono text-purple-500 animate-pulse uppercase tracking-[0.4em]">Syncing_Arena...</div>;
+  // 2. STRATEGIC INSIGHTS
+  const strengths = dsaAnalysis.filter(t => t.avg >= 70);
+  const weaknesses = dsaAnalysis.filter(t => t.avg < 70);
+  const mostPracticed = [...dsaAnalysis].sort((a, b) => b.attempts - a.attempts)[0];
 
   return (
-    <div className="h-screen bg-[#050505] text-zinc-300 flex flex-col overflow-hidden font-sans">
-      <nav className="h-14 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-black/80 backdrop-blur-xl z-50 shrink-0">
-        <div className="flex items-center gap-2">
-          <button onClick={() => router.back()} className="p-2 hover:bg-white/5 rounded-full transition-colors"><ChevronLeft size={20} /></button>
-          <h2 className="text-[10px] font-black uppercase tracking-widest text-purple-500">{params.get("topic")}</h2>
-        </div>
-
-        <div className="flex gap-1">
-          {questions.map((_: any, i: number) => (
-            <div key={i} className={`h-1 w-6 rounded-full transition-all ${i === currentIndex ? "bg-white" : submissions[i] ? "bg-purple-900" : "bg-zinc-800"}`} />
-          ))}
-        </div>
-
-        <div className="text-[10px] font-bold text-zinc-500 uppercase">{currentIndex + 1} / {questions.length}</div>
-      </nav>
-
-      {/* Mobile Tab Switcher */}
-      <div className="flex lg:hidden bg-zinc-900/50 border-b border-white/5">
-        <button onClick={() => setMobileTab('problem')} className={`flex-1 py-3 text-[10px] font-bold tracking-widest ${mobileTab === 'problem' ? 'text-white border-b border-purple-500' : 'text-zinc-500'}`}>PROBLEM</button>
-        <button onClick={() => setMobileTab('editor')} className={`flex-1 py-3 text-[10px] font-bold tracking-widest ${mobileTab === 'editor' ? 'text-white border-b border-purple-500' : 'text-zinc-500'}`}>EDITOR</button>
-      </div>
-
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Problem Section */}
-        <div className={`w-full lg:w-[40%] overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-[#080808] ${mobileTab === 'problem' ? 'block' : 'hidden lg:block'}`}>
-          <span className="text-purple-500 text-[10px] font-black uppercase tracking-[0.3em]">Module_0{currentIndex + 1}</span>
-          <h1 className="text-3xl font-black text-white italic uppercase mt-4 mb-6">{q?.title}</h1>
-          <div className="prose prose-invert prose-sm mb-10 opacity-70 leading-relaxed">{q?.description}</div>
-          
-          <div className="space-y-4">
-             {q?.testCases?.map((tc: any, i: number) => (
-               <div key={i} className="p-4 rounded-xl bg-zinc-900/40 border border-white/5 font-mono text-[10px]">
-                 <div className="text-purple-400 mb-1 uppercase font-bold">Input</div>
-                 <div className="text-zinc-300 mb-3">{tc.input}</div>
-                 <div className="text-emerald-400 mb-1 uppercase font-bold">Output</div>
-                 <div className="text-zinc-300">{tc.output}</div>
-               </div>
-             ))}
+    <div className="min-h-screen bg-[#050505] text-white p-6 pt-24 selection:bg-purple-500/30">
+      <div className="max-w-6xl mx-auto">
+        
+        {/* HEADER SECTION */}
+        <header className="mb-10">
+          <h1 className="text-6xl font-black italic uppercase tracking-tighter leading-none mb-2">
+            DSA <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500">Analytics</span>
+          </h1>
+          <div className="flex items-center gap-4">
+            <span className="h-px w-12 bg-zinc-800"></span>
+            <p className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.4em]">Core Competency Mapping</p>
           </div>
+        </header>
+
+        {/* --- DYNAMIC TOPIC FOCUS CARDS --- */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <FocusCard 
+            title="Primary Focus" 
+            topic={mostPracticed?.name || "N/A"} 
+            desc={`${mostPracticed?.attempts || 0} Total Sessions`}
+            border="border-blue-500/20"
+          />
+          <FocusCard 
+            title="Highest Proficiency" 
+            topic={dsaAnalysis[0]?.name || "N/A"} 
+            desc={`Peak Accuracy: ${dsaAnalysis[0]?.peak || 0}%`}
+            border="border-emerald-500/20"
+          />
+          <FocusCard 
+            title="Critical Weakness" 
+            topic={dsaAnalysis[dsaAnalysis.length - 1]?.name || "N/A"} 
+            desc={`Avg Accuracy: ${dsaAnalysis[dsaAnalysis.length - 1]?.avg || 0}%`}
+            border="border-red-500/20"
+          />
         </div>
 
-        {/* Editor Section */}
-        <div className={`flex-1 flex flex-col bg-[#0b0b0b] ${mobileTab === 'editor' ? 'flex' : 'hidden lg:flex'}`}>
-          <div className="flex-1 relative">
-            <Editor
-              theme="vs-dark"
-              language={params.get("language")?.toLowerCase() === "c++" ? "cpp" : "python"}
-              value={code}
-              onChange={(v: string | undefined) => setCode(v ?? "")}
-              options={{ fontSize: 15, minimap: { enabled: false }, fontFamily: "JetBrains Mono", wordWrap: "on" }}
-            />
-          </div>
-
-          <div className="h-32 lg:h-40 bg-black border-t border-white/5 p-4 flex flex-col justify-center gap-4">
-            <div className="flex gap-3">
-              <button 
-                onClick={handleSaveAndNext}
-                className="flex-1 py-4 bg-zinc-900 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-all"
-              >
-                {currentIndex === questions.length - 1 ? "Save Final" : "Save & Next"}
-              </button>
-              
-              {currentIndex === questions.length - 1 && (
-                <button 
-                  onClick={handleFinishContest}
-                  disabled={isFinishing}
-                  className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
-                >
-                  {isFinishing ? <Loader2 className="animate-spin w-4 h-4" /> : "Finish Contest"}
-                </button>
-              )}
+        {/* --- PERFORMANCE CURVE --- */}
+        <div className="bg-zinc-900/20 backdrop-blur-xl border border-white/5 p-8 rounded-[2rem] mb-10">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="text-xl font-bold">Growth Velocity</h2>
+              <p className="text-zinc-500 text-xs">Tracking accuracy across all DSA domains</p>
             </div>
-            <p className="text-[9px] text-zinc-600 uppercase text-center tracking-widest font-bold">
-              Submissions are encrypted and hidden until contest completion.
-            </p>
+          </div>
+          <div className="h-[350px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={attempts}>
+                <defs>
+                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.3}/>
+                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="5 5" stroke="#18181b" vertical={false} />
+                <XAxis dataKey="topic" hide />
+                <YAxis stroke="#3f3f46" fontSize={10} axisLine={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#000', border: '1px solid #27272a', borderRadius: '12px' }}
+                />
+                <Area 
+                  type="stepAfter" 
+                  dataKey="accuracy" 
+                  stroke="#6366f1" 
+                  strokeWidth={3} 
+                  fill="url(#chartGradient)"
+                  animationDuration={2000}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      </main>
+
+        {/* --- TOPIC BREAKDOWN GRID --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          
+          {/* STRENGTHS LIST */}
+          <section>
+            <div className="flex items-center gap-2 mb-6">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-500">Mastered Domains</h3>
+            </div>
+            <div className="space-y-3">
+              {strengths.length > 0 ? strengths.map(item => (
+                <TopicRow key={item.name} item={item} color="text-emerald-400" />
+              )) : <p className="text-zinc-600 italic text-sm">No topics mastered yet. Keep grinding.</p>}
+            </div>
+          </section>
+
+          {/* WEAKNESSES LIST */}
+          <section>
+            <div className="flex items-center gap-2 mb-6">
+              <div className="h-1.5 w-1.5 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]" />
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-red-500">Target for Improvement</h3>
+            </div>
+            <div className="space-y-3">
+              {weaknesses.length > 0 ? weaknesses.map(item => (
+                <TopicRow key={item.name} item={item} color="text-red-400" />
+              )) : <p className="text-zinc-600 italic text-sm">Zero weak points detected. Exceptional work.</p>}
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Sub-component for the Focus Cards
+function FocusCard({ title, topic, desc, border }: any) {
+  return (
+    <div className={`bg-zinc-900/40 backdrop-blur-md border ${border} p-6 rounded-2xl transition-all hover:scale-[1.02]`}>
+      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">{title}</p>
+      <h4 className="text-2xl font-black truncate">{topic}</h4>
+      <p className="text-xs text-zinc-500 mt-1 font-mono">{desc}</p>
+    </div>
+  );
+}
+
+// Sub-component for Topic Rows
+function TopicRow({ item, color }: any) {
+  return (
+    <div className="flex justify-between items-center p-4 bg-zinc-900/20 border border-white/5 rounded-xl hover:bg-zinc-900/60 transition group">
+      <div>
+        <span className="font-bold text-lg group-hover:translate-x-1 transition-transform inline-block capitalize">{item.name}</span>
+        <div className="text-[10px] text-zinc-500 uppercase tracking-tighter">{item.attempts} Attempts Total</div>
+      </div>
+      <div className="text-right">
+        <div className={`text-2xl font-black ${color}`}>{item.avg}%</div>
+        <div className="h-1 w-24 bg-zinc-800 rounded-full mt-1 overflow-hidden">
+          <div className={`h-full bg-current ${color}`} style={{ width: `${item.avg}%` }} />
+        </div>
+      </div>
     </div>
   );
 }
