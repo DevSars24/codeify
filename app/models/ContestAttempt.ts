@@ -8,9 +8,19 @@ const ContestAttemptSchema = new Schema(
     total: { type: Number, required: true },
     accuracy: { type: Number, required: true },
     language: { type: String, required: true },
+    
+    // The new field we discussed
+    difficulty: { 
+      type: String, 
+      enum: ['easy', 'medium', 'hard'], 
+      default: 'medium' 
+    },
+
+    // Extra fields for better AI suggestions
+    timeTaken: { type: Number }, // How many seconds the quiz took
+    tags: [{ type: String }],    // e.g., ["Strings", "DP", "Arrays"]
   },
-  { timestamps: true } // createdAt, updatedAt auto
+  { timestamps: true }
 );
 
-export default models.ContestAttempt ||
-  model("ContestAttempt", ContestAttemptSchema);
+export default models.ContestAttempt || model("ContestAttempt", ContestAttemptSchema);
