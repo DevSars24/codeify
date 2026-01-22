@@ -8,13 +8,13 @@ import { Terminal, ChevronLeft, Play, CheckCircle, Smartphone, BookOpen, Code2, 
 export default function ContestDsa() {
   const params = useSearchParams();
   const router = useRouter();
-  
+
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [isFinishing, setIsFinishing] = useState(false);
-  
+
   // Storage for user answers to evaluate at the end
   const [submissions, setSubmissions] = useState<Record<number, string>>({});
   const [mobileTab, setMobileTab] = useState<'problem' | 'editor'>('problem');
@@ -26,15 +26,15 @@ export default function ContestDsa() {
       try {
         const res = await fetch("/api/dsa/generate", {
           method: "POST",
-          body: JSON.stringify({ 
-            topic: params.get("topic"), 
+          body: JSON.stringify({
+            topic: params.get("topic"),
             difficulty: params.get("difficulty"),
-            count: params.get("count") 
+            count: params.get("count")
           }),
         });
         const data = await res.json();
         setQuestions(data.questions || []);
-      } catch (err) { console.error(err); } 
+      } catch (err) { console.error(err); }
       finally { setLoading(false); }
     }
     fetchQuestions();
@@ -43,7 +43,7 @@ export default function ContestDsa() {
   const handleSaveAndNext = () => {
     // Save code for current question index
     setSubmissions((prev: Record<number, string>) => ({ ...prev, [currentIndex]: code }));
-    
+
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev: number) => prev + 1);
       setCode(submissions[currentIndex + 1] || ""); // Load existing or empty
@@ -55,7 +55,7 @@ export default function ContestDsa() {
     setIsFinishing(true);
     // Final save of the last question
     const finalSubmissions = { ...submissions, [currentIndex]: code };
-    
+
     try {
       // Evaluate all at once via AI/Judge
       const res = await fetch("/api/dsa/evaluate-all", {
@@ -68,7 +68,7 @@ export default function ContestDsa() {
           submissions: finalSubmissions
         }),
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({ error: "Evaluation failed" }));
         throw new Error(errorData.error || `Evaluation failed with status ${res.status}`);
@@ -84,7 +84,8 @@ export default function ContestDsa() {
         body: JSON.stringify({
           topic: params.get("topic"),
           language: params.get("language"),
-          correct, total, accuracy
+          correct, total, accuracy,
+          submissions: finalSubmissions
         }),
       });
 
@@ -133,16 +134,16 @@ export default function ContestDsa() {
           <span className="text-purple-500 text-[10px] font-black uppercase tracking-[0.3em]">Module_0{currentIndex + 1}</span>
           <h1 className="text-3xl font-black text-white italic uppercase mt-4 mb-6">{q?.title}</h1>
           <div className="prose prose-invert prose-sm mb-10 opacity-70 leading-relaxed">{q?.description}</div>
-          
+
           <div className="space-y-4">
-             {q?.testCases?.map((tc: any, i: number) => (
-               <div key={i} className="p-4 rounded-xl bg-zinc-900/40 border border-white/5 font-mono text-[10px]">
-                 <div className="text-purple-400 mb-1 uppercase font-bold">Input</div>
-                 <div className="text-zinc-300 mb-3">{tc.input}</div>
-                 <div className="text-emerald-400 mb-1 uppercase font-bold">Output</div>
-                 <div className="text-zinc-300">{tc.output}</div>
-               </div>
-             ))}
+            {q?.testCases?.map((tc: any, i: number) => (
+              <div key={i} className="p-4 rounded-xl bg-zinc-900/40 border border-white/5 font-mono text-[10px]">
+                <div className="text-purple-400 mb-1 uppercase font-bold">Input</div>
+                <div className="text-zinc-300 mb-3">{tc.input}</div>
+                <div className="text-emerald-400 mb-1 uppercase font-bold">Output</div>
+                <div className="text-zinc-300">{tc.output}</div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -160,15 +161,15 @@ export default function ContestDsa() {
 
           <div className="h-32 lg:h-40 bg-black border-t border-white/5 p-4 flex flex-col justify-center gap-4">
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={handleSaveAndNext}
                 className="flex-1 py-4 bg-zinc-900 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-all"
               >
                 {currentIndex === questions.length - 1 ? "Save Final" : "Save & Next"}
               </button>
-              
+
               {currentIndex === questions.length - 1 && (
-                <button 
+                <button
                   onClick={handleFinishContest}
                   disabled={isFinishing}
                   className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"

@@ -8,6 +8,7 @@ const TOPICS = ["Arrays", "Strings", "Stack", "Queue", "LinkedList", "BinarySear
 
 export default function DsaPracticeArena() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState({
     topic: "Arrays",
     level: "Basic",
@@ -15,8 +16,20 @@ export default function DsaPracticeArena() {
     language: "C++"
   });
 
+  // This ensures the component only renders the interactive UI 
+  // after the browser has fully taken over.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // While mounting, show a simple dark background to prevent "flicker"
+  if (!mounted) {
+    return <div className="min-h-screen bg-[#030303]" />;
+  }
+
   return (
-    <div className="relative min-h-screen bg-[#030303] text-zinc-200 overflow-hidden font-sans">
+    <div className="relative min-h-screen bg-[#030303] text-zinc-200 overflow-hidden font-sans" suppressHydrationWarning>
+      {/* Background Glows */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/10 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/10 blur-[120px] rounded-full animate-pulse" />
@@ -33,6 +46,7 @@ export default function DsaPracticeArena() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Section 01: Topic Selection */}
           <section className="lg:col-span-8 bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[32px] p-8">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-6 flex items-center gap-2">
               <Layers size={14} /> 01 // Select Domain
@@ -41,10 +55,12 @@ export default function DsaPracticeArena() {
               {TOPICS.map((t) => (
                 <button
                   key={t}
+                  type="button"
                   onClick={() => setConfig({ ...config, topic: t })}
-                  className={`py-4 rounded-2xl text-xs font-bold border transition-all ${
-                    config.topic === t ? "bg-white text-black border-white shadow-lg" : "bg-black/20 border-white/5 text-zinc-500 hover:border-white/20"
-                  }`}
+                  className={`py-4 rounded-2xl text-xs font-bold border transition-all ${config.topic === t
+                      ? "bg-white text-black border-white shadow-lg"
+                      : "bg-black/20 border-white/5 text-zinc-500 hover:border-white/20"
+                    }`}
                 >
                   {t}
                 </button>
@@ -52,14 +68,18 @@ export default function DsaPracticeArena() {
             </div>
           </section>
 
+          {/* Section 02 & 03: Controls */}
           <section className="lg:col-span-4 space-y-6">
             <div className="bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[32px] p-8">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-6 flex items-center gap-2">
                 <ListOrdered size={14} /> 02 // Quantity: {config.count}
               </h3>
-              <input 
-                type="range" min="1" max="10" value={config.count}
-                 onChange={(e: ChangeEvent<HTMLInputElement>) => setConfig({...config, count: parseInt(e.target.value)})}
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={config.count}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setConfig({ ...config, count: parseInt(e.target.value) })}
                 className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
               />
               <div className="flex justify-between mt-2 text-[10px] font-mono text-zinc-500">
@@ -75,10 +95,12 @@ export default function DsaPracticeArena() {
                 {["Basic", "Medium", "Hard"].map((l) => (
                   <button
                     key={l}
+                    type="button"
                     onClick={() => setConfig({ ...config, level: l })}
-                    className={`flex-1 py-2 rounded-xl text-[10px] font-black transition-all ${
-                      config.level === l ? "bg-zinc-800 text-white shadow-inner" : "text-zinc-500 hover:text-zinc-300"
-                    }`}
+                    className={`flex-1 py-2 rounded-xl text-[10px] font-black transition-all ${config.level === l
+                        ? "bg-zinc-800 text-white shadow-inner"
+                        : "text-zinc-500 hover:text-zinc-300"
+                      }`}
                   >
                     {l}
                   </button>
@@ -87,7 +109,16 @@ export default function DsaPracticeArena() {
             </div>
 
             <button
-              onClick={() => router.push(`/contestdsa?topic=${config.topic}&difficulty=${config.level}&count=${config.count}&language=${config.language}`)}
+              type="button"
+              onClick={() => {
+                const query = new URLSearchParams({
+                  topic: config.topic,
+                  difficulty: config.level,
+                  count: config.count.toString(),
+                  language: config.language
+                }).toString();
+                router.push(`/contestdsa?${query}`);
+              }}
               className="w-full py-6 rounded-[32px] bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-xs uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-purple-500/20"
             >
               Initiate_Sequence
