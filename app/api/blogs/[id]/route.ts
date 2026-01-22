@@ -5,10 +5,11 @@ import Blog from "@/models/Blog";
 
 const ADMIN_EMAIL = "saurabhsingh100605@gmail.com";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
-        const blog = await Blog.findById(params.id);
+        const { id } = await params;
+        const blog = await Blog.findById(id);
         if (!blog) return NextResponse.json({ error: "Not found" }, { status: 404 });
         return NextResponse.json(blog);
     } catch (error) {
@@ -16,7 +17,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const user = await currentUser();
         const email = user?.emailAddresses[0]?.emailAddress;
@@ -26,7 +27,8 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
         }
 
         await connectDB();
-        await Blog.findByIdAndDelete(params.id);
+        const { id } = await params;
+        await Blog.findByIdAndDelete(id);
 
         return NextResponse.json({ success: true });
     } catch (error) {
@@ -34,7 +36,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const user = await currentUser();
         const email = user?.emailAddresses[0]?.emailAddress;
@@ -45,8 +47,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
         const body = await req.json();
         await connectDB();
+        const { id } = await params;
 
-        const updatedBlog = await Blog.findByIdAndUpdate(params.id, body, { new: true });
+        const updatedBlog = await Blog.findByIdAndUpdate(id, body, { new: true });
 
         return NextResponse.json(updatedBlog);
     } catch (error) {
