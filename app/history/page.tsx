@@ -1,208 +1,282 @@
-import { auth } from "@clerk/nextjs/server";
+"use client";
+
+import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { connectDB } from "@/lib/mongodb";
-import ContestAttempt from "@/models/ContestAttempt";
-import { Trophy, Target, Zap, Clock, ChevronRight, Activity } from "lucide-react";
+import { useEffect, useState, ReactNode } from "react";
+import { Trophy, Activity, Zap, Clock, Terminal, Search } from "lucide-react";
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
+  PieChart, Pie, Cell
+} from 'recharts';
 
-export default async function HistoryPage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+// Types
+interface Attempt {
+  _id: string;
+  userId: string;
+  contestId: string;
+  code: string;
+  language: string;
+  status: string;
+  correct: number;
+  total: number;
+  accuracy: number;
+  topic: string;
+  difficulty: string;
+  createdAt: string;
+}
 
-  let attempts: any[] = [];
-  try {
-    await connectDB();
-    attempts = await ContestAttempt.find({ userId })
-      .sort({ createdAt: -1 })
-      .lean();
-  } catch (error) {
-    console.error("HISTORY_ERROR", error);
-  }
+export default function HistoryPage() {
+  const { isSignedIn, user, isLoaded } = useUser();
+  const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Calculate Stats
-  const totalMissions = attempts.length;
-  const totalCorrect = attempts.reduce((acc, curr) => acc + curr.correct, 0);
-  const totalQuestions = attempts.reduce((acc, curr) => acc + curr.total, 0);
-  const globalAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+  // Stats State
+  const [stats, setStats] = useState({
+    totalMissions: 0,
+    globalAccuracy: 0,
+    totalXP: 0,
+    rank: "Novice"
+  });
 
-  // XP & Rank System
-  const xp = totalCorrect * 10;
-  let rank = "Novice";
-  let nextRank = "Script Kiddie";
-  let xpTarget = 50;
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) redirect("/sign-in");
 
-  if (xp >= 1000) { rank = "Grandmaster"; nextRank = "Max Level"; xpTarget = 1000; }
-  else if (xp >= 500) { rank = "System Architect"; nextRank = "Grandmaster"; xpTarget = 1000; }
-  else if (xp >= 200) { rank = "Code Ninja"; nextRank = "System Architect"; xpTarget = 500; }
-  else if (xp >= 50) { rank = "Script Kiddie"; nextRank = "Code Ninja"; xpTarget = 200; }
+    // Simulate fetching data for now (Replace with real API call later if needed)
+    // For this task, we will try to fetch if an API exists, or fallback to empty state/mock
+    // Since the original file had DB logic directly in the component (Server Component), 
+    // and I'm converting to Client Component for Recharts, I should ideally fetch data via API.
+    // However, to keep it simple and working without creating a new API route immediately,
+    // I will mock the data or assuming the user meant to keep it server-side.
+    // WAIT: Recharts only works on Client Side. 
+    // I'll fetch from a new API route or just use the existing logic if I can.
+    // Ah, the previous file was a Server Component connecting directly to DB.
+    // I need to create an API route to fetch history if I want this to be a Client Component.
+    // OR: I can make this a Server Component that passes data to a Client Component Wrapper.
 
-  const xpProgress = Math.min((xp / xpTarget) * 100, 100);
+    // STRATEGY: Create a Client Component for the Dashboard and fetch data from an API.
+    // First, let's create the API route.
 
-  // Topic Mastery (Top 3)
-  const topicCounts: Record<string, number> = {};
-  attempts.forEach(a => { topicCounts[a.topic] = (topicCounts[a.topic] || 0) + a.correct; });
-  const topTopics = Object.entries(topicCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch('/api/history');
+        if (res.ok) {
+          const data = await res.json();
+          setAttempts(data);
+          calculateStats(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch history", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Language Distribution
-  const langCounts: Record<string, number> = {};
-  attempts.forEach(a => { langCounts[a.language] = (langCounts[a.language] || 0) + 1; });
-  const totalLangs = Object.values(langCounts).reduce((a, b) => a + b, 0);
+    fetchHistory();
+  }, [isLoaded, isSignedIn]);
 
-  const difficultyStats = {
-    Basic: attempts.filter(a => a.difficulty === 'Basic').length,
-    Medium: attempts.filter(a => a.difficulty === 'Medium').length,
-    Hard: attempts.filter(a => a.difficulty === 'Hard').length
+
+  // Helper Calculation
+  const calculateStats = (data: Attempt[]) => {
+    const totalMissions = data.length;
+    const totalCorrect = data.reduce((acc, curr) => acc + curr.correct, 0);
+    const totalQuestions = data.reduce((acc, curr) => acc + curr.total, 0);
+    const globalAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+    const totalXP = totalCorrect * 10;
+
+    let rank = "Novice";
+    if (totalXP >= 1000) rank = "Grandmaster";
+    else if (totalXP >= 500) rank = "Architect";
+    else if (totalXP >= 200) rank = "Ninja";
+    else if (totalXP >= 50) rank = "Script Kiddie";
+
+    setStats({ totalMissions, globalAccuracy, totalXP, rank });
   };
 
+  // Prepare Chart Data
+  const activityData = attempts.slice(0, 7).reverse().map((a, i) => ({
+    name: `Mission ${i + 1}`,
+    accuracy: a.accuracy,
+    xp: a.correct * 10
+  }));
+
+  const langCounts: Record<string, number> = {};
+  attempts.forEach(a => { langCounts[a.language] = (langCounts[a.language] || 0) + 1; });
+  const langData = Object.entries(langCounts).map(([name, value]) => ({ name, value }));
+  const COLORS = ['#8b5cf6', '#ec4899', '#3b82f6', '#10b981'];
+
+  // Loading State
+  if (!isLoaded || loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase">Initializing Mission Control...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-300 font-sans selection:bg-purple-500/30">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500/30 pb-20">
 
       {/* Header */}
-      <header className="pt-24 pb-12 px-6 border-b border-white/5 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-100">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-purple-500/10 rounded-lg border border-purple-500/20 text-purple-400">
-                  <Activity size={20} />
-                </div>
-                <span className="text-xs font-bold tracking-[0.3em] uppercase text-zinc-500">System_Logs_V2</span>
-              </div>
-              <h1 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter italic">
-                Mission <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Control</span>
-              </h1>
-            </div>
-
-            {/* Rank Card */}
-            <div className="p-6 bg-zinc-900/80 backdrop-blur border border-white/10 rounded-2xl min-w-[280px]">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold uppercase text-zinc-500 tracking-widest">Current Rank</span>
-                <Trophy size={16} className="text-yellow-500" />
-              </div>
-              <div className="text-2xl font-black text-white uppercase italic">{rank}</div>
-              <div className="mt-4">
-                <div className="flex justify-between text-[10px] uppercase font-bold text-zinc-600 mb-1">
-                  <span>{xp} XP</span>
-                  <span>{nextRank}</span>
-                </div>
-                <div className="h-1.5 bg-black rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-purple-600 to-pink-600" style={{ width: `${xpProgress}%` }} />
-                </div>
-              </div>
-            </div>
+      <header className="border-b border-zinc-900 bg-black/50 backdrop-blur-xl sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <h1 className="font-bold text-sm tracking-widest uppercase text-zinc-400">Mission Control</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-xs font-mono text-zinc-600">User: {user?.firstName || 'Unknown'}</div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12 space-y-16">
+      <main className="max-w-7xl mx-auto px-6 py-12 space-y-8">
 
-        {/* Stats Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* ... (Keep existing Stats cards but maybe update styles slightly if needed, existing is fine) ... */}
-          {/* Re-implementing simplified to allow replacing efficiently */}
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
-            <div className="absolute top-0 right-0 p-32 bg-purple-600/10 blur-[80px] rounded-full group-hover:bg-purple-600/20 transition-all" />
-            <div className="relative z-10">
-              <div className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-4">Total_Missions</div>
-              <div className="text-5xl font-black text-white">{totalMissions}</div>
-            </div>
-          </div>
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
-            <div className="absolute top-0 right-0 p-32 bg-emerald-600/10 blur-[80px] rounded-full group-hover:bg-emerald-600/20 transition-all" />
-            <div className="relative z-10">
-              <div className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-4">Global_Accuracy</div>
-              <div className="text-5xl font-black text-white">{globalAccuracy}%</div>
-            </div>
-          </div>
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
-            {/* Topic Mastery Mini-Chart */}
-            <div className="absolute top-0 right-0 p-32 bg-blue-600/10 blur-[80px] rounded-full group-hover:bg-blue-600/20 transition-all" />
-            <div className="relative z-10">
-              <div className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-6">Top_Topics</div>
-              <div className="space-y-3">
-                {topTopics.map(([t, c], i) => (
-                  <div key={t} className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-zinc-400 w-20 truncate">{t}</span>
-                    <div className="flex-1 h-1.5 bg-black rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500" style={{ width: `${(c / Math.max(...topTopics.map(x => x[1]), 1)) * 100}%` }} />
-                    </div>
-                  </div>
-                ))}
-                {topTopics.length === 0 && <span className="text-xs text-zinc-600">No data yet.</span>}
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Top Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <StatCard label="Total XP" value={stats.totalXP.toString()} icon={<Zap size={18} className="text-yellow-500" />} />
+          <StatCard label="Current Rank" value={stats.rank} icon={<Trophy size={18} className="text-purple-500" />} />
+          <StatCard label="Missions" value={stats.totalMissions.toString()} icon={<Terminal size={18} className="text-blue-500" />} />
+          <StatCard label="Accuracy" value={`${stats.globalAccuracy}%`} icon={<Activity size={18} className="text-emerald-500" />} />
+        </div>
 
-        {/* Language & Recent Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Sidebar: Languages */}
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-6">Languages_Used</h3>
-              <div className="space-y-4">
-                {Object.entries(langCounts).map(([l, c]) => (
-                  <div key={l} className="flex items-center justify-between p-4 rounded-xl bg-zinc-900/30 border border-white/5">
-                    <span className="font-bold text-sm text-zinc-300">{l}</span>
-                    <span className="text-xs font-mono text-zinc-500">{Math.round((c / totalLangs) * 100)}%</span>
-                  </div>
-                ))}
-                {totalLangs === 0 && <span className="text-xs text-zinc-600">No data yet.</span>}
-              </div>
+          {/* Main Activity Chart */}
+          <div className="lg:col-span-2 p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800">
+            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-6">Recent Performance Metrics</h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={activityData}>
+                  <defs>
+                    <linearGradient id="colorAccuracy" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                  <XAxis dataKey="name" hide />
+                  <YAxis stroke="#52525b" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Area type="monotone" dataKey="accuracy" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#colorAccuracy)" />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Main: Recent Logs */}
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-black italic uppercase text-white mb-8 flex items-center gap-3">
-              <span className="w-2 h-8 bg-purple-500 rounded-full" />
-              Recent_Operations
-            </h2>
-            <div className="space-y-4">
-              {attempts.length === 0 ? (
-                <div className="p-10 border border-dashed border-zinc-800 rounded-3xl text-center text-zinc-500 font-mono text-xs uppercase tracking-widest">
-                  No Data Found. Initialize Sequence.
-                </div>
+          {/* Language Distribution */}
+          <div className="p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800 flex flex-col items-center justify-center">
+            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-6 w-full text-left">Language Core</h3>
+            <div className="h-[250px] w-full">
+              {langData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={langData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {langData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
+                      itemStyle={{ color: '#fff' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
               ) : (
-                attempts.map((a: any) => (
-                  <div key={a._id} className="group relative bg-[#080808] border border-white/5 hover:border-white/10 p-6 rounded-2xl transition-all hover:bg-[#0a0a0a]">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm border ${a.accuracy >= 80 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
-                            a.accuracy >= 50 ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' :
-                              'bg-red-500/10 border-red-500/20 text-red-500'
-                          }`}>
-                          {a.accuracy}%
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-white">{a.topic}</h3>
-                          <div className="flex gap-2 text-[10px] uppercase font-bold tracking-wider text-zinc-600 mt-0.5">
-                            <span>{a.difficulty || 'BASIC'}</span>
-                            <span>•</span>
-                            <span>{a.language}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 justify-between sm:justify-end">
-                        <div className="text-right">
-                          <div className="text-[10px] font-bold text-zinc-500 uppercase">Score</div>
-                          <div className="text-sm font-bold text-white font-mono">{a.correct}/{a.total}</div>
-                        </div>
-                        <div className="text-right pl-4 border-l border-zinc-800">
-                          <div className="text-[10px] font-bold text-zinc-500 uppercase">Date</div>
-                          <div className="text-sm font-bold text-white font-mono">{new Date(a.createdAt).toLocaleDateString()}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
+                <div className="h-full flex items-center justify-center text-zinc-600 text-xs text-center">
+                  NO DATA AVAILABLE
+                </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* Detailed Logs Table */}
+        <div className="rounded-2xl bg-zinc-900/30 border border-zinc-800 overflow-hidden">
+          <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Mission Logs</h3>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black border border-zinc-800 text-zinc-500 text-xs">
+              <Search size={14} />
+              <span>Search logs...</span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-zinc-400">
+              <thead className="bg-black/50 text-zinc-500 uppercase text-xs font-bold tracking-wider">
+                <tr>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Mission Report</th>
+                  <th className="px-6 py-4">Language</th>
+                  <th className="px-6 py-4">Accuracy</th>
+                  <th className="px-6 py-4 text-right">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800/50">
+                {attempts.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-zinc-600 font-mono text-xs uppercase tracking-widest">
+                      No missions attempted yet.
+                    </td>
+                  </tr>
+                ) : (
+                  attempts.map((attempt) => (
+                    <tr key={attempt._id} className="hover:bg-zinc-900/20 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className={`w-2 h-2 rounded-full ${attempt.correct === attempt.total ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                      </td>
+                      <td className="px-6 py-4 font-medium text-white">{attempt.topic}</td>
+                      <td className="px-6 py-4 font-mono text-xs">{attempt.language}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-purple-500" style={{ width: `${attempt.accuracy}%` }} />
+                          </div>
+                          <span className="text-xs">{attempt.accuracy}%</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right font-mono text-xs text-zinc-600">
+                        {new Date(attempt.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </main>
     </div>
   );
+}
+
+function StatCard({ label, value, icon }: { label: string, value: string, icon: ReactNode }) {
+  return (
+    <div className="p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800 flex items-center justify-between group hover:border-zinc-700 transition-colors">
+      <div>
+        <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
+        <p className="text-2xl font-black text-white">{value}</p>
+      </div>
+      <div className="w-10 h-10 rounded-lg bg-black border border-zinc-800 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity">
+        {icon}
+      </div>
+    </div>
+  )
 }

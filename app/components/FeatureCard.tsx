@@ -1,29 +1,31 @@
 "use client";
 
+import { ReactNode } from "react";
+
+interface FeatureCardProps {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  className?: string;
+}
+
 export default function FeatureCard({
   icon,
   title,
   description,
-  highlight,
-}: {
-  icon: string;
-  title: string;
-  description?: string;
-  highlight?: boolean;
-}) {
+  className = "",
+}: FeatureCardProps) {
   return (
     <div
-      className={`rounded-xl p-6 text-center border ${
-        highlight
-          ? "bg-purple-950/50 border-purple-500/70 shadow-[0_0_25px_rgba(168,85,247,0.5)]"
-          : "bg-zinc-900 border-zinc-800"
-      }`}
+      className={`p-8 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 hover:border-zinc-700 hover:bg-zinc-900/50 transition-all duration-300 group ${className}`}
     >
-      <div className="text-3xl mb-3">{icon}</div>
-      <h3 className="font-semibold">{title}</h3>
-      {description && (
-        <p className="text-zinc-400 text-sm mt-2">{description}</p>
-      )}
+      <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
+        {icon}
+      </div>
+      <div>
+        <h3 className="text-lg font-bold text-white mb-3 tracking-tight">{title}</h3>
+        <p className="text-zinc-500 text-sm leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 }
