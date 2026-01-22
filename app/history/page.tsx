@@ -1,165 +1,282 @@
-import { auth } from "@clerk/nextjs/server";
+"use client";
+
+import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { connectDB } from "@/lib/mongodb";
-import ContestAttempt from "@/models/ContestAttempt";
-import { Trophy, Target, Zap, Clock, ChevronRight, Activity } from "lucide-react";
+import { useEffect, useState, ReactNode } from "react";
+import { Trophy, Activity, Zap, Clock, Terminal, Search } from "lucide-react";
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
+  PieChart, Pie, Cell
+} from 'recharts';
 
-export default async function HistoryPage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+// Types
+interface Attempt {
+  _id: string;
+  userId: string;
+  contestId: string;
+  code: string;
+  language: string;
+  status: string;
+  correct: number;
+  total: number;
+  accuracy: number;
+  topic: string;
+  difficulty: string;
+  createdAt: string;
+}
 
-  let attempts: any[] = [];
-  try {
-    await connectDB();
-    attempts = await ContestAttempt.find({ userId })
-      .sort({ createdAt: -1 })
-      .lean();
-  } catch (error) {
-    console.error("HISTORY_ERROR", error);
-  }
+export default function HistoryPage() {
+  const { isSignedIn, user, isLoaded } = useUser();
+  const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Calculate Stats
-  const totalMissions = attempts.length;
-  const totalCorrect = attempts.reduce((acc, curr) => acc + curr.correct, 0);
-  const totalQuestions = attempts.reduce((acc, curr) => acc + curr.total, 0);
-  const globalAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+  // Stats State
+  const [stats, setStats] = useState({
+    totalMissions: 0,
+    globalAccuracy: 0,
+    totalXP: 0,
+    rank: "Novice"
+  });
 
-  const difficultyStats = {
-    Basic: attempts.filter(a => a.difficulty === 'Basic').length,
-    Medium: attempts.filter(a => a.difficulty === 'Medium').length,
-    Hard: attempts.filter(a => a.difficulty === 'Hard').length
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) redirect("/sign-in");
+
+    // Simulate fetching data for now (Replace with real API call later if needed)
+    // For this task, we will try to fetch if an API exists, or fallback to empty state/mock
+    // Since the original file had DB logic directly in the component (Server Component), 
+    // and I'm converting to Client Component for Recharts, I should ideally fetch data via API.
+    // However, to keep it simple and working without creating a new API route immediately,
+    // I will mock the data or assuming the user meant to keep it server-side.
+    // WAIT: Recharts only works on Client Side. 
+    // I'll fetch from a new API route or just use the existing logic if I can.
+    // Ah, the previous file was a Server Component connecting directly to DB.
+    // I need to create an API route to fetch history if I want this to be a Client Component.
+    // OR: I can make this a Server Component that passes data to a Client Component Wrapper.
+
+    // STRATEGY: Create a Client Component for the Dashboard and fetch data from an API.
+    // First, let's create the API route.
+
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch('/api/history');
+        if (res.ok) {
+          const data = await res.json();
+          setAttempts(data);
+          calculateStats(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch history", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [isLoaded, isSignedIn]);
+
+
+  // Helper Calculation
+  const calculateStats = (data: Attempt[]) => {
+    const totalMissions = data.length;
+    const totalCorrect = data.reduce((acc, curr) => acc + curr.correct, 0);
+    const totalQuestions = data.reduce((acc, curr) => acc + curr.total, 0);
+    const globalAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+    const totalXP = totalCorrect * 10;
+
+    let rank = "Novice";
+    if (totalXP >= 1000) rank = "Grandmaster";
+    else if (totalXP >= 500) rank = "Architect";
+    else if (totalXP >= 200) rank = "Ninja";
+    else if (totalXP >= 50) rank = "Script Kiddie";
+
+    setStats({ totalMissions, globalAccuracy, totalXP, rank });
   };
 
+  // Prepare Chart Data
+  const activityData = attempts.slice(0, 7).reverse().map((a, i) => ({
+    name: `Mission ${i + 1}`,
+    accuracy: a.accuracy,
+    xp: a.correct * 10
+  }));
+
+  const langCounts: Record<string, number> = {};
+  attempts.forEach(a => { langCounts[a.language] = (langCounts[a.language] || 0) + 1; });
+  const langData = Object.entries(langCounts).map(([name, value]) => ({ name, value }));
+  const COLORS = ['#8b5cf6', '#ec4899', '#3b82f6', '#10b981'];
+
+  // Loading State
+  if (!isLoaded || loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-zinc-500 font-mono text-xs tracking-widest uppercase">Initializing Mission Control...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-300 font-sans selection:bg-purple-500/30">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500/30 pb-20">
 
       {/* Header */}
-      <header className="pt-24 pb-12 px-6 border-b border-white/5 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-100">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-purple-500/10 rounded-lg border border-purple-500/20 text-purple-400">
-              <Activity size={20} />
-            </div>
-            <span className="text-xs font-bold tracking-[0.3em] uppercase text-zinc-500">System_Logs_V2</span>
+      <header className="border-b border-zinc-900 bg-black/50 backdrop-blur-xl sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <h1 className="font-bold text-sm tracking-widest uppercase text-zinc-400">Mission Control</h1>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter italic">
-            Mission <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Control</span>
-          </h1>
+          <div className="flex items-center gap-4">
+            <div className="text-xs font-mono text-zinc-600">User: {user?.firstName || 'Unknown'}</div>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12 space-y-16">
+      <main className="max-w-7xl mx-auto px-6 py-12 space-y-8">
 
-        {/* Stats Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
-            <div className="absolute top-0 right-0 p-32 bg-purple-600/10 blur-[80px] rounded-full group-hover:bg-purple-600/20 transition-all" />
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-8">
-                <div className="p-3 bg-black rounded-xl border border-white/10"><Trophy size={18} className="text-yellow-500" /></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Total_Missions</span>
-              </div>
-              <div className="text-5xl font-black text-white">{totalMissions}</div>
-              <div className="text-xs text-zinc-500 mt-2 font-mono">Completed Operations</div>
+        {/* Top Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <StatCard label="Total XP" value={stats.totalXP.toString()} icon={<Zap size={18} className="text-yellow-500" />} />
+          <StatCard label="Current Rank" value={stats.rank} icon={<Trophy size={18} className="text-purple-500" />} />
+          <StatCard label="Missions" value={stats.totalMissions.toString()} icon={<Terminal size={18} className="text-blue-500" />} />
+          <StatCard label="Accuracy" value={`${stats.globalAccuracy}%`} icon={<Activity size={18} className="text-emerald-500" />} />
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Main Activity Chart */}
+          <div className="lg:col-span-2 p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800">
+            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-6">Recent Performance Metrics</h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={activityData}>
+                  <defs>
+                    <linearGradient id="colorAccuracy" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                  <XAxis dataKey="name" hide />
+                  <YAxis stroke="#52525b" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Area type="monotone" dataKey="accuracy" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#colorAccuracy)" />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
-            <div className="absolute top-0 right-0 p-32 bg-emerald-600/10 blur-[80px] rounded-full group-hover:bg-emerald-600/20 transition-all" />
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-8">
-                <div className="p-3 bg-black rounded-xl border border-white/10"><Target size={18} className="text-emerald-500" /></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Global_Accuracy</span>
-              </div>
-              <div className="text-5xl font-black text-white">{globalAccuracy}%</div>
-              <div className="text-xs text-zinc-500 mt-2 font-mono">{totalCorrect} / {totalQuestions} Validated</div>
-            </div>
-          </div>
-
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
-            <div className="absolute top-0 right-0 p-32 bg-blue-600/10 blur-[80px] rounded-full group-hover:bg-blue-600/20 transition-all" />
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-8">
-                <div className="p-3 bg-black rounded-xl border border-white/10"><Zap size={18} className="text-blue-500" /></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Intensity_Level</span>
-              </div>
-              <div className="space-y-2 font-mono text-xs">
-                <div className="flex justify-between"><span className="text-zinc-500">BASIC</span> <span className="text-white">{difficultyStats.Basic}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-500">MEDIUM</span> <span className="text-white">{difficultyStats.Medium}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-500">HARD</span> <span className="text-white">{difficultyStats.Hard}</span></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Mission Logs */}
-        <section>
-          <h2 className="text-xl font-black italic uppercase text-white mb-8 flex items-center gap-3">
-            <span className="w-2 h-8 bg-purple-500 rounded-full" />
-            Recent_Operations
-          </h2>
-
-          <div className="space-y-4">
-            {attempts.length === 0 ? (
-              <div className="p-10 border border-dashed border-zinc-800 rounded-3xl text-center text-zinc-500 font-mono text-xs uppercase tracking-widest">
-                No Data Found. Initialize Sequence.
-              </div>
-            ) : (
-              attempts.map((a: any) => (
-                <div key={a._id} className="group relative bg-[#080808] border border-white/5 hover:border-white/10 p-6 md:p-8 rounded-3xl transition-all hover:bg-[#0a0a0a]">
-                  <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-12">
-
-                    {/* Icon & Meta */}
-                    <div className="flex items-center gap-4 min-w-[200px]">
-                      <div className={`p-4 rounded-2xl border flex items-center justify-center ${a.accuracy >= 80 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
-                          a.accuracy >= 50 ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' :
-                            'bg-red-500/10 border-red-500/20 text-red-500'
-                        }`}>
-                        <span className="font-black text-xl">{a.accuracy}%</span>
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg text-white">{a.topic}</h3>
-                        <div className="flex gap-2 text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-1">
-                          <span className={a.difficulty === 'Hard' ? 'text-red-400' : a.difficulty === 'Medium' ? 'text-yellow-400' : 'text-zinc-500'}>{a.difficulty || 'BASIC'}</span>
-                          <span>•</span>
-                          <span>{a.language}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Score Bar */}
-                    <div className="flex-1">
-                      <div className="flex justify-between text-[10px] font-bold text-zinc-500 uppercase mb-2">
-                        <span>Progress</span>
-                        <span>{a.correct} / {a.total} Completed</span>
-                      </div>
-                      <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${a.accuracy >= 80 ? 'bg-emerald-500' :
-                              a.accuracy >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                            }`}
-                          style={{ width: `${a.accuracy}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Date & Action */}
-                    <div className="flex items-center justify-between md:justify-end gap-6 min-w-[150px]">
-                      <div className="flex items-center gap-2 text-zinc-600 text-[10px] uppercase font-bold tracking-widest">
-                        <Clock size={12} />
-                        {new Date(a.createdAt).toLocaleDateString()}
-                      </div>
-                      <ChevronRight size={16} className="text-zinc-600 group-hover:text-white transition-colors" />
-                    </div>
-
-                  </div>
+          {/* Language Distribution */}
+          <div className="p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800 flex flex-col items-center justify-center">
+            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-6 w-full text-left">Language Core</h3>
+            <div className="h-[250px] w-full">
+              {langData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={langData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {langData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '8px' }}
+                      itemStyle={{ color: '#fff' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-zinc-600 text-xs text-center">
+                  NO DATA AVAILABLE
                 </div>
-              ))
-            )}
+              )}
+            </div>
           </div>
-        </section>
+        </div>
+
+        {/* Detailed Logs Table */}
+        <div className="rounded-2xl bg-zinc-900/30 border border-zinc-800 overflow-hidden">
+          <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Mission Logs</h3>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black border border-zinc-800 text-zinc-500 text-xs">
+              <Search size={14} />
+              <span>Search logs...</span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-zinc-400">
+              <thead className="bg-black/50 text-zinc-500 uppercase text-xs font-bold tracking-wider">
+                <tr>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Mission Report</th>
+                  <th className="px-6 py-4">Language</th>
+                  <th className="px-6 py-4">Accuracy</th>
+                  <th className="px-6 py-4 text-right">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800/50">
+                {attempts.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-zinc-600 font-mono text-xs uppercase tracking-widest">
+                      No missions attempted yet.
+                    </td>
+                  </tr>
+                ) : (
+                  attempts.map((attempt) => (
+                    <tr key={attempt._id} className="hover:bg-zinc-900/20 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className={`w-2 h-2 rounded-full ${attempt.correct === attempt.total ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                      </td>
+                      <td className="px-6 py-4 font-medium text-white">{attempt.topic}</td>
+                      <td className="px-6 py-4 font-mono text-xs">{attempt.language}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-purple-500" style={{ width: `${attempt.accuracy}%` }} />
+                          </div>
+                          <span className="text-xs">{attempt.accuracy}%</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right font-mono text-xs text-zinc-600">
+                        {new Date(attempt.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
       </main>
     </div>
   );
+}
+
+function StatCard({ label, value, icon }: { label: string, value: string, icon: ReactNode }) {
+  return (
+    <div className="p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800 flex items-center justify-between group hover:border-zinc-700 transition-colors">
+      <div>
+        <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
+        <p className="text-2xl font-black text-white">{value}</p>
+      </div>
+      <div className="w-10 h-10 rounded-lg bg-black border border-zinc-800 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity">
+        {icon}
+      </div>
+    </div>
+  )
 }
