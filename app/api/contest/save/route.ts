@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     await connectDB();
 
     const body = await req.json();
-    const { topic, correct, total, accuracy, language, submissions } = body;
+    const { topic, correct, total, accuracy, language, submissions, difficulty } = body;
 
     // Validate required fields
     if (!topic || typeof correct !== 'number' || typeof total !== 'number' || typeof accuracy !== 'number' || !language) {
@@ -32,6 +32,7 @@ export async function POST(req: Request) {
       total,
       accuracy,
       language,
+      difficulty,
       submissions,
     });
 

@@ -8,6 +8,7 @@ const ContestAttemptSchema = new Schema(
     total: { type: Number, required: true },
     accuracy: { type: Number, required: true },
     language: { type: String, required: true },
+    difficulty: { type: String, required: false }, // Added for stats
     submissions: { type: Object, required: false },
   },
   { timestamps: true } // createdAt, updatedAt auto
