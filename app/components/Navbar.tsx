@@ -85,6 +85,9 @@ export default function Navbar() {
               <Link href="#features" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
                 Features
               </Link>
+              <Link href="/blogs" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
+                Blogs
+              </Link>
               <SignedIn>
                 <Link href="/history" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
                   Mission Logs
