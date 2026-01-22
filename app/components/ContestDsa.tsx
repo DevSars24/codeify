@@ -84,6 +84,7 @@ export default function ContestDsa() {
         body: JSON.stringify({
           topic: params.get("topic"),
           language: params.get("language"),
+          difficulty: params.get("difficulty") || "Basic",
           correct, total, accuracy,
           submissions: finalSubmissions
         }),
@@ -147,38 +148,60 @@ export default function ContestDsa() {
           </div>
         </div>
 
-        {/* Editor Section */}
-        <div className={`flex-1 flex flex-col bg-[#0b0b0b] ${mobileTab === 'editor' ? 'flex' : 'hidden lg:flex'}`}>
+        {/* EDITOR */}
+        <div
+          className={`flex-1 flex flex-col bg-[#0b0b0b] ${mobileTab === "editor" ? "flex" : "hidden lg:flex"
+            } relative min-h-0`}
+        >
           <div className="flex-1 relative">
             <Editor
               theme="vs-dark"
-              language={params.get("language")?.toLowerCase() === "c++" ? "cpp" : "python"}
+              language={
+                params.get("language")?.toLowerCase() === "c++"
+                  ? "cpp"
+                  : "python"
+              }
               value={code}
+              onFocus={() => setMobileTab("editor")}
               onChange={(v: string | undefined) => setCode(v ?? "")}
-              options={{ fontSize: 15, minimap: { enabled: false }, fontFamily: "JetBrains Mono", wordWrap: "on" }}
+              options={{
+                fontSize: 14,
+                minimap: { enabled: false },
+                fontFamily: "JetBrains Mono",
+                wordWrap: "on",
+                automaticLayout: true,
+                padding: { top: 16, bottom: 16 },
+              }}
             />
           </div>
 
-          <div className="h-32 lg:h-40 bg-black border-t border-white/5 p-4 flex flex-col justify-center gap-4">
+          {/* ACTION BAR */}
+          <div className="bg-black border-t border-white/5 p-3 md:p-4 z-50 shrink-0">
             <div className="flex gap-3">
               <button
                 onClick={handleSaveAndNext}
-                className="flex-1 py-4 bg-zinc-900 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-all"
+                className="flex-1 py-3 md:py-4 bg-zinc-900 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-all active:scale-95"
               >
-                {currentIndex === questions.length - 1 ? "Save Final" : "Save & Next"}
+                {currentIndex === questions.length - 1
+                  ? "Save Final"
+                  : "Save & Next"}
               </button>
 
               {currentIndex === questions.length - 1 && (
                 <button
                   onClick={handleFinishContest}
                   disabled={isFinishing}
-                  className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-3 md:py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-95"
                 >
-                  {isFinishing ? <Loader2 className="animate-spin w-4 h-4" /> : "Finish Contest"}
+                  {isFinishing ? (
+                    <Loader2 className="animate-spin w-4 h-4" />
+                  ) : (
+                    "Finish Contest"
+                  )}
                 </button>
               )}
             </div>
-            <p className="text-[9px] text-zinc-600 uppercase text-center tracking-widest font-bold">
+            <p className="text-[9px] text-zinc-600 uppercase text-center tracking-widest font-bold mt-3">
               Submissions are encrypted and hidden until contest completion.
             </p>
           </div>
