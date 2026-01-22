@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     await connectDB();
 
     const body = await req.json();
-    const { topic, correct, total, accuracy, language } = body;
+    const { topic, correct, total, accuracy, language, submissions } = body;
 
     // Validate required fields
     if (!topic || typeof correct !== 'number' || typeof total !== 'number' || typeof accuracy !== 'number' || !language) {
@@ -32,13 +32,14 @@ export async function POST(req: Request) {
       total,
       accuracy,
       language,
+      submissions,
     });
 
     return NextResponse.json(attempt);
   } catch (error: any) {
     console.error("SAVE_ERROR:", error);
     return NextResponse.json(
-      { 
+      {
         error: error.message || "Internal Server Error",
         details: process.env.NODE_ENV === 'development' ? error.stack : undefined
       },
