@@ -170,17 +170,18 @@ export default function ContestDsa() {
                 fontFamily: "JetBrains Mono",
                 wordWrap: "on",
                 automaticLayout: true,
-                padding: { top: 16, bottom: 16 },
+                padding: { top: 16, bottom: 80 }, // Added bottom padding for Action Bar
+                scrollBeyondLastLine: false,
               }}
             />
           </div>
 
-          {/* ACTION BAR */}
-          <div className="bg-black border-t border-white/5 p-3 md:p-4 z-50 shrink-0">
+          {/* ACTION BAR - Fixed/Absolute Bottom Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md border-t border-white/5 p-3 md:p-4 z-50">
             <div className="flex gap-3">
               <button
                 onClick={handleSaveAndNext}
-                className="flex-1 py-3 md:py-4 bg-zinc-900 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-all active:scale-95"
+                className="flex-1 py-3 md:py-4 bg-zinc-900 border border-white/5 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-all active:scale-95 shadow-lg shadow-black/50"
               >
                 {currentIndex === questions.length - 1
                   ? "Save Final"
@@ -191,7 +192,7 @@ export default function ContestDsa() {
                 <button
                   onClick={handleFinishContest}
                   disabled={isFinishing}
-                  className="flex-1 py-3 md:py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-95"
+                  className="flex-1 py-3 md:py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-95 shadow-lg shadow-white/10"
                 >
                   {isFinishing ? (
                     <Loader2 className="animate-spin w-4 h-4" />
@@ -201,9 +202,7 @@ export default function ContestDsa() {
                 </button>
               )}
             </div>
-            <p className="text-[9px] text-zinc-600 uppercase text-center tracking-widest font-bold mt-3">
-              Submissions are encrypted and hidden until contest completion.
-            </p>
+            {/* removed the hidden text to save space */}
           </div>
         </div>
       </main>
