@@ -20,6 +20,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
+        // Check for missing environment variables
+        if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+            console.error("Missing Cloudinary configuration in production");
+            return NextResponse.json({
+                error: "Server misconfiguration: Missing Cloudinary environment variables. Please check your production settings."
+            }, { status: 500 });
+        }
+
         const formData = await req.formData();
         const file = formData.get("file") as File;
 
@@ -34,15 +42,20 @@ export async function POST(req: Request) {
             cloudinary.uploader.upload_stream(
                 { folder: "codeify-blogs" },
                 (error, result) => {
-                    if (error) reject(error);
+                    if (error) {
+                        console.error("Cloudinary upload error:", error);
+                        reject(error);
+                    }
                     else resolve(result);
                 }
             ).end(buffer);
         });
 
         return NextResponse.json(uploadResult);
-    } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    } catch (error: any) {
+        console.error("Detailed Upload Error:", error);
+        return NextResponse.json({
+            error: error.message || "Upload failed due to an unexpected server error"
+        }, { status: 500 });
     }
 }

@@ -83,11 +83,17 @@ export default function EditBlogPage() {
                 body: formData,
             });
             const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Upload failed");
+            }
+
             if (data.secure_url) {
                 setImageUrl(data.secure_url);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Upload failed", err);
+            alert(`Upload Error: ${err.message}`);
         } finally {
             setUploading(false);
         }
