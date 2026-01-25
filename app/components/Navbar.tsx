@@ -40,6 +40,9 @@ export default function Navbar() {
             <Link href="/leaderboard" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
               Leaderboard
             </Link>
+            <Link href="/sessions" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+              Live Sessions
+            </Link>
 
             <SignedIn>
               <Link
@@ -93,6 +96,9 @@ export default function Navbar() {
               </Link>
               <Link href="/leaderboard" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
                 Leaderboard
+              </Link>
+              <Link href="/sessions" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
+                Live Sessions
               </Link>
               <SignedIn>
                 <Link href="/history" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
