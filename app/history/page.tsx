@@ -12,7 +12,7 @@ import {
 
 // Types
 interface Attempt {
-  _id: string;
+  id: string;
   userId: string;
   contestId: string;
   code: string;
@@ -237,7 +237,7 @@ export default function HistoryPage() {
                   </tr>
                 ) : (
                   attempts.map((attempt) => (
-                    <tr key={attempt._id} className="hover:bg-zinc-900/20 transition-colors">
+                    <tr key={attempt.id} className="hover:bg-zinc-900/20 transition-colors">
                       <td className="px-6 py-4">
                         <div className={`w-2 h-2 rounded-full ${attempt.correct === attempt.total ? 'bg-emerald-500' : 'bg-red-500'}`} />
                       </td>

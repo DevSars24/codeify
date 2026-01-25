@@ -1,7 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import ContestAttempt from "@/models/ContestAttempt";
+import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +9,6 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId)
       return new NextResponse("Unauthorized", { status: 401 });
-
-    await connectDB();
 
     const body = await req.json();
     const { topic, correct, total, accuracy, language, submissions, difficulty } = body;
@@ -25,15 +22,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const attempt = await ContestAttempt.create({
-      userId,
-      topic,
-      correct,
-      total,
-      accuracy,
-      language,
-      difficulty,
-      submissions,
+    const attempt = await prisma.contestAttempt.create({
+      data: {
+        userId,
+        topic,
+        correct,
+        total,
+        accuracy,
+        language,
+        difficulty,
+        submissions: submissions || undefined,
+      },
     });
 
     return NextResponse.json(attempt);

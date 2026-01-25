@@ -140,24 +140,30 @@ export default function ContestDsa() {
         </div>
 
         {/* EDITOR SECTION */}
-        <div className={`flex-1 flex flex-col bg-[#0b0b0b] relative min-h-0 ${mobileTab === "editor" ? "flex" : "hidden lg:flex"}`}>
-          <div className="flex-1 relative overflow-hidden">
+        <div className={`flex-1 flex flex-col bg-[#0b0b0b] relative ${mobileTab === "editor" ? "flex" : "hidden lg:flex"}`} style={{ minHeight: '50vh' }}>
+          <div className="flex-1 overflow-auto" style={{ height: 'calc(100vh - 200px)' }}>
             <Editor
               theme="vs-dark"
               language={params.get("language")?.toLowerCase() === "c++" ? "cpp" : "python"}
               value={code}
               onChange={(v: string | undefined) => setCode(v ?? "")}
               options={{
-                fontSize: 14,
+                fontSize: 16, // Larger for mobile
                 minimap: { enabled: false },
-                fontFamily: "JetBrains Mono",
+                fontFamily: "JetBrains Mono, monospace",
                 wordWrap: "on",
                 automaticLayout: true,
-                padding: { top: 16, bottom: 120 }, // Extra space so code isn't hidden by buttons
-                scrollBeyondLastLine: false,
+                padding: { top: 16, bottom: 150 }, // Extra space for action bar
+                scrollBeyondLastLine: true,
                 lineNumbers: "on",
                 glyphMargin: false,
                 folding: false,
+                scrollbar: {
+                  vertical: 'visible',
+                  horizontal: 'visible',
+                  verticalScrollbarSize: 12,
+                  horizontalScrollbarSize: 12
+                }
               }}
             />
           </div>

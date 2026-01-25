@@ -1,0 +1,7 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-1-ap-south-1.pooler.supabase.com:5432"
+
+Error: P1001: Can't reach database server at `aws-1-ap-south-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-ap-south-1.pooler.supabase.com:5432`.

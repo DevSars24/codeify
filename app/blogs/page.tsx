@@ -1,6 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { connectDB } from "@/lib/mongodb";
-import Blog from "@/models/Blog";
+import prisma from "@/lib/prisma";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { Plus, ArrowRight, Layers, Tag, ExternalLink } from "lucide-react";
@@ -17,22 +16,23 @@ interface PageProps {
 }
 
 export default async function BlogsPage({ searchParams }: PageProps) {
-    await connectDB();
-
     const { q } = await searchParams;
     const queryTerm = q || "";
-    const searchRegex = queryTerm ? { $regex: queryTerm, $options: "i" } : null;
 
-    const query = searchRegex ? {
-        $or: [
-            { title: searchRegex },
-            { domains: searchRegex },
-            { pattern: searchRegex },
-            { source: searchRegex }
+    const where = queryTerm ? {
+        OR: [
+            { title: { contains: queryTerm, mode: 'insensitive' as const } },
+            { source: { contains: queryTerm, mode: 'insensitive' as const } },
+            { pattern: { contains: queryTerm, mode: 'insensitive' as const } },
+            // Accessing array in Prisma for text search is trickier, simplified here to scalar fields or basic array check if supported
+            // or just stick to title/source/pattern for now
         ]
     } : {};
 
-    const blogs = await Blog.find(query).sort({ createdAt: -1 });
+    const blogs = await prisma.blog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' }
+    });
 
     const user = await currentUser();
     const isAdmin = user?.emailAddresses[0]?.emailAddress === ADMIN_EMAIL;
@@ -67,8 +67,8 @@ export default async function BlogsPage({ searchParams }: PageProps) {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {blogs.map((blog) => (
                         <Link
-                            key={blog._id.toString()}
-                            href={`/blogs/${blog._id}`}
+                            key={blog.id}
+                            href={`/blogs/${blog.id}`}
                             className="group block h-full"
                         >
                             <article className="bg-[#0a0a0a] border border-zinc-800 rounded-2xl overflow-hidden h-full flex flex-col hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1">

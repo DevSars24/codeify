@@ -1,7 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import ContestAttempt from "@/models/ContestAttempt";
+import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -10,8 +9,10 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB();
-    const attempts = await ContestAttempt.find({ userId }).sort({ createdAt: -1 });
+    const attempts = await prisma.contestAttempt.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    });
 
     return NextResponse.json(attempts);
   } catch (error) {
