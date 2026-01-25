@@ -43,6 +43,9 @@ export default function Navbar() {
             <Link href="/sessions" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
               Live Sessions
             </Link>
+            <Link href="/tools" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+              Tools
+            </Link>
 
             <SignedIn>
               <Link
@@ -99,6 +102,9 @@ export default function Navbar() {
               </Link>
               <Link href="/sessions" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
                 Live Sessions
+              </Link>
+              <Link href="/tools" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
+                Tools
               </Link>
               <SignedIn>
                 <Link href="/history" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
