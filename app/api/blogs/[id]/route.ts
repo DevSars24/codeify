@@ -1,15 +1,15 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import Blog from "@/models/Blog";
+import prisma from "@/lib/prisma";
 
 const ADMIN_EMAIL = "saurabhsingh100605@gmail.com";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        await connectDB();
         const { id } = await params;
-        const blog = await Blog.findById(id);
+        const blog = await prisma.blog.findUnique({
+            where: { id }
+        });
         if (!blog) return NextResponse.json({ error: "Not found" }, { status: 404 });
         return NextResponse.json(blog);
     } catch (error) {
@@ -26,9 +26,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        await connectDB();
         const { id } = await params;
-        await Blog.findByIdAndDelete(id);
+        await prisma.blog.delete({
+            where: { id }
+        });
 
         return NextResponse.json({ success: true });
     } catch (error) {
@@ -46,10 +47,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         }
 
         const body = await req.json();
-        await connectDB();
         const { id } = await params;
 
-        const updatedBlog = await Blog.findByIdAndUpdate(id, body, { new: true });
+        const updatedBlog = await prisma.blog.update({
+            where: { id },
+            data: body
+        });
 
         return NextResponse.json(updatedBlog);
     } catch (error) {

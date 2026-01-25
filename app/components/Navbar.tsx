@@ -37,6 +37,9 @@ export default function Navbar() {
             <Link href="/blogs" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
               Blogs
             </Link>
+            <Link href="/leaderboard" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+              Leaderboard
+            </Link>
 
             <SignedIn>
               <Link
@@ -87,6 +90,9 @@ export default function Navbar() {
               </Link>
               <Link href="/blogs" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
                 Blogs
+              </Link>
+              <Link href="/leaderboard" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
+                Leaderboard
               </Link>
               <SignedIn>
                 <Link href="/history" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>

@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ContestAttempt {
+  id          String   @id @default(uuid())
+  userId      String
+  topic       String
+  correct     Int
+  total       Int
+  accuracy    Float
+  language    String
+  difficulty  String?
+  submissions Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Blog {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  domains     String[]
+  source      String?  @default("")
+  pattern     String?  @default("")
+  imageUrl    String?  @default("")
+  authorEmail String
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

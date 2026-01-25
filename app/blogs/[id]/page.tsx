@@ -1,6 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { connectDB } from "@/lib/mongodb";
-import Blog from "@/models/Blog";
+import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import { ArrowLeft, Edit, Trash2, Calendar, Tag, Database, Layers } from "lucide-react";
 import Link from "next/link";
@@ -17,8 +16,9 @@ interface PageProps {
 export default async function BlogPage({ params }: PageProps) {
     const { id } = await params;
 
-    await connectDB();
-    const blog = await Blog.findById(id);
+    const blog = await prisma.blog.findUnique({
+        where: { id }
+    });
 
     if (!blog) return notFound();
 
@@ -40,12 +40,12 @@ export default async function BlogPage({ params }: PageProps) {
                     {/* Admin Controls */}
                     {isAdmin && (
                         <div className="flex gap-2 mb-6 justify-end">
-                            <Link href={`/admin/blog/edit/${blog._id}`}>
+                            <Link href={`/admin/blog/edit/${blog.id}`}>
                                 <button className="px-3 py-1.5 rounded bg-blue-900/30 text-blue-400 text-xs font-bold uppercase hover:bg-blue-900/50 flex items-center gap-2">
                                     <Edit size={12} /> Edit
                                 </button>
                             </Link>
-                            <DeleteBlogButton id={blog._id.toString()} />
+                            <DeleteBlogButton id={blog.id} />
                         </div>
                     )}
 

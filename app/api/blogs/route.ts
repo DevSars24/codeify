@@ -1,14 +1,14 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import Blog from "@/models/Blog";
+import prisma from "@/lib/prisma";
 
 const ADMIN_EMAIL = "saurabhsingh100605@gmail.com";
 
 export async function GET() {
     try {
-        await connectDB();
-        const blogs = await Blog.find().sort({ createdAt: -1 });
+        const blogs = await prisma.blog.findMany({
+            orderBy: { createdAt: "desc" }
+        });
         return NextResponse.json(blogs);
     } catch (error) {
         console.error("[BLOGS_GET_ERROR]", error);
@@ -28,23 +28,23 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { title, content, domains, source, pattern, imageUrl } = body;
 
-        await connectDB();
-
         // Create Slug
         const slug = title
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/(^-|-$)+/g, "");
 
-        const newBlog = await Blog.create({
-            title,
-            content,
-            domains,
-            source,
-            pattern,
-            imageUrl,
-            slug: `${slug}-${Date.now()}`,
-            authorEmail: email
+        const newBlog = await prisma.blog.create({
+            data: {
+                title,
+                content,
+                domains,
+                source,
+                pattern,
+                imageUrl,
+                slug: `${slug}-${Date.now()}`,
+                authorEmail: email
+            }
         });
 
         return NextResponse.json(newBlog);
