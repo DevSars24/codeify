@@ -120,9 +120,10 @@ export default function ContestDsa() {
         <button onClick={() => setMobileTab('editor')} className={`flex-1 py-4 text-[10px] font-bold tracking-widest transition-all ${mobileTab === 'editor' ? 'text-white border-b-2 border-purple-500 bg-white/5' : 'text-zinc-500'}`}>EDITOR</button>
       </div>
 
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+      {/* Main Content - Scrollable on mobile */}
+      <main className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden relative">
         {/* Problem Section */}
-        <div className={`w-full lg:w-[40%] overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-[#080808] ${mobileTab === 'problem' ? 'block' : 'hidden lg:block'}`}>
+        <div className={`w-full lg:w-[40%] lg:overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-[#080808] ${mobileTab === 'problem' ? 'block' : 'hidden lg:block'}`}>
           <span className="text-purple-500 text-[10px] font-black uppercase tracking-[0.3em]">Module_0{currentIndex + 1}</span>
           <h1 className="text-2xl md:text-3xl font-black text-white italic uppercase mt-4 mb-6">{q?.title}</h1>
           <div className="prose prose-invert prose-sm mb-10 opacity-70 leading-relaxed whitespace-pre-wrap">{q?.description}</div>
@@ -139,37 +140,44 @@ export default function ContestDsa() {
           </div>
         </div>
 
-        {/* EDITOR SECTION */}
-        <div className={`flex-1 flex flex-col bg-[#0b0b0b] relative ${mobileTab === "editor" ? "flex" : "hidden lg:flex"}`} style={{ minHeight: '50vh' }}>
-          <div className="flex-1 overflow-auto" style={{ height: 'calc(100vh - 200px)' }}>
+        {/* EDITOR SECTION - Mobile: Fixed height, scrollable container | Desktop: Flex fill */}
+        <div className={`w-full lg:flex-1 flex flex-col bg-[#0b0b0b] ${mobileTab === "editor" ? "flex" : "hidden lg:flex"}`}>
+          {/* Editor Container - Fixed height on mobile for scrollability */}
+          <div
+            className="w-full touch-pan-y"
+            style={{
+              height: 'calc(60vh)',
+              minHeight: '300px'
+            }}
+          >
             <Editor
               theme="vs-dark"
               language={params.get("language")?.toLowerCase() === "c++" ? "cpp" : "python"}
               value={code}
               onChange={(v: string | undefined) => setCode(v ?? "")}
               options={{
-                fontSize: 16, // Larger for mobile
+                fontSize: 14,
                 minimap: { enabled: false },
                 fontFamily: "JetBrains Mono, monospace",
                 wordWrap: "on",
                 automaticLayout: true,
-                padding: { top: 16, bottom: 150 }, // Extra space for action bar
-                scrollBeyondLastLine: true,
+                padding: { top: 16, bottom: 16 },
+                scrollBeyondLastLine: false,
                 lineNumbers: "on",
                 glyphMargin: false,
                 folding: false,
                 scrollbar: {
                   vertical: 'visible',
                   horizontal: 'visible',
-                  verticalScrollbarSize: 12,
-                  horizontalScrollbarSize: 12
+                  verticalScrollbarSize: 10,
+                  horizontalScrollbarSize: 10
                 }
               }}
             />
           </div>
 
-          {/* ACTION BAR - Always Visible at Bottom */}
-          <div className="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-white/10 p-4 z-[50] pb-safe">
+          {/* ACTION BAR - Static position on mobile, visible after scrolling */}
+          <div className="w-full bg-black/95 backdrop-blur-md border-t border-white/10 p-4 pb-8">
             <div className="flex gap-3 max-w-4xl mx-auto">
               <button
                 onClick={handleSaveAndNext}
