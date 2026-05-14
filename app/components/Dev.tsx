@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Cpu, Zap, Layers, ListOrdered, Target, Play } from "lucide-react";
 
 export default function DevPracticePlatform() {
   const router = useRouter();
@@ -9,156 +10,163 @@ export default function DevPracticePlatform() {
   const [category, setCategory] = useState("web");
   const [level, setLevel] = useState("Basic");
   const [count, setCount] = useState(5);
-  const [typedText, setTypedText] = useState("");
+
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const full =
-      "turns development practice into a focused, structured and real-world coding experience.";
-    let i = 0;
-    const id = setInterval(() => {
-      setTypedText(full.slice(0, i));
-      i++;
-      if (i > full.length) clearInterval(id);
-    }, 28);
-    return () => clearInterval(id);
+    setMounted(true);
   }, []);
 
+  if (!mounted) {
+    return <div className="min-h-screen bg-[#0B0A1E]" />;
+  }
+
   return (
-    <div className="relative min-h-screen px-4 pt-24 pb-16 text-white overflow-hidden">
+    <div className="relative min-h-screen bg-[#0B0A1E] text-white overflow-hidden font-sans" suppressHydrationWarning>
+      
+      {/* Background Glows */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-600/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600/10 blur-[120px] pointer-events-none" />
 
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-br from-black via-[#0b1020] to-black" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/60 to-black" />
+      <main className="relative z-10 max-w-7xl mx-auto pt-24 pb-20 px-4 md:px-6">
+        
+        {/* Split Layout Container */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+            
+            {/* Left Column: Hero Text */}
+            <div className="space-y-6 animate-fade-in-up">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 mb-2 shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+                    <Target size={16} className="text-cyan-400" />
+                    <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">Dev Arena</span>
+                </div>
+                
+                <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
+                    Development tasks are <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">waiting to enrich</span> your coding skills.
+                </h1>
+                
+                <p className="text-indigo-300/80 text-lg md:text-xl max-w-lg">
+                    Turn practice into a structured, real-world coding experience. Configure your track and launch the environment.
+                </p>
+            </div>
 
-      {/* AURORA */}
-      <div className="absolute top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-[180px]" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[180px]" />
+            {/* Right Column: Abstract CSS Graphic */}
+            <div className="hidden lg:flex justify-center relative [perspective:1000px] animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                <div className="relative w-[400px] h-[400px] [transform-style:preserve-3d]">
+                    <div className="absolute inset-0 bg-gradient-to-bl from-cyan-600/40 to-purple-500/40 rounded-[32px] -rotate-12 blur-xl animate-pulse" />
+                    <div className="absolute inset-0 bg-[#16133A]/80 backdrop-blur-3xl border border-white/10 rounded-[32px] shadow-2xl flex flex-col items-center justify-center p-8 transform hover:-rotate-y-12 transition-transform duration-700">
+                        <div className="w-32 h-32 bg-gradient-to-bl from-cyan-400 to-purple-600 rounded-full flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(6,182,212,0.5)] relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+                            <Layers size={64} className="text-white relative z-10 animate-bounce" style={{animationDuration: '4s'}} />
+                        </div>
+                        <h3 className="text-2xl font-black text-white text-center">Build Real Systems</h3>
+                        <p className="text-purple-400 font-mono text-sm mt-2 text-center">Architecture_Active</p>
+                        
+                        {/* Decorative cards floating */}
+                        <div className="absolute -right-12 top-20 bg-[#1A1744] p-4 rounded-2xl border border-white/5 shadow-xl animate-pulse" style={{animationDelay: '1.5s'}}>
+                            <div className="flex gap-2">
+                                <div className="w-4 h-4 bg-purple-500 rounded-sm" />
+                                <div className="w-4 h-4 bg-cyan-500 rounded-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      {/* HERO */}
-      <div className="max-w-xl mx-auto text-center mb-10 animate-fade">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-          Welcome to{" "}
-          <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-            Dev Practice Arena
-          </span>
-        </h1>
+        {/* Configuration Dashboard */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+          
+          {/* Section 01: Category Selection */}
+          <section className="lg:col-span-8 bg-[#16133A]/60 backdrop-blur-xl border border-white/5 rounded-[32px] p-8 shadow-2xl flex flex-col justify-center">
+            <h3 className="text-xs font-black uppercase tracking-widest text-cyan-400 mb-8 flex items-center gap-2">
+              <Layers size={16} /> 01 // Select Track
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { id: "web", label: "Web Development" },
+                { id: "app", label: "App Development" },
+                { id: "blockchain", label: "Blockchain" },
+                { id: "ai", label: "Agentic AI" }
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setCategory(t.id)}
+                  className={`py-8 rounded-2xl text-sm md:text-base font-bold border transition-all duration-300 relative overflow-hidden group ${category === t.id
+                      ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border-transparent shadow-[0_10px_20px_rgba(6,182,212,0.3)] scale-105 z-10"
+                      : "bg-black/40 border-white/5 text-zinc-400 hover:border-cyan-500/50 hover:bg-[#1a1744]"
+                    }`}
+                >
+                  {category === t.id && <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />}
+                  <span className="relative z-10">{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
 
-        <p className="text-zinc-400 text-sm sm:text-base">
-          <span className="font-semibold text-white">SARS </span>
-          {typedText}
-          <span className="ml-1 animate-blink">|</span>
-        </p>
-      </div>
+          {/* Section 02 & 03: Controls */}
+          <section className="lg:col-span-4 space-y-6 flex flex-col">
+            <div className="bg-[#16133A]/60 backdrop-blur-xl border border-white/5 rounded-[32px] p-8 shadow-2xl">
+              <h3 className="text-xs font-black uppercase tracking-widest text-cyan-400 mb-6 flex items-center gap-2">
+                <ListOrdered size={16} /> 02 // Task Quantity
+              </h3>
+              <div className="flex bg-black/40 p-2 rounded-2xl border border-white/5 gap-2">
+                {[5, 10].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setCount(n)}
+                    className={`flex-1 py-3 rounded-xl text-xs font-black transition-all duration-300 ${count === n
+                        ? "bg-white text-black shadow-lg scale-105"
+                        : "text-zinc-500 hover:text-white hover:bg-white/5"
+                      }`}
+                  >
+                    {n} Tasks
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {/* PRACTICE CARD */}
-      <div className="max-w-sm mx-auto mb-14 animate-slide-up">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.035] backdrop-blur-3xl p-5 space-y-5">
+            <div className="bg-[#16133A]/60 backdrop-blur-xl border border-white/5 rounded-[32px] p-8 shadow-2xl">
+              <h3 className="text-xs font-black uppercase tracking-widest text-cyan-400 mb-6 flex items-center gap-2">
+                <Cpu size={16} /> 03 // Difficulty Level
+              </h3>
+              <div className="flex bg-black/40 p-2 rounded-2xl border border-white/5 gap-2">
+                {["Basic", "Medium", "Advanced"].map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLevel(l)}
+                    className={`flex-1 py-3 rounded-xl text-[10px] sm:text-xs font-black transition-all duration-300 ${level === l
+                        ? "bg-white text-black shadow-lg scale-105"
+                        : "text-zinc-500 hover:text-white hover:bg-white/5"
+                      }`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          {/* CATEGORY */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Track
-            </label>
-            <select
-              value={category}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
-              className="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-sm"
+            <button
+              type="button"
+              onClick={() =>
+                router.push(
+                  `/contestdev?category=${category}&level=${level}&count=${count}&title=${encodeURIComponent(
+                    `${category.toUpperCase()} ${level} Practice`
+                  )}`
+                )
+              }
+              className="mt-auto w-full py-6 rounded-[32px] bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-black text-sm uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_rgba(6,182,212,0.4)] flex items-center justify-center gap-3 group"
             >
-              <option value="web">Web Development</option>
-              <option value="app">App Development</option>
-              <option value="blockchain">Blockchain</option>
-              <option value="ai">Agentic AI</option>
-            </select>
-          </div>
-
-          {/* LEVEL */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Level
-            </label>
-            <div className="flex gap-3">
-              {["Basic", "Medium", "Advanced"].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLevel(l)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-semibold ${
-                    level === l
-                      ? "bg-white text-black"
-                      : "bg-white/10 text-zinc-300"
-                  }`}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* TASK COUNT */}
-          <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
-              Tasks
-            </label>
-            <div className="flex gap-3">
-              {[5, 10].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCount(n)}
-                  className={`flex-1 py-2 rounded-xl text-sm font-semibold ${
-                    count === n
-                      ? "bg-white text-black"
-                      : "bg-white/10 text-zinc-300"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* START PRACTICE */}
-          <button
-            onClick={() =>
-              router.push(
-                `/contestdev?category=${category}&level=${level}&count=${count}&title=${encodeURIComponent(
-                  `${category.toUpperCase()} ${level} Practice`
-                )}`
-              )
-            }
-            className="w-full py-3 rounded-xl bg-white text-black font-bold text-sm"
-          >
-            Start Practice
-          </button>
+              Start Practice
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <Play size={14} className="fill-white" />
+              </div>
+            </button>
+          </section>
         </div>
-      </div>
-
-      {/* WHY SECTION */}
-      <div className="max-w-md mx-auto mb-8 animate-fade-delayed">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center">
-          <h3 className="font-semibold mb-2">Why Dev Practice?</h3>
-          <p className="text-zinc-400 text-sm">
-            Practice real-world development tasks with structured feedback and
-            progressive difficulty.
-          </p>
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes fade {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade { animation: fade 0.9s ease-out; }
-        .animate-slide-up { animation: slideUp 0.9s ease-out; }
-        .animate-blink { animation: blink 1s infinite; }
-        @keyframes blink {
-          0%,100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-      `}</style>
+      </main>
     </div>
   );
 }

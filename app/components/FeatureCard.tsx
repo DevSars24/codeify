@@ -17,14 +17,19 @@ export default function FeatureCard({
 }: FeatureCardProps) {
   return (
     <div
-      className={`p-8 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 hover:border-zinc-700 hover:bg-zinc-900/50 transition-all duration-300 group ${className}`}
+      className={`relative p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-purple-500/50 transition-all duration-500 group overflow-hidden ${className}`}
     >
-      <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
-        {icon}
-      </div>
-      <div>
-        <h3 className="text-lg font-bold text-white mb-3 tracking-tight">{title}</h3>
-        <p className="text-zinc-500 text-sm leading-relaxed">{description}</p>
+      {/* Hover Glow Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      
+      <div className="relative z-10">
+        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-lg">
+          {icon}
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-white mb-3 tracking-tight group-hover:text-purple-300 transition-colors">{title}</h3>
+          <p className="text-zinc-400 text-sm leading-relaxed">{description}</p>
+        </div>
       </div>
     </div>
   );
