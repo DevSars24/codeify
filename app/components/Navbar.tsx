@@ -1,128 +1,141 @@
 "use client";
 
 import Link from "next/link";
-import {
-  SignedIn,
-  SignedOut,
-  UserButton,
-  SignUpButton,
-  SignInButton,
-} from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, Command } from "lucide-react";
+import { useState, useEffect } from "react";
+
+// Mock Clerk for demo — no keys needed
+const SignedIn  = ({ children }: { children: React.ReactNode }) => null;
+const SignedOut = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+const UserButton   = () => null;
+const SignInButton = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+const SignUpButton = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
+const NAV_LINKS = [
+  { label: "Features",      href: "#features"     },
+  { label: "Blogs",         href: "/blogs"        },
+  { label: "Leaderboard",   href: "/leaderboard"  },
+  { label: "Live Sessions", href: "/live-sessions" },
+];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen,   setIsOpen]   = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="fixed top-4 inset-x-0 z-50 px-4 md:px-6">
-      <div className="mx-auto max-w-7xl">
-        <nav className="glass-card rounded-2xl flex items-center justify-between h-16 px-6 relative">
-
-          {/* Brand */}
-          <Link
-            href="/"
-            className="text-xl font-bold tracking-tight text-white hover:text-purple-300 transition-colors flex items-center gap-2"
-          >
-            <span className="bg-gradient-to-r from-purple-500 to-indigo-500 w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs">CS</span>
-            <span>CodeSaarthi</span>
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+        scrolled ? "py-3" : "py-6"
+      }`}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div
+          className={`rounded-full flex items-center justify-between h-14 px-6 transition-all duration-500 ${
+            scrolled
+              ? "bg-[#0a0f1d]/70 backdrop-blur-2xl shadow-xl"
+              : "bg-transparent"
+          }`}
+          style={{ boxShadow: scrolled ? "0 8px 40px rgba(0,0,0,0.6)" : "none" }}
+        >
+          {/* ── GenZ Minimalist Brand ── */}
+          <Link href="/" className="flex items-center gap-2.5 group select-none">
+            <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-transform duration-300 group-hover:scale-90 group-hover:rotate-12">
+              <Command size={16} strokeWidth={3} />
+            </div>
+            <span className="text-xl font-extrabold tracking-tighter text-white lowercase">
+              codesaarthi<span className="text-indigo-500">.</span>
+            </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="#features" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-              Features
-            </Link>
-            <Link href="/blogs" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-              Blogs
-            </Link>
-            <Link href="/leaderboard" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-              Leaderboard
-            </Link>
-            <Link href="/sessions" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-              Live Sessions
-            </Link>
-
-            <SignedIn>
+          {/* ── Desktop links ── */}
+          <nav className="hidden md:flex items-center gap-8">
+            {NAV_LINKS.map(({ label, href }) => (
               <Link
-                href="/history"
-                className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+                key={label}
+                href={href}
+                className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400 hover:text-white transition-colors duration-300 relative group"
               >
-                Mission Logs
+                {label}
+                <span className="absolute -bottom-0.5 left-0 w-0 h-[1px] bg-indigo-500 group-hover:w-full transition-all duration-300" />
               </Link>
-              <div className="h-5 w-[1px] bg-zinc-800" />
-              <UserButton afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox: "w-8 h-8 ring-2 ring-purple-500/20 hover:ring-purple-500 transition-all",
-                  }
-                }}
-              />
-            </SignedIn>
+            ))}
+          </nav>
 
+          {/* ── Auth CTA (desktop) ── */}
+          <div className="hidden md:flex items-center gap-4">
             <SignedOut>
-              <div className="flex items-center gap-4">
-                <SignInButton mode="modal">
-                  <button className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-                    Log in
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <Button className="bg-white text-black hover:bg-zinc-200 text-sm font-semibold rounded-lg px-5 h-9">
-                    Get Started
-                  </Button>
-                </SignUpButton>
-              </div>
+              <SignInButton mode="modal">
+                <button className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 hover:text-white transition-colors">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button className="h-9 px-6 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold tracking-wide shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] transition-all">
+                  Get Access
+                </Button>
+              </SignUpButton>
             </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* ── Hamburger ── */}
           <button
-            className="md:hidden p-2 text-zinc-400 hover:text-white"
-            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+            onClick={() => setIsOpen((v) => !v)}
+            aria-label="Toggle menu"
           >
             {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
+        </div>
 
-          {/* Mobile Nav */}
+        {/* ── Mobile menu ── */}
+        <AnimatePresence>
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 p-4 glass-card rounded-2xl flex flex-col gap-4 md:hidden animate-fade-in-up">
-              <Link href="#features" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
-                Features
-              </Link>
-              <Link href="/blogs" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
-                Blogs
-              </Link>
-              <Link href="/leaderboard" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
-                Leaderboard
-              </Link>
-              <Link href="/sessions" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
-                Live Sessions
-              </Link>
-              <SignedIn>
-                <Link href="/history" className="text-sm font-medium text-zinc-400 hover:text-white p-2" onClick={() => setIsOpen(false)}>
-                  Mission Logs
+            <motion.div
+              key="mobile-menu"
+              initial={{ opacity: 0, y: -12, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0,  scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.97 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-3 glass rounded-2xl p-6 flex flex-col gap-5"
+              style={{ background: "rgba(8,10,18,0.92)" }}
+            >
+              {NAV_LINKS.map(({ label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  onClick={() => setIsOpen(false)}
+                  className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 hover:text-white transition-colors"
+                >
+                  {label}
                 </Link>
-                <div className="p-2">
-                  <UserButton afterSignOutUrl="/" />
-                </div>
-              </SignedIn>
+              ))}
+              <div className="h-px bg-white/5" />
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button className="w-full text-left text-sm font-medium text-zinc-400 hover:text-white p-2">
-                    Log in
+                  <button className="text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 hover:text-white">
+                    Sign In
                   </button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <Button className="w-full bg-white text-black hover:bg-zinc-200">
-                    Get Started
+                  <Button className="w-full h-11 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold">
+                    Get Access
                   </Button>
                 </SignUpButton>
               </SignedOut>
-            </div>
+            </motion.div>
           )}
-        </nav>
+        </AnimatePresence>
       </div>
     </header>
   );
