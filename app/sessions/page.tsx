@@ -89,7 +89,7 @@ export default async function SessionsPage() {
 
                 {/* Sessions Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-                    {sessions.map((session) => (
+                    {sessions.map((session: any) => (
                         <Link
                             key={session.id}
                             href={session.status === 'live' ? `/sessions/${session.id}/room` : `/sessions/${session.id}`}
