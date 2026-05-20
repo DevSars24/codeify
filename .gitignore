@@ -26,3 +26,5 @@ Thumbs.db
 
 /app/generated/prisma
 echo "dev.db" >> .gitignore
+# clerk configuration (can include secrets)
+/.clerk/
