@@ -7,11 +7,11 @@ import { Menu, X, Command } from "lucide-react";
 import { useState, useEffect } from "react";
 
 // Mock Clerk for demo — no keys needed
-const SignedIn  = ({ children }: { children: React.ReactNode }) => null;
-const SignedOut = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-const UserButton   = () => null;
-const SignInButton = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-const SignUpButton = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+const SignedIn   = ({ children }: { children: React.ReactNode }) => null;
+const SignedOut  = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+const UserButton = () => null;
+const SignInButton = ({ children, mode }: { children: React.ReactNode; mode?: string }) => <>{children}</>;
+const SignUpButton = ({ children, mode }: { children: React.ReactNode; mode?: string }) => <>{children}</>;
 
 const NAV_LINKS = [
   { label: "Features",      href: "#features"     },
