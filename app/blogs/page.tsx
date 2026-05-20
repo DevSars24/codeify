@@ -82,7 +82,7 @@ export default async function BlogsPage({ searchParams }: PageProps) {
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {blogs.map((blog) => (
+                        {blogs.map((blog: any) => (
                             <Link
                                 key={blog.id}
                                 href={`/blogs/${blog.id}`}

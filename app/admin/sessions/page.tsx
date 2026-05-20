@@ -59,7 +59,7 @@ export default async function AdminSessionsPage() {
 
                 {/* Sessions List */}
                 <div className="space-y-4">
-                    {sessions.map((session) => (
+                    {sessions.map((session: any) => (
                         <div key={session.id} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-all">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="flex-1">

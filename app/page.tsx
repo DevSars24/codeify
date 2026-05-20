@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 // Animation helpers
-const fw = (d = 0) => ({
+const fw = (d = 0): any => ({
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-50px" },

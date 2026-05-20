@@ -35,7 +35,7 @@ export async function GET() {
         // Fetch user details from Clerk for each userId
         const clerk = await clerkClient();
         const leaderboard = await Promise.all(
-            leaderboardData.map(async (entry, index) => {
+            leaderboardData.map(async (entry: any, index: number) => {
                 const totalCorrect = entry._sum.correct || 0;
                 const xp = totalCorrect * 10;
                 const { tier, color } = getRatingTier(xp);
