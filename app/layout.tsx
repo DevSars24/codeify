@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
       <html lang="en" className="dark">
-        <body className={`${inter.className} min-h-screen bg-black text-white selection:bg-purple-500/30 selection:text-purple-200 antialiased`}>
+        <body className={`${inter.className} min-h-screen bg-background text-foreground selection:bg-[#7C6FE0]/30 selection:text-[#F0F0F8] antialiased`}>
           {children}
         </body>
       </html>
