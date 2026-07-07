@@ -1,7 +1,8 @@
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
-import VideoRoom from "@/components/VideoRoom";
+import VideoRoomWrapper from "@/components/VideoRoomWrapper";
+
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -29,7 +30,7 @@ export default async function RoomPage({ params }: PageProps) {
     const participantName = user.firstName || user.emailAddresses[0]?.emailAddress || "Participant";
 
     return (
-        <VideoRoom
+        <VideoRoomWrapper
             roomName={session.roomName}
             sessionId={session.id}
             participantName={participantName}

@@ -73,7 +73,15 @@ export async function POST(req: Request) {
       Remember: accuracy = (correct / ${total}) * 100. Round to nearest integer.
     `;
 
-    const result = await model.generateContent(prompt);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout")), 15000)
+    );
+
+    const result = await Promise.race([
+      model.generateContent(prompt),
+      timeoutPromise
+    ]) as any;
+
     const rawText = result.response.text();
     const text = rawText.replace(/```json|```/g, "").trim();
 
@@ -103,6 +111,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ correct, total, accuracy });
   } catch (error: any) {
     console.error("EVALUATE_ALL_ERROR:", error);
+    if (error.message === "Timeout") {
+      return NextResponse.json(
+        { error: "Evaluation timed out, please retry." },
+        { status: 504 }
+      );
+    }
     return NextResponse.json(
       {
         error: error.message || "Evaluation failed",

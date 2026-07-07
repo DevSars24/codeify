@@ -2,8 +2,11 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
+import type { EditorProps } from "@monaco-editor/react";
 import { ChevronLeft, Loader2 } from "lucide-react";
+
+const Editor = dynamic<EditorProps>(() => import("@monaco-editor/react"), { ssr: false });
 
 export default function ContestDsa() {
   const params = useSearchParams();
@@ -66,9 +69,12 @@ export default function ContestDsa() {
         }),
       });
 
-      if (!res.ok) throw new Error("Evaluation failed");
-
       const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Evaluation failed");
+      }
+
       const { correct, total, accuracy } = data;
 
       const saveRes = await fetch("/api/contest/save", {

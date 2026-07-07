@@ -101,9 +101,24 @@ export async function POST(req: Request) {
 
     let result;
     try {
-      result = await model.generateContent(prompt);
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), 15000)
+      );
+      result = await Promise.race([
+        model.generateContent(prompt),
+        timeoutPromise
+      ]) as any;
     } catch (aiError: any) {
       console.error("DEV SUBMIT AI ERROR:", aiError);
+
+      if (aiError.message === "Timeout") {
+        return new Response(
+          JSON.stringify({
+            error: "Evaluation timed out, please retry."
+          }),
+          { status: 504, headers: { "Content-Type": "application/json" } }
+        );
+      }
 
       if (isQuotaError(aiError)) {
         return new Response(

@@ -2,7 +2,10 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const revalidate = 60;
+
 const ADMIN_EMAIL = "saurabhsingh100605@gmail.com";
+
 
 export async function GET() {
     try {

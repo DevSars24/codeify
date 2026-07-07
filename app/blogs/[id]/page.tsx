@@ -1,6 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
+import Image from "next/image";
 import { ArrowLeft, Edit, Trash2, Calendar, Tag, Database, Layers } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -86,11 +87,16 @@ export default async function BlogPage({ params }: PageProps) {
 
                 {/* Featured Image */}
                 {blog.imageUrl && (
-                    <img
-                        src={blog.imageUrl}
-                        alt={blog.title}
-                        className="w-full rounded-xl sm:rounded-2xl border border-zinc-800 mb-8 sm:mb-12 shadow-2xl shadow-black"
-                    />
+                    <div className="relative w-full aspect-[16/9] mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl shadow-black">
+                        <Image
+                            src={blog.imageUrl}
+                            alt={blog.title}
+                            fill
+                            priority
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 1200px"
+                        />
+                    </div>
                 )}
 
                 {/* Article Content - Responsive prose */}

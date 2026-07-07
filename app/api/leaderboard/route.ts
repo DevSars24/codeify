@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { clerkClient } from "@clerk/nextjs/server";
 
+export const revalidate = 60;
+export const dynamic = "force-dynamic";
+
 // Rating tiers based on total XP (correct answers * 10)
 function getRatingTier(xp: number): { tier: string; color: string } {
     if (xp >= 2000) return { tier: "Grandmaster", color: "#ff0000" };
@@ -32,37 +35,43 @@ export async function GET() {
             take: 10, // Top 10
         });
 
-        // Fetch user details from Clerk for each userId
+        // Fetch user details from Clerk in a single batch request
         const clerk = await clerkClient();
-        const leaderboard = await Promise.all(
-            leaderboardData.map(async (entry: any, index: number) => {
-                const totalCorrect = entry._sum.correct || 0;
-                const xp = totalCorrect * 10;
-                const { tier, color } = getRatingTier(xp);
+        const userIds = leaderboardData.map((d: any) => d.userId);
+        const userMap = new Map<string, any>();
 
-                // Try to get user info from Clerk
-                let userName = "Unknown User";
-                let userImage = null;
-                try {
-                    const user = await clerk.users.getUser(entry.userId);
-                    userName = user.firstName || user.username || "Anonymous";
-                    userImage = user.imageUrl;
-                } catch (e) {
-                    // User might not exist or Clerk error
-                }
+        if (userIds.length > 0) {
+            try {
+                const response = await clerk.users.getUserList({ userId: userIds });
+                const users = Array.isArray(response) ? response : (response?.data || []);
+                users.forEach((u: any) => {
+                    userMap.set(u.id, u);
+                });
+            } catch (e) {
+                console.error("Clerk batch fetch error:", e);
+            }
+        }
 
-                return {
-                    rank: index + 1,
-                    userId: entry.userId,
-                    userName,
-                    userImage,
-                    xp,
-                    contestCount: entry._count.id,
-                    tier,
-                    tierColor: color,
-                };
-            })
-        );
+        const leaderboard = leaderboardData.map((entry: any, index: number) => {
+            const totalCorrect = entry._sum.correct || 0;
+            const xp = totalCorrect * 10;
+            const { tier, color } = getRatingTier(xp);
+
+            const user = userMap.get(entry.userId);
+            const userName = user ? (user.firstName || user.username || "Anonymous") : "Unknown User";
+            const userImage = user ? user.imageUrl : null;
+
+            return {
+                rank: index + 1,
+                userId: entry.userId,
+                userName,
+                userImage,
+                xp,
+                contestCount: entry._count.id,
+                tier,
+                tierColor: color,
+            };
+        });
 
         return NextResponse.json(leaderboard);
     } catch (error: any) {
@@ -70,3 +79,4 @@ export async function GET() {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+

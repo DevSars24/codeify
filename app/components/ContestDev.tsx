@@ -2,7 +2,10 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
+import type { EditorProps } from "@monaco-editor/react";
+
+const Editor = dynamic<EditorProps>(() => import("@monaco-editor/react"), { ssr: false });
 
 /* ================= TYPES ================= */
 type Task = {
@@ -92,6 +95,12 @@ export default function ContestDev() {
       });
 
       const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setVerdict(`⚠️ ${data.error || "Evaluation failed."}`);
+        setMobileView("response");
+        return;
+      }
 
       setVerdict(`${data.verdict}\n\n${data.feedback}`);
       setScores((prev: number[]) => {
