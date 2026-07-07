@@ -1,440 +1,253 @@
 "use client";
+
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import {
-  Terminal, Cpu, Shield, Zap, Globe, BarChart3,
-  ArrowRight, Sparkles, CheckCircle2, Lock, Users, ChevronRight, Command
+  Terminal, Cpu, Zap, Globe, ArrowRight, CheckCircle2, Lock, Users, ChevronRight, Command, Sparkles
 } from "lucide-react";
+import { prefersReducedMotion } from "@/lib/motion";
 
-// Animation helpers
-const fw = (d = 0): any => ({
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-50px" },
-  transition: { duration: 0.6, delay: d, ease: [0.16, 1, 0.3, 1] },
-});
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function LandingPage() {
   const router = useRouter();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(".hero-line", {
+        opacity: 0,
+        y: 12,
+        duration: 0.45,
+        stagger: 0.08,
+        ease: "power2.out",
+      });
+
+      gsap.from(".hero-terminal", {
+        opacity: 0,
+        x: 24,
+        duration: 0.5,
+        delay: 0.25,
+        ease: "power3.out",
+      });
+
+      if (featuresRef.current) {
+        gsap.from(".feature-card", {
+          scrollTrigger: {
+            trigger: featuresRef.current,
+            start: "top 80%",
+            once: true,
+          },
+          opacity: 0,
+          y: 16,
+          duration: 0.4,
+          stagger: 0.12,
+          ease: "power2.out",
+        });
+      }
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#040508] text-[#F0F0F8] overflow-x-hidden font-sans relative">
-        {/* Ambient Background Image */}
-        <div
-          className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/assets/main-page.jpg')",
-            opacity: 0.40,
-            filter: "brightness(0.8) contrast(1.05)",
-          }}
-        />
-        {/* Radial vignette mask - color graded to blend the background image perfectly */}
-        <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(4,5,8,0.15)_0%,rgba(4,5,8,0.75)_45%,#040508_95%)]" />
-
-        {/* ════════════ HERO SECTION ════════════ */}
-        <section className="relative pt-32 pb-24 md:pt-52 md:pb-40 px-6 max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center gap-20">
-          {/* Subtle background glow */}
-          <div className="absolute top-[10%] left-[20%] w-[600px] h-[600px] bg-[#7868b8]/15 blur-[150px] rounded-full pointer-events-none" />
-          <div className="absolute top-[30%] right-[10%] w-[500px] h-[500px] bg-[#8878c8]/10 blur-[150px] rounded-full pointer-events-none" />
-
-          {/* Left Text */}
-          <div className="flex-1 z-10 text-center lg:text-left relative">
-            <motion.div {...fw(0)} className="mb-8 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#0F1120]/90 border border-[#7C6FE0]/30 text-[#A89FF5] text-xs font-medium tracking-wide backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7C6FE0] opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#7C6FE0]" />
-              </span>
-              New: Institutional environments
-            </motion.div>
-
-            <motion.h1 {...fw(0.1)} className="text-5xl md:text-7xl lg:text-[5.5rem] font-bold text-white tracking-tight leading-[1.05] mb-8 drop-shadow-[0_4px_24px_rgba(8,10,18,0.85)]">
-              Automate your <br className="hidden lg:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7C6FE0] via-[#A89FF5] to-[#7C6FE0] bg-[length:200%_auto] animate-[gradientShift_8s_ease_infinite] drop-shadow-[0_2px_12px_rgba(124,111,224,0.35)]">
-                coding workflows
-              </span>
-            </motion.h1>
-
-            <motion.p {...fw(0.2)} className="text-lg md:text-xl text-[#8B8FA8] mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
-              CodeSaarthi is designed to give you your time back by getting daily technical work done faster through automated environments, AI-assisted logic, and seamless collaboration.
-            </motion.p>
-
-            <motion.div {...fw(0.3)} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
-              <button onClick={() => router.push("/welcome")} className="relative group overflow-hidden px-10 py-4 rounded-full bg-gradient-to-r from-[#7C6FE0] to-[#8B7FE8] text-white font-semibold tracking-wide transition-all hover:scale-[1.02] border border-white/10 hover:border-white/30 shadow-[0_0_30px_rgba(124,111,224,0.35)] hover:shadow-[0_0_50px_rgba(124,111,224,0.65)] cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#8B7FE8] to-[#7C6FE0] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <span className="relative z-10 flex items-center gap-2">Start Free Trial <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></span>
-              </button>
-              <button onClick={() => router.push("/sign-in")} className="px-10 py-4 rounded-full bg-white/5 hover:bg-[#7C6FE0]/10 text-white font-semibold tracking-wide border border-white/10 hover:border-[#7C6FE0]/40 transition-all backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:shadow-[0_0_40px_rgba(124,111,224,0.35)] cursor-pointer">
-                Book a demo
-              </button>
-            </motion.div>
-          </div>
-
-          {/* Right Graphic (Premium Terminal) */}
-          <motion.div {...fw(0.4)} className="flex-1 w-full max-w-2xl lg:max-w-none relative z-10 perspective-1000">
-            <div className="relative rounded-2xl bg-[#0A0B16]/90 border border-[#14172B] shadow-2xl backdrop-blur-2xl overflow-hidden hover:shadow-[0_20px_80px_rgba(124,111,224,0.22)] hover:border-[#7C6FE0]/40 hover:-translate-y-1 hover:scale-[1.01] transition-all duration-700 ease-[0.16,1,0.3,1] group">
-              {/* Glossy top highlight */}
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#7C6FE0]/40 to-transparent" />
-
-              {/* Terminal Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-[#14172B]/85 bg-[#06070D]/80">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#FF5F56] shadow-[0_0_8px_rgba(255,95,86,0.3)]" />
-                  <div className="w-3 h-3 rounded-full bg-[#FFBD2E] shadow-[0_0_8px_rgba(255,189,46,0.3)]" />
-                  <div className="w-3 h-3 rounded-full bg-[#27C93F] shadow-[0_0_8px_rgba(39,201,63,0.3)]" />
-                </div>
-                {/* File tab bar */}
-                <div className="flex items-center gap-1.5 text-xs text-[#8B8FA8] font-mono select-none">
-                  <span className="px-3.5 py-1.5 rounded-t-lg bg-[#0A0B16] text-[#F0F0F8] border-t-2 border-[#7C6FE0] border-x border-[#14172B] flex items-center gap-2 shadow-inner">
-                    <span className="w-2.5 h-2.5 rounded bg-blue-500/20 text-[#60a5fa] font-bold text-[8px] flex items-center justify-center">TS</span> 
-                    saarthi.config.ts
-                    <span className="text-slate-500 hover:text-white transition-colors cursor-pointer text-[9px] font-sans ml-1">×</span>
-                  </span>
-                  <span className="px-3.5 py-1.5 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-2 font-medium">
-                    <span className="w-2.5 h-2.5 rounded bg-blue-500/10 text-[#60a5fa]/60 font-bold text-[8px] flex items-center justify-center">TS</span>
-                    index.ts
-                  </span>
-                </div>
-                <div className="w-12" /> {/* alignment spacer */}
+      <main ref={heroRef} className="min-h-screen bg-background text-foreground overflow-x-hidden">
+        {/* Hero */}
+        <section className="pt-28 pb-20 md:pt-36 md:pb-28 px-6 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <div className="hero-line inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted border border-border text-xs font-medium text-muted-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                AI-powered coding platform
               </div>
 
-              {/* Terminal Body */}
-              <div className="p-8 font-mono text-[14px] leading-relaxed text-[#F0F0F8] bg-[#0A0B16]/30">
-                <table className="w-full border-collapse">
-                  <tbody>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">1</td>
-                      <td className="pl-4">
-                        <span className="text-[#7C6FE0] font-medium">import</span> <span className="text-white">&#123;</span> <span className="text-[#8E82E9]">AI</span> <span className="text-white">&#125;</span> <span className="text-[#7C6FE0] font-medium">from</span> <span className="text-emerald-300">"@codesaarthi/core"</span>;
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">2</td>
-                      <td className="pl-4">
-                        <span className="text-[#7C6FE0] font-medium">const</span> <span className="text-sky-300">engine</span> <span className="text-white">=</span> <span className="text-[#7C6FE0] font-medium">new</span> <span className="text-[#8E82E9]">AI</span>();
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">3</td>
-                      <td className="pl-4">
-                        <span className="text-slate-500 font-mono italic">// Initialize neural environment</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">4</td>
-                      <td className="pl-4">
-                        <span className="text-[#7C6FE0] font-medium">await</span> <span className="text-sky-300">engine</span>.<span className="text-[#8E82E9]">start</span>(<span className="text-white">&#123;</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">5</td>
-                      <td className="pl-4">
-                        <span className="pl-4 text-slate-300">mode:</span> <span className="text-emerald-300">"elite"</span>,
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">6</td>
-                      <td className="pl-4">
-                        <span className="pl-4 text-slate-300">latency:</span> <span className="text-rose-300">0</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">7</td>
-                      <td className="pl-4">
-                        <span className="text-white">&#125;</span>);
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="w-8 text-slate-600 select-none text-right pr-4 border-r border-white/[0.03]">8</td>
-                      <td className="pl-4">
-                        <span className="text-[#7C6FE0]">~</span> <span className="inline-block w-[2px] h-[15px] bg-[#7C6FE0] animate-pulse ml-0.5 align-middle" />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <h1 className="hero-line text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-tight leading-[1.1] text-foreground">
+                Practice, compete, and ship code — in one workspace.
+              </h1>
 
-              {/* Terminal Footer status bar */}
-              <div className="flex items-center justify-between px-6 py-3 border-t border-[#14172B]/60 bg-[#06070D]/90 text-[10px] text-slate-500 font-mono">
-                <div>src/saarthi.config.ts</div>
-                <div className="flex items-center gap-3">
-                  <span>UTF-8</span>
-                  <span>TypeScript</span>
-                  <span>Ln 8, Col 5</span>
-                </div>
-              </div>
+              <p className="hero-line text-lg text-muted-foreground max-w-lg leading-relaxed">
+                CodeSaarthi gives you structured DSA contests, dev challenges, live sessions, and mission logs — without leaving the browser.
+              </p>
 
-              {/* Subtle inner glow */}
-              <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#7868b8]/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="hero-line flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => router.push("/welcome")}
+                  className="btn-primary cursor-pointer"
+                >
+                  Get started <ArrowRight size={16} />
+                </button>
+                <button
+                  onClick={() => router.push("/sign-in")}
+                  className="btn-secondary cursor-pointer"
+                >
+                  Sign in
+                </button>
+              </div>
             </div>
-          </motion.div>
+
+            {/* Terminal preview */}
+            <div className="hero-terminal surface-card shadow-sm overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/50">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                <span className="ml-2 text-xs text-muted-foreground font-mono">saarthi.config.ts</span>
+              </div>
+              <div className="p-6 font-mono text-sm leading-relaxed bg-card">
+                <p><span className="text-primary">import</span> {"{ AI }"} <span className="text-primary">from</span> <span className="text-emerald-600 dark:text-emerald-400">&quot;@codesaarthi/core&quot;</span>;</p>
+                <p className="mt-1"><span className="text-primary">const</span> engine = <span className="text-primary">new</span> AI();</p>
+                <p className="mt-1 text-muted-foreground">// Initialize environment</p>
+                <p className="mt-1"><span className="text-primary">await</span> engine.start({"{"}</p>
+                <p className="pl-4">mode: <span className="text-emerald-600 dark:text-emerald-400">&quot;elite&quot;</span>,</p>
+                <p className="pl-4">latency: <span className="text-rose-500">0</span></p>
+                <p>{"});"}</p>
+              </div>
+            </div>
+          </div>
         </section>
 
-        {/* ════════════ FEATURES GRID ════════════ */}
-        <section className="relative py-24 px-6 bg-[#020305] overflow-hidden">
-          {/* Subtle tiled ruler grid */}
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
-          {/* Premium top border */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center max-w-3xl mx-auto mb-20">
-              <motion.div {...fw(0)} className="w-12 h-12 mx-auto bg-[#7C6FE0]/10 border border-[#7C6FE0]/25 rounded-2xl flex items-center justify-center mb-6">
-                <Sparkles className="text-[#7C6FE0]" size={24} />
-              </motion.div>
-              <motion.h2 {...fw(0.1)} className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight drop-shadow-[0_4px_12px_rgba(8,10,18,0.9)]">
-                Your new automation <br /> layer for engineering
-              </motion.h2>
-              <motion.p {...fw(0.2)} className="text-[#8B8FA8] text-base md:text-lg font-medium">
-                CodeSaarthi lives on top of your existing workflows and lets you set up rules that automate everything from provisioning to deployment—all while keeping your code secure.
-              </motion.p>
+        {/* Features */}
+        <section ref={featuresRef} id="features" className="py-20 px-6 border-t border-border bg-muted/30">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-12 max-w-2xl">
+              <div className="flex items-center gap-2 text-primary mb-4">
+                <Sparkles size={18} />
+                <span className="text-xs font-semibold uppercase tracking-wider">Platform</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
+                Everything you need to level up
+              </h2>
+              <p className="text-muted-foreground">
+                Contests, analytics, blogs, and live sessions — built for engineers who want deliberate practice.
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+            <div className="grid md:grid-cols-3 gap-6">
               {[
-                { badge: "WORKSPACE", title: "A single inbox for all your projects", desc: "Sync, upload, or clone a repo and let CodeSaarthi read, analyze, and map all the data to your development environment." },
-                { badge: "WORKFLOWS", title: "Advanced workflow automation", desc: "Create automated pipelines with multi-step approvals based on tests, security, resources, and more. Automate categorization." },
-                { badge: "INTELLIGENCE", title: "Intelligent code assistance", desc: "Use AI to automatically write boilerplate based on the rules you set, without worrying about syntax errors and bugs." }
-              ].map((item, i) => (
-                <motion.div key={i} {...fw(0.1 * i + 0.3)} className="relative group perspective-1000">
-                  <div className={`p-8 h-full rounded-3xl backdrop-blur-xl transition-all duration-500 relative overflow-hidden ${
-                    i === 2 
-                      ? "border-[#7C6FE0]/50 shadow-[0_0_30px_rgba(124,111,224,0.15)] bg-gradient-to-b from-[#0F1120] to-[#12142B]/85" 
-                      : "border-[#1C1F35] bg-[#0F1120]/80 group-hover:border-[#7C6FE0]/40 group-hover:bg-[#0F1120]/95"
-                  } border group-hover:shadow-[0_0_30px_rgba(124,111,224,0.15),0_15px_40px_rgba(0,0,0,0.5)] group-hover:scale-[1.03] group-hover:-translate-y-2`}>
-                    
-                    {/* Hover radial glowing backdrop overlay */}
-                    <div className="absolute -inset-px bg-[radial-gradient(circle_at_center,rgba(124,111,224,0.12),transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                    
-                    {/* Top border light line on hover */}
-                    <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#7C6FE0]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    <div className="relative z-10">
-                      <div className="inline-block px-3 py-1 bg-[#7C6FE0]/10 border border-[#7C6FE0]/25 text-[#A89FF5] text-[10px] font-extrabold tracking-widest uppercase rounded-full mb-6">
-                        {item.badge}
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-4 pr-4">{item.title}</h3>
-                      <p className="text-[#8B8FA8] text-sm font-medium leading-relaxed mb-8">
-                        {item.desc}
-                      </p>
-                      <Link href="#" className="text-[#7C6FE0] text-sm font-bold tracking-wide flex items-center gap-2 hover:text-[#A89FF5] transition-colors group/link">
-                        Read More <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-                      </Link>
-                    </div>
+                { icon: Terminal, title: "DSA Arena", desc: "Topic-based contests with AI evaluation and instant feedback on your submissions." },
+                { icon: Cpu, title: "Dev Challenges", desc: "Real-world tasks across web, backend, and system design — graded by AI mentors." },
+                { icon: Zap, title: "Mission Logs", desc: "Track accuracy, XP, and progress over time with clear analytics dashboards." },
+              ].map(({ icon: Icon, title, desc }) => (
+                <div key={title} className="feature-card surface-card p-6 hover:border-primary/30 transition-colors">
+                  <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center mb-4">
+                    <Icon size={20} className="text-primary" />
                   </div>
-                </motion.div>
+                  <h3 className="font-semibold mb-2">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ════════════ INTEGRATIONS (2 COL) ════════════ */}
-        <section className="relative py-24 px-6 overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-16 relative z-10">
-            <motion.div {...fw(0.2)} className="flex-1 w-full relative">
-              <div className="aspect-square max-w-md mx-auto relative">
-                {/* Central Hub */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#7868b8] rounded-3xl flex items-center justify-center shadow-[0_0_40px_rgba(120,104,184,0.4)] z-10">
-                  <span className="text-white font-bold text-2xl">CS</span>
+        {/* Integrations */}
+        <section className="py-20 px-6">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div className="surface-card p-8 flex items-center justify-center min-h-[280px]">
+              <div className="relative w-48 h-48">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">CS</div>
                 </div>
-
-                {/* Orbiting nodes (simplified representation) */}
-                <div className="absolute top-1/4 left-1/4 w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 shadow-lg"><Globe size={20} className="text-blue-400" /></div>
-                <div className="absolute top-1/4 right-1/4 w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 shadow-lg"><Terminal size={24} className="text-green-400" /></div>
-                <div className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 shadow-lg"><Cpu size={18} className="text-orange-400" /></div>
-                <div className="absolute bottom-1/3 right-1/4 w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 shadow-lg"><Zap size={28} className="text-yellow-400" /></div>
-
-                {/* Connecting lines (bg) */}
-                <svg className="absolute inset-0 w-full h-full text-slate-800 pointer-events-none" style={{ zIndex: 0 }}>
-                  <circle cx="50%" cy="50%" r="35%" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" />
-                </svg>
-              </div>
-            </motion.div>
-
-            <div className="flex-1 text-center md:text-left">
-              <motion.div {...fw(0)} className="inline-block px-3 py-1 bg-pink-500/10 text-pink-400 text-[10px] font-bold tracking-wider uppercase rounded mb-6">
-                Integrations
-              </motion.div>
-              <motion.h2 {...fw(0.1)} className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight drop-shadow-[0_4px_12px_rgba(3,7,18,0.9)]">
-                Connect your favorite <br className="hidden lg:block" /> apps & services
-              </motion.h2>
-              <motion.p {...fw(0.2)} className="text-slate-200 text-lg font-semibold mb-8 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-                Take automation to the next level by connecting to your existing tools. Notify your co-workers in Slack, keep your repos up to date, or save outputs in your favorite storage tool.
-              </motion.p>
-              <motion.button {...fw(0.3)} className="px-8 py-3 rounded-full bg-white/5 hover:bg-white/10 text-white font-bold tracking-wide border border-white/10 hover:border-[#7868b8]/40 transition-all backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:shadow-[0_0_40px_rgba(120,104,184,0.4)]">
-                Explore Integrations
-              </motion.button>
-            </div>
-          </div>
-        </section>
-
-        {/* ════════════ TESTIMONIALS ════════════ */}
-        <section className="relative py-24 px-6 bg-[#020305] overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          <div className="max-w-7xl mx-auto relative z-10">
-            <motion.h2 {...fw(0)} className="text-3xl md:text-4xl font-bold text-white text-center mb-16 tracking-tight">
-              Used by forward-thinking <br /> engineers
-            </motion.h2>
-
-            <div className="flex flex-col lg:flex-row items-center gap-16">
-              {/* Logos Grid */}
-              <motion.div {...fw(0.1)} className="flex-1 grid grid-cols-2 gap-8 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                <div className="flex justify-center"><div className="text-xl font-bold text-slate-300">Google</div></div>
-                <div className="flex justify-center"><div className="text-xl font-bold text-slate-300">Microsoft</div></div>
-                <div className="flex justify-center"><div className="text-xl font-bold text-slate-300">Amazon</div></div>
-                <div className="flex justify-center"><div className="text-xl font-bold text-slate-300">Meta</div></div>
-                <div className="flex justify-center"><div className="text-xl font-bold text-slate-300">Netflix</div></div>
-                <div className="flex justify-center"><div className="text-xl font-bold text-slate-300">Apple</div></div>
-              </motion.div>
-
-              {/* Testimonial Card */}
-              <motion.div {...fw(0.2)} className="flex-1 w-full max-w-lg">
-                <div className="relative bg-[#0a0f1d]/60 border border-white/[0.06] backdrop-blur-2xl rounded-3xl p-8 md:p-12 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-[#7868b8]/10 blur-[80px] rounded-full pointer-events-none transition-all duration-700 group-hover:bg-[#7868b8]/20" />
-
-                  {/* Quote mark icon */}
-                  <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#7868b8]/20 border border-[#7868b8]/30 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-lg">
-                    <span className="text-[#8878c8] text-5xl font-serif leading-none pt-4">"</span>
-                  </div>
-
-                  <p className="text-slate-200 text-lg md:text-xl font-semibold leading-relaxed mb-10 relative z-10 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-                    "We've scaled up our engineering team by 10x in 2 years, and CodeSaarthi helps us keep infrastructure costs and headcount stable as we grow."
-                  </p>
-
-                  <div className="flex items-center gap-4 relative z-10">
-                    <div className="w-12 h-12 bg-slate-800 border border-white/10 rounded-full flex items-center justify-center overflow-hidden">
-                      <div className="w-full h-full bg-gradient-to-br from-[#7868b8] to-[#8878c8]" />
-                    </div>
-                    <div>
-                      <div className="text-white font-bold text-sm tracking-wide">PETER J. DAWSON</div>
-                      <div className="text-[#8878c8] text-xs font-semibold tracking-wider">CTO, INVISO</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            <motion.div {...fw(0.3)} className="text-center mt-16">
-              <Link href="#" className="text-[#8878c8] text-sm font-semibold flex items-center justify-center gap-2 hover:text-[#a898e8] transition-colors">
-                Read more about why companies trust us <ArrowRight size={14} />
-              </Link>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ════════════ SECONDARY FEATURES ════════════ */}
-        <section className="py-24 px-6 border-t border-[#14172B]/60">
-          <div className="max-w-4xl mx-auto">
-            <motion.h2 {...fw(0)} className="text-3xl font-bold text-white text-center mb-16 tracking-tight">
-              We care about your code
-            </motion.h2>
-
-            <div className="grid md:grid-cols-2 gap-16">
-              <motion.div {...fw(0.1)} className="text-center md:text-left">
-                <div className="w-16 h-16 mx-auto md:mx-0 bg-[#0A0B16] rounded-full flex items-center justify-center mb-6 shadow-lg border border-[#14172B]">
-                  <Lock className="text-[#8878c8]" size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4">Your digital Fort Knox</h3>
-                <p className="text-slate-200 text-sm font-semibold leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-                  We take security extremely seriously. Your data is fully protected with AES-256 encryption, 2-factor authentication, and fraud detection built-in.
-                </p>
-              </motion.div>
-
-              <motion.div {...fw(0.2)} className="text-center md:text-left">
-                <div className="w-16 h-16 mx-auto md:mx-0 bg-[#0A0B16] rounded-full flex items-center justify-center mb-6 shadow-lg border border-[#14172B]">
-                  <Users className="text-[#8878c8]" size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4">Friendly human support</h3>
-                <p className="text-slate-200 text-sm font-semibold leading-relaxed mb-4 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-                  We have real humans ready to help you. If you get stuck, have questions or want to share feedback with us.
-                </p>
-                <Link href="#" className="text-[#8878c8] text-sm font-bold hover:text-[#a898e8] transition-colors">
-                  Contact us
-                </Link>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* ════════════ BOTTOM CTA ════════════ */}
-        <section className="py-24 px-6 bg-[#020305]/65 border-t border-[#14172B]/60 relative overflow-hidden">
-          {/* Decorative dots pattern */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-64 h-64 opacity-20 pointer-events-none"
-            style={{ backgroundImage: "radial-gradient(circle, #fff 2px, transparent 2px)", backgroundSize: "20px 20px" }} />
-
-          <div className="max-w-3xl mx-auto text-center relative z-10">
-            <motion.div {...fw(0)} className="inline-block px-3 py-1 bg-[#7868b8]/10 text-[#8878c8] text-[10px] font-bold tracking-wider uppercase rounded mb-6">
-              Get Started
-            </motion.div>
-            <motion.h2 {...fw(0.1)} className="text-3xl md:text-5xl font-bold text-white mb-10 tracking-tight drop-shadow-[0_4px_16px_rgba(3,7,18,0.95)]">
-              Ready for a delightful, high-performance alternative?
-            </motion.h2>
-            <motion.div {...fw(0.2)} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button onClick={() => router.push("/welcome")} className="relative group overflow-hidden w-full sm:w-auto px-10 py-4 rounded-full bg-gradient-to-r from-[#7868b8] to-[#8878c8] text-white font-bold tracking-wide transition-all hover:scale-105 border border-white/20 hover:border-white/40 shadow-[0_0_30px_rgba(120,104,184,0.6)] hover:shadow-[0_0_50px_rgba(136,120,200,0.9)]">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#8878c8] to-[#7868b8] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <span className="relative z-10 flex items-center justify-center gap-2">Start Free Trial <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></span>
-              </button>
-              <button onClick={() => router.push("/sign-in")} className="w-full sm:w-auto px-10 py-4 rounded-full bg-white/5 hover:bg-white/10 text-white font-bold tracking-wide border border-white/10 hover:border-[#7868b8]/40 transition-all backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:shadow-[0_0_40px_rgba(120,104,184,0.4)]">
-                Book a demo
-              </button>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ════════════ FOOTER ════════════ */}
-        <footer className="pt-16 pb-8 px-6 border-t border-slate-800/50">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row justify-between gap-12 mb-16">
-              {/* Brand & Language */}
-              <div className="space-y-6 lg:w-1/4">
-                <div className="flex items-center gap-2.5 group select-none">
-                  <div className="w-8 h-8 rounded-full bg-[#0A0B16] border border-[#7C6FE0]/30 text-[#7C6FE0] flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:border-[#7C6FE0]/65 group-hover:bg-[#7C6FE0]/10 shadow-[0_0_15px_rgba(124,111,224,0.15)]">
-                    <Command size={16} strokeWidth={3} className="text-[#7C6FE0]" />
-                  </div>
-                  <span className="font-bold text-white text-lg tracking-tight lowercase">
-                    codesaarthi<span className="text-[#7C6FE0]">.</span>
-                  </span>
-                </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-700 text-xs text-slate-400">
-                  <span>🇺🇸</span> United States <ChevronRight size={14} />
-                </div>
-              </div>
-
-              {/* Links */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:w-3/4">
-                {[
-                  { title: "Company", links: ["About", "Blog", "Careers"] },
-                  { title: "Solutions", links: ["For Startups", "For Enterprise"] },
-                  { title: "Product", links: ["Features", "Integrations", "Pricing"] },
-                  { title: "Resources", links: ["Documentation", "Support", "Contact"] },
-                ].map((col, i) => (
-                  <div key={i} className="space-y-4">
-                    <h4 className="text-white font-semibold text-sm">{col.title}</h4>
-                    <ul className="space-y-3">
-                      {col.links.map(link => (
-                        <li key={link}><Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">{link}</Link></li>
-                      ))}
-                    </ul>
+                {[Globe, Terminal, Cpu, Zap].map((Icon, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-10 h-10 rounded-md border border-border bg-card flex items-center justify-center"
+                    style={{
+                      top: `${[10, 10, 70, 70][i]}%`,
+                      left: `${[10, 70, 30, 70][i]}%`,
+                    }}
+                  >
+                    <Icon size={16} className="text-muted-foreground" />
                   </div>
                 ))}
               </div>
             </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-3">Workflow</p>
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
+                From practice to production
+              </h2>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Connect contests to your learning path. Review mission logs, climb the leaderboard, and join live coding sessions with mentors.
+              </p>
+              <Link href="/blogs" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">
+                Explore resources <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+        </section>
 
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-slate-800/50">
-              <p className="text-xs text-slate-500">© 2026 CodeSaarthi Inc. All rights reserved.</p>
-              <div className="flex gap-6 text-xs text-slate-500">
-                <Link href="#" className="hover:text-white transition-colors">Security</Link>
-                <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-                <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+        {/* Trust */}
+        <section className="py-20 px-6 border-t border-border bg-muted/30">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+            <div className="flex gap-4">
+              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center shrink-0">
+                <Lock size={18} className="text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Secure by default</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Authentication via Clerk, encrypted connections, and isolated contest environments.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center shrink-0">
+                <Users size={18} className="text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">Built for teams</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Leaderboards, live sessions, and admin tools for instructors running cohorts.
+                </p>
               </div>
             </div>
           </div>
-        </footer>
+        </section>
 
+        {/* CTA */}
+        <section className="py-20 px-6 border-t border-border">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
+              Ready to start practicing?
+            </h2>
+            <p className="text-muted-foreground mb-8">
+              Join contests, track your progress, and compete on the global leaderboard.
+            </p>
+            <button onClick={() => router.push("/welcome")} className="btn-primary cursor-pointer">
+              Start free <ArrowRight size={16} />
+            </button>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-12 px-6 border-t border-border">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-8">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+                <Command size={14} className="text-primary" />
+              </div>
+              <span className="font-semibold text-sm">codesaarthi</span>
+            </div>
+            <div className="flex gap-6 text-sm text-muted-foreground">
+              <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
+              <Link href="/blogs" className="hover:text-foreground transition-colors">Blog</Link>
+              <Link href="/leaderboard" className="hover:text-foreground transition-colors">Leaderboard</Link>
+            </div>
+            <p className="text-xs text-muted-foreground">© 2026 CodeSaarthi</p>
+          </div>
+        </footer>
       </main>
     </>
   );

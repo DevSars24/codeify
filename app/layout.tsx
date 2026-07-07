@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }}
           />
         </head>
-        <body className={`${inter.className} min-h-screen bg-background text-foreground selection:bg-[#7C6FE0]/30 selection:text-[#F0F0F8] antialiased`}>
+        <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased`}>
           {children}
         </body>
       </html>

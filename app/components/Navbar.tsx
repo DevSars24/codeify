@@ -1,84 +1,87 @@
 "use client";
 
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Command } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
 import ThemeToggle from "@/components/ThemeToggle";
+import { prefersReducedMotion } from "@/lib/motion";
 
-// Mock Clerk for demo — no keys needed
 const SignedIn = ({ children }: { children: React.ReactNode }) => null;
 const SignedOut = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 const UserButton = () => null;
-const SignInButton = ({ children, mode }: { children: React.ReactNode; mode?: string }) => <>{children}</>;
-const SignUpButton = ({ children, mode }: { children: React.ReactNode; mode?: string }) => <>{children}</>;
+const SignInButton = ({ children }: { children: React.ReactNode; mode?: string }) => <>{children}</>;
+const SignUpButton = ({ children }: { children: React.ReactNode; mode?: string }) => <>{children}</>;
 
 const NAV_LINKS = [
-  { label: "Features", href: "#features" },
+  { label: "Features", href: "/#features" },
   { label: "Blogs", href: "/blogs" },
   { label: "Leaderboard", href: "/leaderboard" },
-  { label: "Live Sessions", href: "/live-sessions" },
+  { label: "Sessions", href: "/sessions" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!navRef.current || prefersReducedMotion()) return;
+    gsap.to(navRef.current, {
+      backgroundColor: scrolled ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0)",
+      borderColor: scrolled ? "rgba(226,232,240,1)" : "rgba(226,232,240,0)",
+      boxShadow: scrolled ? "0 1px 3px rgba(0,0,0,0.06)" : "0 0 0 rgba(0,0,0,0)",
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  }, [scrolled]);
+
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? "py-3" : "py-6"
-        }`}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+    <header className="fixed inset-x-0 top-0 z-50 py-4">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div
-          className={`rounded-full flex items-center justify-between h-14 px-6 transition-all duration-500 ${scrolled
-            ? "bg-[#040508]/80 border border-[#14172B] backdrop-blur-2xl shadow-xl"
-            : "bg-transparent border border-transparent"
-            }`}
-          style={{ boxShadow: scrolled ? "0 8px 40px rgba(0,0,0,0.7)" : "none" }}
+          ref={navRef}
+          className={`dark:bg-background/90 flex items-center justify-between h-12 px-5 rounded-lg border transition-colors ${
+            scrolled ? "border-border" : "border-transparent"
+          }`}
         >
-          {/* ── GenZ Minimalist Brand ── */}
-          <Link href="/" className="flex items-center gap-2.5 group select-none">
-            <div className="w-8 h-8 rounded-full bg-[#0A0B16] border border-[#7C6FE0]/30 text-[#7C6FE0] flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:border-[#7C6FE0]/65 group-hover:bg-[#7C6FE0]/10 shadow-[0_0_15px_rgba(124,111,224,0.15)]">
-              <Command size={16} strokeWidth={3} className="text-[#7C6FE0] group-hover:rotate-12 transition-transform duration-350" />
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
+              <Command size={14} className="text-primary" />
             </div>
-            <span className="text-xl font-extrabold tracking-tighter text-white lowercase">
-              codesaarthi<span className="text-[#7C6FE0]">.</span>
-            </span>
+            <span className="text-sm font-semibold tracking-tight">codesaarthi</span>
           </Link>
 
-          {/* ── Desktop links ── */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map(({ label, href }) => (
               <Link
                 key={label}
                 href={href}
-                className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400 hover:text-white transition-colors duration-300 relative group"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 {label}
-                <span className="absolute -bottom-0.5 left-0 w-0 h-[1px] bg-[#7C6FE0] group-hover:w-full transition-all duration-300" />
               </Link>
             ))}
           </nav>
 
-          {/* ── Auth CTA (desktop) ── */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="text-[11px] font-semibold uppercase tracking-widest text-[#8B8FA8] hover:text-white transition-colors cursor-pointer">
-                  Sign In
-                </button>
+                <Link href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Sign in
+                </Link>
               </SignInButton>
               <SignUpButton mode="modal">
-                <Button className="h-9 px-6 rounded-full bg-[#7C6FE0] hover:bg-[#8E82E9] text-white text-xs font-bold tracking-wide shadow-[0_0_20px_rgba(124,111,224,0.25)] hover:shadow-[0_0_30px_rgba(124,111,224,0.5)] transition-all cursor-pointer">
-                  Get Access
+                <Button size="sm" className="rounded-md h-8 px-4 text-xs font-medium">
+                  Get started
                 </Button>
               </SignUpButton>
             </SignedOut>
@@ -87,11 +90,10 @@ export default function Navbar() {
             </SignedIn>
           </div>
 
-          {/* ── Theme Toggle & Hamburger Menu ── */}
-          <div className="flex items-center gap-3">
+          <div className="flex md:hidden items-center gap-2">
             <ThemeToggle />
             <button
-              className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+              className="p-2 text-muted-foreground hover:text-foreground"
               onClick={() => setIsOpen((v) => !v)}
               aria-label="Toggle menu"
             >
@@ -100,43 +102,24 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* ── Mobile menu ── */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              key="mobile-menu"
-              initial={{ opacity: 0, y: -12, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -12, scale: 0.97 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-3 rounded-2xl p-6 flex flex-col gap-5 border border-[#1C1F35] bg-[#0F1120]/95 backdrop-blur-2xl shadow-2xl"
-            >
-              {NAV_LINKS.map(({ label, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={() => setIsOpen(false)}
-                  className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8B8FA8] hover:text-white transition-colors"
-                >
-                  {label}
-                </Link>
-              ))}
-              <div className="h-px bg-white/5" />
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="text-left text-xs font-semibold uppercase tracking-[0.18em] text-[#8B8FA8] hover:text-white cursor-pointer">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <Button className="w-full h-11 rounded-full bg-[#7C6FE0] hover:bg-[#8E82E9] text-white font-bold cursor-pointer">
-                    Get Access
-                  </Button>
-                </SignUpButton>
-              </SignedOut>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isOpen && (
+          <div className="md:hidden mt-2 rounded-lg border border-border bg-card p-4 flex flex-col gap-3 shadow-sm">
+            {NAV_LINKS.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                onClick={() => setIsOpen(false)}
+                className="text-sm text-muted-foreground hover:text-foreground py-1"
+              >
+                {label}
+              </Link>
+            ))}
+            <div className="border-t border-border pt-3 flex flex-col gap-2">
+              <Link href="/sign-in" className="text-sm text-muted-foreground">Sign in</Link>
+              <Button size="sm" className="w-full">Get started</Button>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
