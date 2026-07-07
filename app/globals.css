@@ -1,35 +1,73 @@
 @import "tailwindcss";
 
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #f8fafc;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #6366f1;
+  --accent-foreground: #ffffff;
+  --destructive: #e11d48;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #6366f1;
+}
+
+.dark {
+  --background: #040508;
+  --foreground: #F0F0F8;
+  --card: #0A0B16;
+  --card-foreground: #F0F0F8;
+  --popover: #0A0B16;
+  --popover-foreground: #F0F0F8;
+  --primary: #7C6FE0;
+  --primary-foreground: #ffffff;
+  --secondary: #111827;
+  --secondary-foreground: #c0d0ff;
+  --muted: #111827;
+  --muted-foreground: #8B8FA8;
+  --accent: #7C6FE0;
+  --accent-foreground: #ffffff;
+  --border: #14172B;
+  --input: #111827;
+  --ring: #7C6FE0;
+}
+
 @theme {
-  /* ── Rich dark navy palette ── */
-  --color-background: #040508;
-  /* deep premium near black background */
-  --color-foreground: #F0F0F8;
-  /* premium off-white text */
-  --color-card: #0A0B16;
-  /* deep dark surface cards */
-  --color-card-foreground: #F0F0F8;
-  --color-popover: #0A0B16;
-  --color-popover-foreground: #F0F0F8;
-  --color-primary: #7C6FE0;
-  /* brand soft purple */
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #111827;
-  --color-secondary-foreground: #c0d0ff;
-  --color-muted: #111827;
-  --color-muted-foreground: #8B8FA8;
-  --color-accent: #7C6FE0;
-  --color-accent-foreground: #ffffff;
-  --color-destructive: #e11d48;
-  --color-destructive-foreground: #fff;
-  --color-border: #14172B;
-  /* sharp dark border */
-  --color-input: #111827;
-  --color-ring: #7C6FE0;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --radius-lg: 1rem;
   --radius-md: 0.75rem;
   --radius-sm: 0.5rem;
 }
+
 
 /* ════════════════════════════════════════════
    BASE
@@ -52,13 +90,19 @@
     font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
     min-height: 100vh;
 
-    /* Rich layered background matching CodeSaarthi brand */
-    background-color: #040508;
+    /* Responsive SaaS background */
+    background-color: var(--background);
+    background-image:
+      radial-gradient(ellipse 120% 55% at 50% -5%, rgba(99, 102, 241, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 85% 80%, rgba(99, 102, 241, 0.02) 0%, transparent 55%);
+    background-attachment: fixed;
+  }
+
+  .dark body {
     background-image:
       radial-gradient(ellipse 120% 55% at 50% -5%, rgba(124, 111, 224, 0.14) 0%, transparent 60%),
       radial-gradient(ellipse 60% 40% at 85% 80%, rgba(124, 111, 224, 0.07) 0%, transparent 55%),
       radial-gradient(ellipse 50% 35% at 8% 60%, rgba(124, 111, 224, 0.04) 0%, transparent 55%);
-    background-attachment: fixed;
   }
 
   /* noise texture */

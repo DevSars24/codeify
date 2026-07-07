@@ -20,6 +20,9 @@ model ContestAttempt {
   submissions Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Blog {
@@ -34,18 +37,22 @@ model Blog {
   slug        String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
 }
 
 model LiveSession {
   id              String   @id @default(uuid())
   title           String
   description     String?
-  roomName        String   @unique  // LiveKit room identifier
-  scheduledAt     DateTime           // When the session starts
-  duration        Int      @default(60)  // Duration in minutes
-  status          String   @default("scheduled")  // scheduled, live, ended
-  hostEmail       String              // Admin email
+  roomName        String   @unique
+  scheduledAt     DateTime
+  duration        Int      @default(60)
+  status          String   @default("scheduled")
+  hostEmail       String
   maxParticipants Int      @default(50)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([scheduledAt])
 }

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Command } from "lucide-react";
 import { useState, useEffect } from "react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 // Mock Clerk for demo — no keys needed
 const SignedIn = ({ children }: { children: React.ReactNode }) => null;
@@ -86,14 +87,17 @@ export default function Navbar() {
             </SignedIn>
           </div>
 
-          {/* ── Hamburger ── */}
-          <button
-            className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
-            onClick={() => setIsOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* ── Theme Toggle & Hamburger Menu ── */}
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <button
+              className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+              onClick={() => setIsOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* ── Mobile menu ── */}

@@ -1,8 +1,11 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Trophy, Medal, Crown, Zap, Users, TrendingUp } from "lucide-react";
+import prisma from "@/lib/prisma";
+import { clerkClient } from "@clerk/nextjs/server";
+import Image from "next/image";
+
+export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface LeaderboardEntry {
     rank: number;
@@ -26,36 +29,77 @@ const tierIcons: Record<string, any> = {
     Novice: Zap,
 };
 
-export default function LeaderboardPage() {
-    const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-    const [loading, setLoading] = useState(true);
+// Rating tiers based on total XP (correct answers * 10)
+function getRatingTier(xp: number): { tier: string; color: string } {
+    if (xp >= 2000) return { tier: "Grandmaster", color: "#ff0000" };
+    if (xp >= 1500) return { tier: "Master", color: "#ff8c00" };
+    if (xp >= 1000) return { tier: "Expert", color: "#a855f7" };
+    if (xp >= 500) return { tier: "Candidate", color: "#3b82f6" };
+    if (xp >= 200) return { tier: "Specialist", color: "#22c55e" };
+    if (xp >= 50) return { tier: "Knight", color: "#06b6d4" };
+    return { tier: "Novice", color: "#71717a" };
+}
 
-    useEffect(() => {
-        async function fetchLeaderboard() {
+export default async function LeaderboardPage() {
+    let leaderboard: LeaderboardEntry[] = [];
+
+    try {
+        // Aggregate scores by userId
+        const leaderboardData = await prisma.contestAttempt.groupBy({
+            by: ['userId'],
+            _sum: {
+                correct: true,
+            },
+            _count: {
+                id: true,
+            },
+            orderBy: {
+                _sum: {
+                    correct: 'desc',
+                },
+            },
+            take: 10, // Top 10
+        });
+
+        // Fetch user details from Clerk in a single batch request
+        const clerk = await clerkClient();
+        const userIds = leaderboardData.map((d: any) => d.userId);
+        const userMap = new Map<string, any>();
+
+        if (userIds.length > 0) {
             try {
-                const res = await fetch("/api/leaderboard");
-                if (res.ok) {
-                    const data = await res.json();
-                    setLeaderboard(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch leaderboard", error);
-            } finally {
-                setLoading(false);
+                const response = await clerk.users.getUserList({ userId: userIds });
+                const users = Array.isArray(response) ? response : (response?.data || []);
+                users.forEach((u: any) => {
+                    userMap.set(u.id, u);
+                });
+            } catch (e) {
+                console.error("Clerk batch fetch error in leaderboard component:", e);
             }
         }
-        fetchLeaderboard();
-    }, []);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-[#0B0A1E] text-white flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-indigo-400 font-mono text-xs tracking-widest uppercase animate-pulse">Syncing Rankings...</p>
-                </div>
-            </div>
-        );
+        leaderboard = leaderboardData.map((entry: any, index: number) => {
+            const totalCorrect = entry._sum.correct || 0;
+            const xp = totalCorrect * 10;
+            const { tier, color } = getRatingTier(xp);
+
+            const user = userMap.get(entry.userId);
+            const userName = user ? (user.firstName || user.username || "Anonymous") : "Unknown User";
+            const userImage = user ? user.imageUrl : null;
+
+            return {
+                rank: index + 1,
+                userId: entry.userId,
+                userName,
+                userImage,
+                xp,
+                contestCount: entry._count.id,
+                tier,
+                tierColor: color,
+            };
+        });
+    } catch (error) {
+        console.error("Failed to query leaderboard on server:", error);
     }
 
     return (
@@ -150,7 +194,7 @@ export default function LeaderboardPage() {
                                         <div className="flex items-center gap-4">
                                             <div className="relative shrink-0">
                                                 {entry.userImage ? (
-                                                    <img src={entry.userImage} alt="" className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-white/10" />
+                                                    <Image src={entry.userImage} alt={entry.userName} width={56} height={56} className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-white/10 object-cover" />
                                                 ) : (
                                                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-indigo-900/50 border border-white/10 flex items-center justify-center text-indigo-300 font-bold text-xl">
                                                         {entry.userName.charAt(0).toUpperCase()}

@@ -1,6 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { Plus, ArrowRight, Layers, Tag, ExternalLink, Search, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -93,7 +94,7 @@ export default async function BlogsPage({ searchParams }: PageProps) {
                                     <div className="aspect-[16/10] bg-[#1a1744] relative overflow-hidden p-2">
                                         <div className="w-full h-full rounded-[24px] overflow-hidden relative">
                                             {blog.imageUrl ? (
-                                                <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
+                                                <Image src={blog.imageUrl} alt={blog.title} fill className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                                             ) : (
                                                 <div className="w-full h-full flex flex-col items-center justify-center text-indigo-400/50 bg-gradient-to-br from-[#1c184d] to-[#120f33]">
                                                     <Layers size={48} className="mb-2" />
