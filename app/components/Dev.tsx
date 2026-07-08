@@ -111,6 +111,18 @@ export default function DevPracticePlatform() {
               >
                 Start practice <Play size={14} />
               </button>
+
+              <div className="surface-card p-5 overflow-hidden rounded-xl border border-border mt-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                  <Play size={12} className="text-primary" /> Lab Preview
+                </h4>
+                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md border border-border bg-muted">
+                  <img src="/work3.jpg" alt="Dev Lab Workspace Preview" className="object-cover w-full h-full" />
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
+                  Real-world sandbox environment featuring custom test suites, server consoles, and side-by-side spec panels.
+                </p>
+              </div>
             </section>
           </div>
         </main>

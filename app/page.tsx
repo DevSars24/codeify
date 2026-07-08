@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import {
-  Terminal, Cpu, Zap, Globe, ArrowRight, Lock, Users, Command, Layers
+  Terminal, Cpu, Zap, Globe, ArrowRight, Lock, Users, Command, Layers, Sparkles
 } from "lucide-react";
 import { prefersReducedMotion } from "@/lib/motion";
 import TypingText from "@/components/TypingText";
@@ -160,6 +160,97 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Platform Showcase */}
+        <section className="py-20 px-6 border-t border-border bg-background">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-12 text-center max-w-2xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted border border-border text-xs font-medium text-muted-foreground mb-4">
+                <Sparkles size={12} className="text-primary" /> Visual Walkthrough
+              </div>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
+                Deliberate Practice in Action
+              </h2>
+              <p className="text-muted-foreground">
+                Take a look at the developer workspace designed for pure focus, deep learning, and zero distractions.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Card 1 */}
+              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+                  <img
+                    src="/work2.jpg"
+                    alt="DSA Practice Arena"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">DSA Practice</span>
+                  <h3 className="text-xl font-semibold mt-2 mb-2">Interactive Coding Arena</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Solve core algorithmic problems with real-time feedback, detailed performance metrics, and a custom Monaco-based editor built for speed.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+                  <img
+                    src="/work3.jpg"
+                    alt="Dev Challenges Lab"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">Dev Lab</span>
+                  <h3 className="text-xl font-semibold mt-2 mb-2">Real-world Project Environments</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Build real full-stack features, integrate databases, and configure system architecture. Code is verified against practical engineering test suites.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+                  <img
+                    src="/work1.jpg"
+                    alt="Mobile Coding Experience"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">Mobile First</span>
+                  <h3 className="text-xl font-semibold mt-2 mb-2">Code Anywhere, Anytime</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Laptop? No need. Anytime, Anywhere. CodeSaarthi is optimized for mobile browser interactions, allowing you to review and write code on your commute.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 4 */}
+              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+                  <img
+                    src="/work4.jpg"
+                    alt="Analytics Dashboard & History"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">Analytics</span>
+                  <h3 className="text-xl font-semibold mt-2 mb-2">History & Mission Logs</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Track your growth over time with interactive history visualizations, contest archives, and accuracy charts that highlight your strength areas.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>

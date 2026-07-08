@@ -106,42 +106,80 @@ export default function HistoryPage() {
           <StatCard label="Accuracy" value={stats.globalAccuracy} icon={<Activity size={16} className="text-foreground" />} numeric />
         </div>
 
-        <HistoryVisualizations activityData={activityData} langData={langData} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 space-y-6">
+            <HistoryVisualizations activityData={activityData} langData={langData} />
 
-        <div className="surface-card overflow-hidden">
-          <div className="p-5 border-b border-border flex items-center justify-between">
-            <h3 className="text-sm font-medium">Recent attempts</h3>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted text-muted-foreground text-xs">
-              <Search size={12} /> Filter
+            <div className="surface-card overflow-hidden">
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <h3 className="text-sm font-medium">Recent attempts</h3>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted text-muted-foreground text-xs">
+                  <Search size={12} /> Filter
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50 text-muted-foreground text-xs uppercase">
+                    <tr>
+                      <th className="px-5 py-3 text-left">Status</th>
+                      <th className="px-5 py-3 text-left">Topic</th>
+                      <th className="px-5 py-3 text-left">Language</th>
+                      <th className="px-5 py-3 text-left">Accuracy</th>
+                      <th className="px-5 py-3 text-right">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {attempts.length === 0 ? (
+                      <tr><td colSpan={5} className="px-5 py-12 text-center text-muted-foreground">No missions yet.</td></tr>
+                    ) : (
+                      attempts.map((a) => (
+                        <tr key={a.id} className="hover:bg-muted/30">
+                          <td className="px-5 py-3"><span className={`w-2 h-2 rounded-full inline-block ${a.correct === a.total ? "bg-foreground" : "bg-muted-foreground"}`} /></td>
+                          <td className="px-5 py-3 font-medium">{a.topic}</td>
+                          <td className="px-5 py-3 font-mono text-xs">{a.language}</td>
+                          <td className="px-5 py-3">{a.accuracy}%</td>
+                          <td className="px-5 py-3 text-right text-muted-foreground text-xs">{new Date(a.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-muted-foreground text-xs uppercase">
-                <tr>
-                  <th className="px-5 py-3 text-left">Status</th>
-                  <th className="px-5 py-3 text-left">Topic</th>
-                  <th className="px-5 py-3 text-left">Language</th>
-                  <th className="px-5 py-3 text-left">Accuracy</th>
-                  <th className="px-5 py-3 text-right">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {attempts.length === 0 ? (
-                  <tr><td colSpan={5} className="px-5 py-12 text-center text-muted-foreground">No missions yet.</td></tr>
-                ) : (
-                  attempts.map((a) => (
-                    <tr key={a.id} className="hover:bg-muted/30">
-                      <td className="px-5 py-3"><span className={`w-2 h-2 rounded-full inline-block ${a.correct === a.total ? "bg-foreground" : "bg-muted-foreground"}`} /></td>
-                      <td className="px-5 py-3 font-medium">{a.topic}</td>
-                      <td className="px-5 py-3 font-mono text-xs">{a.language}</td>
-                      <td className="px-5 py-3">{a.accuracy}%</td>
-                      <td className="px-5 py-3 text-right text-muted-foreground text-xs">{new Date(a.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+
+          <div className="lg:col-span-4 space-y-6">
+            <div className="surface-card p-6 border border-border">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-1.5">
+                <Activity size={12} className="text-primary" /> Analytics Overview
+              </h3>
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md border border-border bg-muted">
+                <img src="/work4.jpg" alt="Platform Analytics Preview" className="object-cover w-full h-full" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                Review detailed reports of your accuracy distribution, language usage charts, and timeline maps to stay on top of your coding progress.
+              </p>
+            </div>
+
+            <div className="surface-card p-6 border border-border">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                <Trophy size={12} className="text-primary" /> Learning Goals
+              </h3>
+              <ul className="text-xs space-y-2.5 text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  Maintain a daily submission streak
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  Reach 90%+ average code accuracy
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  Practice across multiple tracks weekly
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </main>
