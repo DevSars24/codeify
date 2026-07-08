@@ -196,7 +196,7 @@ sequenceDiagram
 
     Host->>Admin: Schedule LiveSession (title, time, room)
     Admin->>API: Create LiveSession row (status = scheduled)
-    Note over API: At scheduled time, status flips to "live"
+    Note over API: At scheduled time, status flips to live
     Participant->>API: Requests join token for roomName
     API->>SDK: Generate signed JWT (identity, room grants)
     SDK-->>API: Return token
@@ -296,7 +296,7 @@ graph LR
     A[Traditional Approach] --> B[Spin up Docker container]
     B --> C[Compile & run against<br/>hidden test cases]
     C --> D[Compare stdout diff]
-    D --> E[Security risk: sandbox escape<br/>Resource cost: container overhead]
+    D --> E["Security risk: sandbox escape<br/>Resource cost: container overhead"]
 
     F[CodeSaarthi Approach] --> G[Send code + problem<br/>to Gemini 2.5 Flash Lite]
     G --> H[Model reasons about<br/>correctness semantically]
@@ -458,7 +458,7 @@ graph TD
 graph TD
     Layout[RootLayout<br/>ClerkProvider] --> ContestPage[contestdsa/page.tsx]
     ContestPage --> ProblemPanel[Problem Statement Panel]
-    ContestPage --> EditorPanel[Monaco Editor<br/>dynamic ssr:false]
+    ContestPage --> EditorPanel["Monaco Editor<br/>dynamic ssr:false"]
     ContestPage --> Timer[Contest Timer]
     ContestPage --> SubmitBar[Submit Bar]
 
@@ -588,12 +588,12 @@ The entire application deploys as a single Vercel project. There is no separatel
 
 ```mermaid
 flowchart TD
-    Start[Evaluation Request Sent to Gemini] --> Race{Promise.race:<br/>Response vs 15s Timer}
-    Race -->|Response arrives first| Parse{Valid JSON<br/>matching schema?}
-    Race -->|Timer fires first| Fallback[Return score = 0<br/>mark as 'evaluation failed']
-    Parse -->|Yes| Success[Return verdict to client]
+    Start["Evaluation Request Sent to Gemini"] --> Race{"Promise.race:<br/>Response vs 15s Timer"}
+    Race -->|Response arrives first| Parse{"Valid JSON<br/>matching schema?"}
+    Race -->|Timer fires first| Fallback["Return score = 0<br/>mark as evaluation failed"]
+    Parse -->|Yes| Success["Return verdict to client"]
     Parse -->|No / malformed| Fallback
-    Fallback --> Log[Log incident for review]
+    Fallback --> Log["Log incident for review"]
 ```
 
 This is a deliberately **conservative failure mode**: rather than retrying indefinitely (which risks the user staring at a spinner) or guessing a passing score (which would be exploitable), any judging failure resolves to the lowest possible score plus a logged incident, and the UI is expected to clearly label these as "evaluation failed" rather than a genuine `0/N` performance.
@@ -613,10 +613,10 @@ Before any Gemini call is made, `/api/dsa/evaluate-all` strips out questions the
 
 ```mermaid
 graph LR
-    A[ISR: revalidate=60] --> D[Fewer DB round trips]
-    B[Dynamic ssr:false imports] --> E[Faster server render, no build errors]
-    C[Batched Gemini calls] --> F[Lower latency + lower API cost]
-    G[prefersReducedMotion check] --> H[Accessible, CPU-friendly animations]
+    A["ISR (revalidate=60)"] --> D["Fewer DB round trips"]
+    B["Dynamic ssr:false imports"] --> E["Faster server render, no build errors"]
+    C["Batched Gemini calls"] --> F["Lower latency + lower API cost"]
+    G["prefersReducedMotion check"] --> H["Accessible, CPU-friendly animations"]
 ```
 
 ---
@@ -643,7 +643,7 @@ Points worth flagging for a team growing beyond the current design:
 ```mermaid
 graph TD
     Now[Current Design] --> R1[Normalize submissions<br/>into child table]
-    Now --> R2[Hybrid judge:<br/>LLM + sandboxed exec for<br/>perf-sensitive problems]
+    Now --> R2["Hybrid judge: LLM + sandboxed exec for<br/>perf-sensitive problems"]
     Now --> R3[Move admin roles<br/>into Clerk metadata]
     Now --> R4[Add per-user rate limiting<br/>on Gemini-backed routes]
 ```
