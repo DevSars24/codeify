@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
@@ -21,44 +22,49 @@ export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (prefersReducedMotion()) return;
 
-    const ctx = gsap.context(() => {
-      gsap.from(".hero-line", {
-        opacity: 0,
-        y: 12,
+    gsap.fromTo(".hero-line", 
+      { opacity: 0, y: 12 },
+      {
+        opacity: 1,
+        y: 0,
         duration: 0.45,
         stagger: 0.08,
         ease: "power2.out",
-      });
+      }
+    );
 
-      gsap.from(".hero-terminal", {
-        opacity: 0,
-        x: 24,
+    gsap.fromTo(".hero-terminal", 
+      { opacity: 0, x: 24 },
+      {
+        opacity: 1,
+        x: 0,
         duration: 0.5,
         delay: 0.25,
         ease: "power3.out",
-      });
+      }
+    );
 
-      if (featuresRef.current) {
-        gsap.from(".feature-card", {
+    if (featuresRef.current) {
+      gsap.fromTo(".feature-card",
+        { opacity: 0, y: 16 },
+        {
           scrollTrigger: {
             trigger: featuresRef.current,
             start: "top 80%",
             once: true,
           },
-          opacity: 0,
-          y: 16,
+          opacity: 1,
+          y: 0,
           duration: 0.4,
           stagger: 0.12,
           ease: "power2.out",
-        });
-      }
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, []);
+        }
+      );
+    }
+  }, { scope: heroRef });
 
   return (
     <>

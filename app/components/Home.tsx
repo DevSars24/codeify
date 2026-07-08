@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import type { EditorProps } from "@monaco-editor/react";
 import Select from "react-select";
@@ -91,6 +91,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [mobileView, setMobileView] =
     useState<"editor" | "response">("editor");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const syncTheme = () => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   async function runAICommand(cmd: string) {
     if (!code.trim()) return alert("Please enter code first");
@@ -175,7 +184,7 @@ export default function Home() {
           <div className="flex-1 min-h-0 border border-border rounded-md overflow-hidden">
             <Editor
               height="100%"
-              theme="vs"
+              theme={theme === "dark" ? "vs-dark" : "vs"}
               language={language.value}
               value={code}
               onChange={(v: string | undefined) => setCode(v || "")}
@@ -183,6 +192,7 @@ export default function Home() {
                 minimap: { enabled: false },
                 fontSize: 14,
                 scrollBeyondLastLine: false,
+                automaticLayout: true,
               }}
             />
           </div>
