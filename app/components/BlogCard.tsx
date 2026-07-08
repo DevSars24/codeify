@@ -24,8 +24,8 @@ export default function BlogCard({ id, title, content, imageUrl, domains, source
     const el = cardRef.current;
     if (!el || prefersReducedMotion()) return;
 
-    const onEnter = () => gsap.to(el, { borderColor: "rgba(79,70,229,0.4)", duration: 0.25, ease: "power2.out" });
-    const onLeave = () => gsap.to(el, { borderColor: "rgba(226,232,240,1)", duration: 0.25, ease: "power2.out" });
+    const onEnter = () => gsap.to(el, { borderColor: "var(--foreground)", duration: 0.25, ease: "power2.out" });
+    const onLeave = () => gsap.to(el, { borderColor: "var(--border)", duration: 0.25, ease: "power2.out" });
 
     el.addEventListener("mouseenter", onEnter);
     el.addEventListener("mouseleave", onLeave);

@@ -40,15 +40,13 @@ export default function LeaderboardList({ leaderboard }: { leaderboard: Leaderbo
             return (
               <div
                 key={entry.userId}
-                className={`flex items-center justify-between p-4 md:p-5 rounded-lg border transition-colors hover:border-primary/30 ${
-                  isTop3 ? "bg-muted/50 border-primary/20" : "surface-card"
+                className={`flex items-center justify-between p-4 md:p-5 rounded-md border transition-colors hover:border-foreground ${
+                  isTop3 ? "bg-muted/50 border-border" : "surface-card"
                 }`}
               >
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-md flex items-center justify-center font-semibold text-sm shrink-0 ${
-                    entry.rank === 1 ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400" :
-                    entry.rank === 2 ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300" :
-                    entry.rank === 3 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                    entry.rank <= 3 ? "bg-foreground text-background" :
                     "bg-muted text-muted-foreground"
                   }`}>
                     {entry.rank}

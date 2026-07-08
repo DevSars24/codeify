@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Command } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
-import gsap from "gsap";
+import { useState, useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
-import { prefersReducedMotion } from "@/lib/motion";
 
 const SignedIn = ({ children }: { children: React.ReactNode }) => null;
 const SignedOut = ({ children }: { children: React.ReactNode }) => <>{children}</>;
@@ -24,7 +22,6 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -32,31 +29,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    if (!navRef.current || prefersReducedMotion()) return;
-    gsap.to(navRef.current, {
-      backgroundColor: scrolled ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0)",
-      borderColor: scrolled ? "rgba(226,232,240,1)" : "rgba(226,232,240,0)",
-      boxShadow: scrolled ? "0 1px 3px rgba(0,0,0,0.06)" : "0 0 0 rgba(0,0,0,0)",
-      duration: 0.3,
-      ease: "power2.out",
-    });
-  }, [scrolled]);
-
   return (
     <header className="fixed inset-x-0 top-0 z-50 py-4">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div
-          ref={navRef}
-          className={`dark:bg-background/90 flex items-center justify-between h-12 px-5 rounded-lg border transition-colors ${
-            scrolled ? "border-border" : "border-transparent"
+          className={`flex items-center justify-between h-12 px-4 sm:px-5 rounded-md border backdrop-blur-md transition-colors ${
+            scrolled ? "border-border bg-background/92" : "border-transparent bg-background/70"
           }`}
         >
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-md border border-border bg-muted flex items-center justify-center">
               <Command size={14} className="text-primary" />
             </div>
-            <span className="text-sm font-semibold tracking-tight">codesaarthi</span>
+            <span className="text-sm font-semibold tracking-tight">CodeSaarthi</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
@@ -103,7 +88,7 @@ export default function Navbar() {
         </div>
 
         {isOpen && (
-          <div className="md:hidden mt-2 rounded-lg border border-border bg-card p-4 flex flex-col gap-3 shadow-sm">
+          <div className="md:hidden mt-2 rounded-md border border-border bg-card p-4 flex flex-col gap-3">
             {NAV_LINKS.map(({ label, href }) => (
               <Link
                 key={label}

@@ -100,10 +100,10 @@ export default function HistoryPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <StatCard label="Total XP" value={stats.totalXP} icon={<Zap size={16} className="text-amber-500" />} numeric />
+          <StatCard label="Total XP" value={stats.totalXP} icon={<Zap size={16} className="text-foreground" />} numeric />
           <StatCard label="Rank" value={stats.rank} icon={<Trophy size={16} className="text-primary" />} />
-          <StatCard label="Missions" value={stats.totalMissions} icon={<Terminal size={16} className="text-blue-500" />} numeric />
-          <StatCard label="Accuracy" value={stats.globalAccuracy} icon={<Activity size={16} className="text-emerald-500" />} numeric />
+          <StatCard label="Missions" value={stats.totalMissions} icon={<Terminal size={16} className="text-foreground" />} numeric />
+          <StatCard label="Accuracy" value={stats.globalAccuracy} icon={<Activity size={16} className="text-foreground" />} numeric />
         </div>
 
         <HistoryVisualizations activityData={activityData} langData={langData} />
@@ -132,7 +132,7 @@ export default function HistoryPage() {
                 ) : (
                   attempts.map((a) => (
                     <tr key={a.id} className="hover:bg-muted/30">
-                      <td className="px-5 py-3"><span className={`w-2 h-2 rounded-full inline-block ${a.correct === a.total ? "bg-emerald-500" : "bg-red-500"}`} /></td>
+                      <td className="px-5 py-3"><span className={`w-2 h-2 rounded-full inline-block ${a.correct === a.total ? "bg-foreground" : "bg-muted-foreground"}`} /></td>
                       <td className="px-5 py-3 font-medium">{a.topic}</td>
                       <td className="px-5 py-3 font-mono text-xs">{a.language}</td>
                       <td className="px-5 py-3">{a.accuracy}%</td>

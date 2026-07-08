@@ -8,13 +8,13 @@ export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
 function getRatingTier(xp: number): { tier: string; color: string } {
-  if (xp >= 2000) return { tier: "Grandmaster", color: "#ef4444" };
-  if (xp >= 1500) return { tier: "Master", color: "#f97316" };
-  if (xp >= 1000) return { tier: "Expert", color: "#a855f7" };
-  if (xp >= 500) return { tier: "Candidate", color: "#3b82f6" };
-  if (xp >= 200) return { tier: "Specialist", color: "#22c55e" };
-  if (xp >= 50) return { tier: "Knight", color: "#06b6d4" };
-  return { tier: "Novice", color: "#71717a" };
+  if (xp >= 2000) return { tier: "Grandmaster", color: "var(--foreground)" };
+  if (xp >= 1500) return { tier: "Master", color: "var(--foreground)" };
+  if (xp >= 1000) return { tier: "Expert", color: "var(--foreground)" };
+  if (xp >= 500) return { tier: "Candidate", color: "var(--muted-foreground)" };
+  if (xp >= 200) return { tier: "Specialist", color: "var(--muted-foreground)" };
+  if (xp >= 50) return { tier: "Knight", color: "var(--muted-foreground)" };
+  return { tier: "Novice", color: "var(--muted-foreground)" };
 }
 
 export default async function LeaderboardPage() {

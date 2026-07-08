@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
+import type { EditorProps } from "@monaco-editor/react";
 import Select from "react-select";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+// @ts-ignore - style modules are shipped without complete named typings.
+import oneLight from "react-syntax-highlighter/dist/esm/styles/prism/one-light";
 import RingLoader from "react-spinners/RingLoader";
+
+const Editor = dynamic<EditorProps>(() => import("@monaco-editor/react"), { ssr: false });
 
 /* -------------------- LANGUAGE OPTIONS -------------------- */
 const options = [
@@ -24,17 +28,25 @@ const options = [
 const customStyles = {
   control: (base: any) => ({
     ...base,
-    backgroundColor: "#18181b",
-    borderColor: "#3f3f46",
-    color: "#fff",
+    backgroundColor: "var(--background)",
+    borderColor: "var(--border)",
+    color: "var(--foreground)",
+    borderRadius: 6,
   }),
   menu: (base: any) => ({
     ...base,
-    backgroundColor: "#18181b",
+    backgroundColor: "var(--background)",
+    border: "1px solid var(--border)",
+    boxShadow: "none",
   }),
   singleValue: (base: any) => ({
     ...base,
-    color: "#fff",
+    color: "var(--foreground)",
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isFocused ? "var(--muted)" : "var(--background)",
+    color: "var(--foreground)",
   }),
 };
 
@@ -46,19 +58,21 @@ const MarkdownRenderer = ({ children }: { children: string }) => (
         const match = /language-(\w+)/.exec(className || "");
         return !inline && match ? (
           <SyntaxHighlighter
-            style={oneDark}
+            style={oneLight}
             language={match[1]}
             PreTag="div"
             customStyle={{
-              borderRadius: 10,
+              borderRadius: 6,
               padding: 16,
               marginBottom: 12,
+              border: "1px solid var(--border)",
+              background: "var(--muted)",
             }}
           >
             {String(children).replace(/\n$/, "")}
           </SyntaxHighlighter>
         ) : (
-          <code className="bg-zinc-800 px-2 py-1 rounded text-sm">
+          <code className="bg-muted border border-border px-2 py-1 rounded text-sm">
             {children}
           </code>
         );
@@ -99,7 +113,7 @@ export default function Home() {
       setResponse(data.text);
       setMobileView("response");
     } catch (err: any) {
-      setResponse(`❌ ERROR: ${err.message}`);
+      setResponse(`ERROR: ${err.message}`);
       setMobileView("response");
     } finally {
       setLoading(false);
@@ -107,18 +121,18 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-dvh bg-zinc-950 text-white overflow-hidden">
+    <div className="flex flex-col h-dvh bg-background text-foreground overflow-hidden">
 
       {/* MOBILE TABS */}
-      <div className="md:hidden flex shrink-0 border-b border-zinc-800">
+      <div className="md:hidden flex shrink-0 border-b border-border">
         {["editor", "response"].map((tab) => (
           <button
             key={tab}
             onClick={() => setMobileView(tab as any)}
             className={`flex-1 py-3 font-semibold ${
               mobileView === tab
-                ? "text-purple-400 border-b-2 border-purple-500"
-                : "text-zinc-400"
+                ? "text-foreground border-b-2 border-foreground"
+                : "text-muted-foreground"
             }`}
           >
             {tab.toUpperCase()}
@@ -127,7 +141,7 @@ export default function Home() {
       </div>
 
       {/* CONTROLS */}
-      <div className="shrink-0 p-4 border-b border-zinc-800 space-y-3">
+      <div className="shrink-0 p-4 border-b border-border space-y-3 bg-background">
         <Select
           value={language}
           onChange={(v: any) => v && setLanguage(v)}
@@ -141,7 +155,7 @@ export default function Home() {
               key={cmd}
               onClick={() => runAICommand(cmd)}
               disabled={loading}
-              className="px-3 py-2 rounded bg-zinc-800 hover:bg-zinc-700 text-sm disabled:opacity-50"
+              className="px-3 py-2 rounded-md border border-border bg-background hover:bg-muted text-sm disabled:opacity-50"
             >
               {cmd.toUpperCase()}
             </button>
@@ -158,10 +172,10 @@ export default function Home() {
             mobileView === "response" ? "hidden md:flex" : "flex"
           }`}
         >
-          <div className="flex-1 min-h-0 border border-zinc-800 rounded overflow-hidden">
+          <div className="flex-1 min-h-0 border border-border rounded-md overflow-hidden">
             <Editor
               height="100%"
-              theme="vs-dark"
+              theme="vs"
               language={language.value}
               value={code}
               onChange={(v: string | undefined) => setCode(v || "")}
@@ -176,11 +190,11 @@ export default function Home() {
 
         {/* RESPONSE */}
         <div
-          className={`flex-1 min-h-0 border border-zinc-800 rounded flex flex-col ${
+          className={`flex-1 min-h-0 border border-border rounded-md flex flex-col bg-card ${
             mobileView === "editor" ? "hidden md:flex" : "flex"
           }`}
         >
-          <div className="px-4 py-3 border-b border-zinc-800 font-semibold shrink-0">
+          <div className="px-4 py-3 border-b border-border font-semibold shrink-0">
             AI Response
           </div>
 
@@ -188,7 +202,7 @@ export default function Home() {
           <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-20">
             {loading ? (
               <div className="h-full flex items-center justify-center">
-                <RingLoader color="#a855f7" size={60} />
+                <RingLoader color="var(--foreground)" size={54} />
               </div>
             ) : (
               <MarkdownRenderer>{response}</MarkdownRenderer>
