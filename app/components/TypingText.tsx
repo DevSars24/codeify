@@ -1,45 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { prefersReducedMotion } from "@/lib/motion";
 
 type TypingTextProps = {
-  text: string[];        // REQUIRED
+  text: string[];
   className?: string;
 };
 
-export default function TypingText({
-  text,
-  className = "",
-}: TypingTextProps) {
-  const [wordIndex, setWordIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [display, setDisplay] = useState("");
+export default function TypingText({ text, className = "" }: TypingTextProps) {
+  const textRef = useRef<HTMLSpanElement>(null);
+  const cursorRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const currentWord = text[wordIndex];
+    const el = textRef.current;
+    const cursor = cursorRef.current;
+    if (!el || !cursor || text.length === 0) return;
 
-    if (charIndex < currentWord.length) {
-      const timeout = setTimeout(() => {
-        setDisplay((prev: string) => prev + currentWord[charIndex]);
-        setCharIndex((prev: number) => prev + 1);
-      }, 80);
-
-      return () => clearTimeout(timeout);
-    } else {
-      const pause = setTimeout(() => {
-        setDisplay("");
-        setCharIndex(0);
-        setWordIndex((prev: number) => (prev + 1) % text.length);
-      }, 1500);
-
-      return () => clearTimeout(pause);
+    if (prefersReducedMotion()) {
+      el.textContent = text[0];
+      return;
     }
-  }, [charIndex, wordIndex, text]);
+
+    const timeline = gsap.timeline({ repeat: -1, repeatDelay: 0.35 });
+
+    text.forEach((line) => {
+      const proxy = { chars: 0 };
+      timeline.call(() => {
+        el.textContent = "";
+        proxy.chars = 0;
+      });
+      timeline.to(proxy, {
+        chars: line.length,
+        duration: Math.min(1.2, line.length * 0.035),
+        ease: "none",
+        onUpdate() {
+          el.textContent = line.slice(0, Math.round(proxy.chars));
+        },
+      });
+      timeline.to({}, { duration: 0.8 });
+    });
+
+    gsap.to(cursor, { opacity: 0, duration: 0.45, repeat: -1, yoyo: true, ease: "steps(1)" });
+
+    return () => {
+      timeline.kill();
+      gsap.killTweensOf(cursor);
+    };
+  }, [text]);
 
   return (
-    <span className={`text-purple-400 font-medium ${className}`}>
-      {display}
-      <span className="animate-pulse">|</span>
+    <span className={`font-mono text-foreground ${className}`}>
+      <span ref={textRef} />
+      <span ref={cursorRef} className="ml-1 inline-block h-[1em] w-[7px] translate-y-0.5 bg-foreground" />
     </span>
   );
 }

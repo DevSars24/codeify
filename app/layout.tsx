@@ -14,26 +14,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function() {
-                  try {
-                    const theme = localStorage.getItem('theme');
-                    if (theme === 'dark') {
-                      document.documentElement.classList.add('dark');
-                    } else {
-                      document.documentElement.classList.remove('dark');
-                    }
-                  } catch (e) {}
-                })();
-              `
-            }}
-          />
-        </head>
-        <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased`}>
+      <html lang="en" data-theme="light" suppressHydrationWarning>
+        <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased theme-transition`}>
           {children}
         </body>
       </html>

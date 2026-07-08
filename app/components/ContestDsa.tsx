@@ -17,11 +17,20 @@ export default function ContestDsa() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [isFinishing, setIsFinishing] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   const [submissions, setSubmissions] = useState<Record<number, string>>({});
   const [mobileTab, setMobileTab] = useState<'problem' | 'editor'>('problem');
 
   const q = questions[currentIndex];
+
+  useEffect(() => {
+    const syncTheme = () => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -100,54 +109,54 @@ export default function ContestDsa() {
     }
   };
 
-  if (loading) return <div className="h-screen bg-black flex items-center justify-center font-mono text-purple-500 animate-pulse uppercase tracking-[0.4em]">Syncing_Arena...</div>;
+  if (loading) return <div className="h-screen bg-background text-foreground flex items-center justify-center font-mono animate-pulse uppercase tracking-[0.4em]">Syncing_Arena...</div>;
 
   return (
-    <div className="h-screen bg-[#050505] text-zinc-300 flex flex-col overflow-hidden font-sans">
+    <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden font-sans">
       {/* Header */}
-      <nav className="h-14 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-black/80 backdrop-blur-xl z-[100] shrink-0">
+      <nav className="h-14 border-b border-border flex items-center justify-between px-4 md:px-6 bg-background/90 backdrop-blur-xl z-[100] shrink-0">
         <div className="flex items-center gap-2">
-          <button onClick={() => router.back()} className="p-2 hover:bg-white/5 rounded-full transition-colors"><ChevronLeft size={20} /></button>
-          <h2 className="text-[10px] font-black uppercase tracking-widest text-purple-500">{params.get("topic")}</h2>
+          <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-md transition-colors"><ChevronLeft size={20} /></button>
+          <h2 className="text-[10px] font-black uppercase tracking-widest text-foreground">{params.get("topic")}</h2>
         </div>
 
         <div className="flex gap-1">
           {questions.map((_: any, i: number) => (
-            <div key={i} className={`h-1 w-4 md:w-6 rounded-full transition-all ${i === currentIndex ? "bg-white" : submissions[i] ? "bg-purple-900" : "bg-zinc-800"}`} />
+            <div key={i} className={`h-1 w-4 md:w-6 rounded-full transition-all ${i === currentIndex ? "bg-foreground" : submissions[i] ? "bg-muted-foreground" : "bg-muted"}`} />
           ))}
         </div>
 
-        <div className="text-[10px] font-bold text-zinc-500 uppercase">{currentIndex + 1} / {questions.length}</div>
+        <div className="text-[10px] font-bold text-muted-foreground uppercase">{currentIndex + 1} / {questions.length}</div>
       </nav>
 
       {/* Mobile Tab Switcher */}
-      <div className="flex lg:hidden bg-zinc-900/50 border-b border-white/5 shrink-0">
-        <button onClick={() => setMobileTab('problem')} className={`flex-1 py-4 text-[10px] font-bold tracking-widest transition-all ${mobileTab === 'problem' ? 'text-white border-b-2 border-purple-500 bg-white/5' : 'text-zinc-500'}`}>PROBLEM</button>
-        <button onClick={() => setMobileTab('editor')} className={`flex-1 py-4 text-[10px] font-bold tracking-widest transition-all ${mobileTab === 'editor' ? 'text-white border-b-2 border-purple-500 bg-white/5' : 'text-zinc-500'}`}>EDITOR</button>
+      <div className="flex lg:hidden bg-muted/50 border-b border-border shrink-0">
+        <button onClick={() => setMobileTab('problem')} className={`flex-1 py-4 text-[10px] font-bold tracking-widest transition-all ${mobileTab === 'problem' ? 'text-foreground border-b-2 border-foreground bg-background' : 'text-muted-foreground'}`}>PROBLEM</button>
+        <button onClick={() => setMobileTab('editor')} className={`flex-1 py-4 text-[10px] font-bold tracking-widest transition-all ${mobileTab === 'editor' ? 'text-foreground border-b-2 border-foreground bg-background' : 'text-muted-foreground'}`}>EDITOR</button>
       </div>
 
       {/* Main Content - Scrollable on mobile */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden relative">
         {/* Problem Section */}
-        <div className={`w-full lg:w-[40%] lg:overflow-y-auto p-6 lg:p-10 border-r border-white/5 bg-[#080808] ${mobileTab === 'problem' ? 'block' : 'hidden lg:block'}`}>
-          <span className="text-purple-500 text-[10px] font-black uppercase tracking-[0.3em]">Module_0{currentIndex + 1}</span>
-          <h1 className="text-2xl md:text-3xl font-black text-white italic uppercase mt-4 mb-6">{q?.title}</h1>
-          <div className="prose prose-invert prose-sm mb-10 opacity-70 leading-relaxed whitespace-pre-wrap">{q?.description}</div>
+        <div className={`w-full lg:w-[40%] lg:overflow-y-auto p-6 lg:p-10 border-r border-border bg-background ${mobileTab === 'problem' ? 'block' : 'hidden lg:block'}`}>
+          <span className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.3em]">Module_0{currentIndex + 1}</span>
+          <h1 className="text-2xl md:text-3xl font-black text-foreground uppercase mt-4 mb-6">{q?.title}</h1>
+          <div className="prose prose-sm mb-10 text-muted-foreground leading-relaxed whitespace-pre-wrap">{q?.description}</div>
 
           <div className="space-y-4 mb-20 lg:mb-0">
             {q?.testCases?.map((tc: any, i: number) => (
-              <div key={i} className="p-4 rounded-xl bg-zinc-900/40 border border-white/5 font-mono text-[10px]">
-                <div className="text-purple-400 mb-1 uppercase font-bold">Input</div>
-                <div className="text-zinc-300 mb-3 break-all">{tc.input}</div>
-                <div className="text-emerald-400 mb-1 uppercase font-bold">Output</div>
-                <div className="text-zinc-300 break-all">{tc.output}</div>
+              <div key={i} className="p-4 rounded-md bg-muted border border-border font-mono text-[10px]">
+                <div className="text-foreground mb-1 uppercase font-bold">Input</div>
+                <div className="text-muted-foreground mb-3 break-all">{tc.input}</div>
+                <div className="text-foreground mb-1 uppercase font-bold">Output</div>
+                <div className="text-muted-foreground break-all">{tc.output}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* EDITOR SECTION - Mobile: Fixed height, scrollable container | Desktop: Flex fill */}
-        <div className={`w-full lg:flex-1 flex flex-col bg-[#0b0b0b] ${mobileTab === "editor" ? "flex" : "hidden lg:flex"}`}>
+        <div className={`w-full lg:flex-1 flex flex-col bg-card ${mobileTab === "editor" ? "flex" : "hidden lg:flex"}`}>
           {/* Editor Container - Fixed height on mobile for scrollability */}
           <div
             className="w-full touch-pan-y"
@@ -157,7 +166,7 @@ export default function ContestDsa() {
             }}
           >
             <Editor
-              theme="vs-dark"
+              theme={theme === "dark" ? "vs-dark" : "vs"}
               language={params.get("language")?.toLowerCase() === "c++" ? "cpp" : "python"}
               value={code}
               onChange={(v: string | undefined) => setCode(v ?? "")}
@@ -183,11 +192,11 @@ export default function ContestDsa() {
           </div>
 
           {/* ACTION BAR - Static position on mobile, visible after scrolling */}
-          <div className="w-full bg-black/95 backdrop-blur-md border-t border-white/10 p-4 pb-8">
+          <div className="w-full bg-background/95 backdrop-blur-md border-t border-border p-4 pb-8">
             <div className="flex gap-3 max-w-4xl mx-auto">
               <button
                 onClick={handleSaveAndNext}
-                className="flex-1 py-4 bg-zinc-900 border border-white/10 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-zinc-800 transition-all active:scale-95 shadow-xl"
+                className="flex-1 py-4 bg-background border border-border text-foreground font-black text-[10px] uppercase tracking-widest rounded-md hover:bg-muted transition-all active:scale-95"
               >
                 {currentIndex === questions.length - 1 ? "Save Final" : "Save & Next"}
               </button>
@@ -196,7 +205,7 @@ export default function ContestDsa() {
                 <button
                   onClick={handleFinishContest}
                   disabled={isFinishing}
-                  className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-95"
+                  className="flex-1 py-4 bg-primary text-primary-foreground font-black text-[10px] uppercase tracking-widest rounded-md flex items-center justify-center gap-2 hover:opacity-80 transition-all active:scale-95"
                 >
                   {isFinishing ? <Loader2 className="animate-spin w-4 h-4" /> : "Finish Contest"}
                 </button>

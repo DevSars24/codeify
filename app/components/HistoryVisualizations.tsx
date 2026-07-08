@@ -10,7 +10,7 @@ interface VisualizationProps {
   langData: Array<{ name: string; value: number }>;
 }
 
-const COLORS = ["#6366f1", "#8b5cf6", "#3b82f6", "#10b981"];
+const COLORS = ["var(--foreground)", "var(--muted-foreground)", "var(--border)", "var(--input)"];
 
 export default function HistoryVisualizations({ activityData, langData }: VisualizationProps) {
   return (
@@ -22,15 +22,15 @@ export default function HistoryVisualizations({ activityData, langData }: Visual
             <AreaChart data={activityData}>
               <defs>
                 <linearGradient id="colorAccuracy" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--foreground)" stopOpacity={0.16} />
+                  <stop offset="95%" stopColor="var(--foreground)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis dataKey="name" hide />
               <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "8px" }} />
-              <Area type="monotone" dataKey="accuracy" stroke="#6366f1" strokeWidth={2} fill="url(#colorAccuracy)" />
+              <Tooltip contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "6px" }} />
+              <Area type="monotone" dataKey="accuracy" stroke="var(--foreground)" strokeWidth={2} fill="url(#colorAccuracy)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -47,7 +47,7 @@ export default function HistoryVisualizations({ activityData, langData }: Visual
                     <Cell key={index} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "8px" }} />
+                <Tooltip contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "6px" }} />
               </PieChart>
             </ResponsiveContainer>
           ) : (

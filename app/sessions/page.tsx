@@ -42,17 +42,17 @@ export default async function SessionsPage() {
             <Link
               key={session.id}
               href={session.status === "live" ? `/sessions/${session.id}/room` : `/sessions/${session.id}`}
-              className="group surface-card p-6 hover:border-primary/30 transition-colors flex flex-col h-full"
+              className="group surface-card p-6 hover:border-foreground transition-colors flex flex-col h-full"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md border border-border bg-muted flex items-center justify-center">
                   <Video size={18} className="text-primary" />
                 </div>
-                <span className={`text-xs font-medium px-2 py-1 rounded ${session.status === "live" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-muted text-muted-foreground"}`}>
+                <span className={`text-xs font-medium px-2 py-1 rounded ${session.status === "live" ? "bg-foreground text-background" : "bg-muted text-muted-foreground"}`}>
                   {session.status === "live" ? "Live" : "Upcoming"}
                 </span>
               </div>
-              <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">{session.title}</h3>
+              <h3 className="font-semibold mb-2 group-hover:text-foreground transition-colors">{session.title}</h3>
               {session.description && <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{session.description}</p>}
               <div className="mt-auto space-y-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-2"><Calendar size={14} /> {formatDate(session.scheduledAt)}</div>
