@@ -102,6 +102,18 @@ export default function DsaPracticeArena() {
               >
                 Start contest <Play size={14} />
               </button>
+
+              <div className="surface-card p-5 overflow-hidden rounded-xl border border-border mt-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                  <Play size={12} className="text-primary" /> Arena Preview
+                </h4>
+                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md border border-border bg-muted">
+                  <img src="/work2.jpg" alt="DSA Arena Workspace Preview" className="object-cover w-full h-full" />
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
+                  Interactive practice workspace with integrated editor, split-pane console, and real-time test evaluations.
+                </p>
+              </div>
             </section>
           </div>
         </main>
