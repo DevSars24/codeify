@@ -8,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
   Code2,
-  Cpu,
-  GraduationCap,
   Zap,
   Sparkles,
   ArrowRight,
@@ -153,7 +151,7 @@ export default function WelcomePage() {
           >
             <Button
               onClick={() => router.push("/home")}
-              className="group h-14 px-10 rounded-full bg-white text-black hover:bg-zinc-200 font-semibold text-base shadow-2xl shadow-white/10 hover:shadow-white/20 transition-all duration-300"
+              className="group h-14 px-8 sm:px-10 rounded-md bg-primary text-primary-foreground hover:opacity-80 font-semibold text-base transition-all duration-300"
             >
               <span>Explore All Features</span>
               <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />

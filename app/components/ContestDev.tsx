@@ -34,6 +34,15 @@ export default function ContestDev() {
   const [error, setError] = useState("");
   const [mobileView, setMobileView] =
     useState<MobileView>("editor");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const syncTheme = () => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   const currentTask =
     tasks.length > 0 && index < tasks.length ? tasks[index] : null;
@@ -237,7 +246,7 @@ export default function ContestDev() {
 
           <div className={`flex-1 relative ${mobileView === 'editor' ? 'block' : 'hidden md:block'}`}>
             <Editor
-              theme="vs-dark"
+              theme={theme === "dark" ? "vs-dark" : "vs"}
               language="javascript"
               value={code}
               onChange={(v: string | undefined) => setCode(v ?? "")}
