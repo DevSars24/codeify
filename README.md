@@ -1,654 +1,437 @@
-# CodeSaarthi System Design Document
-
-**CodeSaarthi** (a.k.a. *Codeify*) is an AI-powered interactive coding, dev-challenge, blogging, and live-mentorship platform. This document is the complete architectural reference: every subsystem, data flow, schema, and design decision is captured below with a diagram and a plain-language explanation next to it, so a new engineer can onboard from this file alone.
-
----
-
-## Table of Contents
-
-1. [System Architecture](#1-system-architecture)
-2. [Core Modules & User Flows](#2-core-modules--user-flows)
-3. [Database Schema Design](#3-database-schema-design-prisma)
-4. [Key System Design Concepts](#4-key-system-design-concepts-used)
-5. [Directory & Routing Architecture](#5-directory--routing-architecture)
-6. [Component & State Architecture](#6-component--state-architecture)
-7. [API Surface Reference](#7-api-surface-reference)
-8. [Authentication & Authorization Flow](#8-authentication--authorization-flow)
-9. [Deployment & Infrastructure Topology](#9-deployment--infrastructure-topology)
-10. [Error Handling & Resilience](#10-error-handling--resilience)
-11. [Performance & Optimization Strategy](#11-performance--optimization-strategy)
-12. [Security Considerations](#12-security-considerations)
-13. [Future Scaling Roadmap](#13-future-scaling-roadmap)
+# CodeSaarthi — Complete TypeScript Guide (with Diagrams)
+### Har Concept: Diagram + Real Code + Real-Life Scenario + "Website pe kya Enable karta hai"
 
 ---
 
-## 1. System Architecture
+## 0. TypeScript Kya Hai Aur Kaam Kaise Karta Hai (Foundation)
 
-CodeSaarthi is built on a **Serverless-First Next.js (App Router)** architecture: client components rendered in the browser talk to serverless route handlers, which in turn talk to a relational database and a set of third-party cloud services (auth, AI judging, video SFU, asset CDN).
-
-### 1.1 Architecture Topology Diagram
-
-```mermaid
-graph TD
-    User([User Browser]) <--> |HTTPS / WebRTC| FE[Next.js Client-Side UI]
-
-    subgraph Client [Client-Side Workspace]
-        FE --> UI[Tailwind CSS + Framer Motion]
-        FE --> Monaco[Monaco Editor Component]
-        FE --> LiveKitClient[LiveKit Video Client]
-        FE --> Recharts[Recharts Analytics]
-    end
-
-    subgraph Auth [Security & Verification]
-        Middleware[Clerk Middleware Guard] --> ClerkAuth[Clerk Identity Provider]
-    end
-
-    FE --> |API Requests| Middleware
-    Middleware --> API[Next.js Route Handlers / Serverless APIs]
-
-    subgraph Services [Integrations & Servers]
-        API --> |ORM Queries| Prisma[Prisma Client Singleton]
-        API --> |Generates JWT| LiveKitSDK[LiveKit Server SDK]
-        API --> |Upload Buffers| Cloudinary[Cloudinary API]
-        API --> |AI Logic Judging| Gemini[Google Gemini API]
-    end
-
-    subgraph Data [Storage Layer]
-        Prisma --> DB[(PostgreSQL / Supabase)]
-    end
-
-    subgraph Networks [External Mesh & CDN]
-        LiveKitSDK <--> |Signal & Token Verification| LiveKitCloud[LiveKit Cloud SFU]
-        LiveKitClient <--> |WebRTC Media Streams| LiveKitCloud
-        Cloudinary <--> |Assets upload & host| CloudinaryCDN[Cloudinary Storage]
-    end
-```
-
-**How to read this diagram:** every request from the browser first hits Clerk's edge middleware before it is allowed to reach a route handler. From there, route handlers fan out to exactly one of four backends depending on the task: Postgres (via Prisma) for persisted state, LiveKit for real-time video tokens/media, Cloudinary for binary asset storage, or Gemini for AI judging. No route handler talks to more than one of these at a time except the contest-save flow, which only touches Postgres.
-
-### 1.2 Why Serverless-First?
-
-* **No idle compute cost** — route handlers spin up only on request, which matters for a platform with bursty traffic (contest start times, live session start times).
-* **Stateless horizontal scale** — because nothing is kept in server memory between requests (see the Singleton Database Connection Pattern in §4.2), any number of function instances can serve traffic concurrently without coordination.
-* **Managed edge distribution** — Next.js middleware and ISR pages are served from edge nodes close to the user, reducing latency for the largely read-heavy `/blogs` and `/leaderboard` routes.
-
-### 1.3 Request Lifecycle (High Level)
+**Simple Definition:** TypeScript = JavaScript + Type Checking Layer. Browser TypeScript ko samajhta hi nahi — compile-time pe TS Compiler (`tsc`) usse plain JavaScript mein convert karta hai, aur isi process ke beech mein saari galtiyan pakad leta hai.
 
 ```mermaid
 flowchart LR
-    A[Browser Request] --> B{Path matches<br/>protected route?}
-    B -- No --> C[Serve directly<br/>public / static / ISR]
-    B -- Yes --> D[Clerk Middleware<br/>auth.protect]
-    D -- Unauthenticated --> E[Redirect to /sign-in]
-    D -- Authenticated --> F[Route Handler Executes]
-    F --> G{Which backend?}
-    G -->|DB read/write| H[Prisma -> Postgres]
-    G -->|AI judging| I[Gemini API]
-    G -->|Video token| J[LiveKit Server SDK]
-    G -->|Image upload| K[Cloudinary API]
-    H --> L[JSON Response]
-    I --> L
-    J --> L
-    K --> L
-    L --> M[Client renders result]
+    A["Developer likhta hai<br/>.ts / .tsx file"] --> B{"TypeScript Compiler<br/>(tsc) check karta hai"}
+    B -->|Type Error mila| C["❌ Compile fails<br/>Error IDE mein turant dikhta hai"]
+    B -->|Sab types sahi| D["✅ Plain JavaScript<br/>generate hoti hai"]
+    D --> E["Browser/Node.js<br/>ye JS run karta hai"]
+    C -.->|Developer fix karta hai| A
 ```
+
+**Real-Life Scenario:** Socho tum ek restaurant mein order le rahe ho. JavaScript waiter kisi bhi cheez ka order le lega — "mujhe ek chair do khaane ke liye" bhi accept kar lega, aur kitchen mein jaake crash ho jaayega. TypeScript waiter **order lene se pehle hi menu check karta hai** — "chair" menu mein hai hi nahi, order reject.
+
+**Website pe kya Enable karta hai:** Production mein deploy hone se **pehle hi** (build step pe) 90% bugs pakde jaate hain — jo bug production mein user ko crash dikhata, wo ab tumhare VS Code mein red-underline ban jaata hai.
 
 ---
 
-## 2. Core Modules & User Flows
+## 1. Component Props Typing (The UI Guard)
 
-CodeSaarthi has three primary modules that define the entire platform workflow:
-
-| Module | Purpose | Primary Route(s) |
-|---|---|---|
-| **DSA Arena** | Timed algorithm contests, auto-judged by LLM | `/dsa`, `/contestdsa` |
-| **Dev Arena** | Open-ended web/app/API build challenges, mentor-reviewed by LLM | `/dev`, `/contestdev` |
-| **Live Cohorts** | Real-time video mentorship rooms | `/sessions`, `/sessions/[id]/room` |
-
-### 2.1 Module Relationship Overview
-
-```mermaid
-graph LR
-    Welcome[/welcome onboarding/] --> Choice{Track Selection}
-    Choice -->|Algorithms| DSA[DSA Arena]
-    Choice -->|Web/App/API| Dev[Dev Arena]
-    Choice -->|Mentorship| Live[Live Cohorts]
-
-    DSA --> History[/history Recharts Dashboard/]
-    Dev --> History
-    Live --> History
-
-    DSA --> Leaderboard[/leaderboard/]
-    Dev --> Leaderboard
-
-    Blogs[/blogs Articles/] -.reads knowledge from.-> DSA
-    Blogs -.reads knowledge from.-> Dev
-```
-
-All three modules ultimately write into the same `history`/`leaderboard` surfaces, giving users one unified progress view regardless of which track they engage with.
-
-### 2.2 DSA Practice & Evaluation Flow
-
-Rather than spinning up sandboxed execution containers (Docker/Judge0/Piston), CodeSaarthi uses an **LLM-as-a-Judge** approach: the model reads the problem statement and the user's submitted code and reasons about correctness rather than literally executing it.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Participant
-    participant FE as Monaco Editor Client
-    participant API as /api/dsa/evaluate-all
-    participant Gemini as Gemini 2.5 Flash Lite
-    participant DB as Postgres (via Prisma)
-
-    User->>FE: Finishes Contest & Clicks Submit
-    FE->>API: POST questions + submissions + language
-    Note over API: Filter out empty submissions<br/>Construct Strict CP Judge Prompt
-    API->>Gemini: Request code evaluation (15s Timeout)
-    Gemini-->>API: Returns JSON: {correct, total, accuracy}
-    API-->>FE: Return evaluations to client
-    FE->>DB: POST to /api/contest/save
-    DB-->>FE: Save successful
-    FE->>User: Redirects to /history (Mission Logs)
-```
-
-**Step-by-step explanation:**
-1. The user works through problems in the Monaco editor, which is loaded client-side only (see §11.2).
-2. On submit, the client bundles *all* question/submission pairs (not one request per problem) into a single POST to `/api/dsa/evaluate-all`, minimizing round trips.
-3. The route handler strips out any question the user left blank — these are auto-scored as incorrect without spending an LLM call.
-4. A tightly constrained "competitive-programming judge" prompt is built, instructing Gemini to return **only** structured JSON (`{correct, total, accuracy}`), never freeform prose.
-5. The call to Gemini is wrapped in `Promise.race` against a 15-second timer; if Gemini doesn't respond in time, the handler falls back to a safe default rather than hanging the request (see §10.1).
-6. Once the evaluation JSON is back, the client separately persists a `ContestAttempt` row and redirects the user to `/history`, where Recharts visualizes XP/accuracy trends over time.
-
-### 2.3 Dev Arena Evaluation Flow (Kautilya Saarthi Mentor Persona)
-
-For open-ended Web/App/API tasks there's no single "correct" output to pattern-match, so the platform uses a custom-prompted mentor persona — **Kautilya Saarthi** — that critiques structure and design quality instead of grading against a fixed answer key.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Developer
-    participant FE as Editor Workspace
-    participant API as /api/dev/submit
-    participant Gemini as Gemini Flash Lite Latest
-
-    User->>FE: Writes React/JS code & submits task
-    FE->>API: POST task description + user code
-    Note over API: Construct Kautilya Mentor Prompt
-    API->>Gemini: Request structured feedback
-    Gemini-->>API: JSON: {verdict, score, feedback}
-    API-->>FE: Return JSON output
-    FE->>User: Render verdict & mentor feedback markdown
-```
-
-**Design intent:** notice that Kautilya's system prompt deliberately withholds the correct/idiomatic solution from the response — the persona is instructed to *never supply working code*, only structural and architectural feedback. This keeps the platform a learning tool rather than an autocomplete-the-assignment shortcut.
-
-### 2.4 Live Cohorts (Mentorship) Flow
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Host as Mentor (Host)
-    actor Participant as Learner
-    participant Admin as /admin/sessions
-    participant API as /api/livekit/token
-    participant SDK as LiveKit Server SDK
-    participant SFU as LiveKit Cloud SFU
-
-    Host->>Admin: Schedule LiveSession (title, time, room)
-    Admin->>API: Create LiveSession row (status = scheduled)
-    Note over API: At scheduled time, status flips to live
-    Participant->>API: Requests join token for roomName
-    API->>SDK: Generate signed JWT (identity, room grants)
-    SDK-->>API: Return token
-    API-->>Participant: Token delivered to client
-    Participant->>SFU: Connect via WebRTC using token
-    Host->>SFU: Connect via WebRTC using token
-    SFU-->>Participant: Forward selected media streams
-    SFU-->>Host: Forward selected media streams
-```
-
-This is the flow underlying the SFU architecture explained conceptually in §4.3 — this diagram shows *when* and *by whom* tokens are requested, while §4.3 explains *why* an SFU is used instead of P2P mesh.
-
----
-
-## 3. Database Schema Design (Prisma)
-
-The application uses **Prisma ORM** against a relational **PostgreSQL** database hosted on **Supabase**, indexed for fast lookups on user credentials (`userId`, `authorEmail`, `hostEmail` are all Clerk-issued identifiers, so no separate `User` table is needed — Clerk is the source of truth for identity).
-
-### 3.1 Entity-Relationship Diagram
-
-```mermaid
-erDiagram
-    ContestAttempt {
-        String id PK
-        String userId FK "Clerk User ID"
-        String topic "Arrays, Stack, DP, etc."
-        Int correct
-        Int total
-        Float accuracy
-        String language
-        String difficulty
-        Json submissions "User code indexed by question ID"
-        DateTime createdAt
-        DateTime updatedAt
-    }
-
-    Blog {
-        String id PK
-        String title
-        String content "Markdown text"
-        String[] domains "Tags"
-        String source
-        String pattern
-        String imageUrl
-        String authorEmail
-        String slug UK
-        DateTime createdAt
-        DateTime updatedAt
-    }
-
-    LiveSession {
-        String id PK
-        String title
-        String description
-        String roomName UK "LiveKit Room Identity"
-        DateTime scheduledAt
-        Int duration "Minutes"
-        String status "scheduled | live | finished"
-        String hostEmail
-        Int maxParticipants
-        DateTime createdAt
-        DateTime updatedAt
-    }
-```
-
-### 3.2 Table Notes
-
-* **`ContestAttempt`** is intentionally denormalized: rather than a child table per submitted question, `submissions` is stored as a single `Json` blob keyed by question ID. This trades relational query flexibility (you can't easily `WHERE` on a single question's code) for write simplicity and read speed on the `/history` dashboard, which only ever needs the aggregate row, not per-question drill-down.
-* **`Blog.slug`** is unique and used as the route param for `/blogs/[slug]`, giving human-readable, SEO-friendly URLs instead of raw IDs.
-* **`LiveSession.roomName`** is unique and doubles as the LiveKit room identity — the same string is used both as a Postgres key and as the SFU room name, so there is exactly one source of truth for "which room is this."
-* No table stores password hashes or session tokens — all of that is delegated entirely to Clerk (see §8), keeping the platform's own database free of sensitive auth data.
-
-### 3.3 Data Flow: Who Writes to Which Table
+**Dard:** CodeSaarthi mein Code Editor component hai. Bina type-checking ke, koi bhi galat `language` ya missing `code` pass karke UI crash kar sakta hai.
 
 ```mermaid
 flowchart TD
-    DSAContest[DSA Contest Submit] -->|writes| ContestAttempt
-    DevContest[Dev Arena Submit] -.optionally logs to.-> ContestAttempt
-    AdminBlog[Admin Blog Editor] -->|writes| Blog
-    AdminSessions[Admin Session Scheduler] -->|writes| LiveSession
-    HistoryPage[/history dashboard/] -->|reads| ContestAttempt
-    LeaderboardPage[/leaderboard/] -->|reads, aggregates by userId| ContestAttempt
-    BlogsPage[/blogs listing/] -->|reads, ISR cached| Blog
-    SessionsPage[/sessions listing/] -->|reads| LiveSession
+    A["Developer MonacoEditor<br/>component use karta hai"] --> B{"TypeScript prop check<br/>karta hai: language sahi hai?"}
+    B -->|"language='java'<br/>(not in allowed list)"| C["❌ Compile Error<br/>Type 'java' not assignable"]
+    B -->|"language='python'<br/>(valid)"| D["✅ Component<br/>safely render hota hai"]
+    C --> E["Developer bug ko<br/>PRODUCTION se pehle fix karta hai"]
 ```
+
+### Real Code Example
+
+```typescript
+interface EditorProps {
+  code: string;
+  language: "javascript" | "python" | "cpp"; // Sirf yahi 3 allow hain
+  theme?: string; // "?" matlab optional
+}
+
+export function MonacoEditor({ code, language, theme = "vs-dark" }: EditorProps) {
+  return (
+    <div>
+      <h3>Running {language.toUpperCase()} Editor</h3>
+      <pre>{code}</pre>
+    </div>
+  );
+}
+
+// Galti pakdi gayi:
+// <MonacoEditor code="print(1)" language="java" /> 
+// ^ TS Error: Type '"java"' is not assignable to "javascript" | "python" | "cpp"
+```
+
+**Real-Life Scenario:** Ye bilkul waise hai jaise ek ATM machine — tum sirf "Withdraw", "Deposit", "Balance Check" hi choose kar sakte ho, koi 4th random option ATM screen pe hai hi nahi. Interface **allowed actions ko design-level pe hi lock kar deta hai.**
+
+**Website pe kya Enable karta hai:**
+- Naya developer team mein join kare, wo `<MonacoEditor` type karte hi IDE **autocomplete** dikhayega ki kaunse props chahiye
+- `language="Java"` (capital J typo) jaisi silly mistakes production mein kabhi nahi jaayengi
+- Contest ke time editor crash hone ka risk **zero** ho jaata hai kyunki bina valid props ke component render hi nahi ho sakta
 
 ---
 
-## 4. Key System Design Concepts Used
+## 2. Auto-Generated Database Types via Prisma (The Core DB)
 
-### 4.1 LLM-as-a-Judge Pattern
-
-Traditional competitive-programming platforms execute submitted code inside isolated Docker containers (e.g. Judge0 or Piston). CodeSaarthi avoids that entirely:
-
-```mermaid
-graph LR
-    A[Traditional Approach] --> B[Spin up Docker container]
-    B --> C[Compile & run against<br/>hidden test cases]
-    C --> D[Compare stdout diff]
-    D --> E["Security risk: sandbox escape<br/>Resource cost: container overhead"]
-
-    F[CodeSaarthi Approach] --> G[Send code + problem<br/>to Gemini 2.5 Flash Lite]
-    G --> H[Model reasons about<br/>correctness semantically]
-    H --> I[Returns structured JSON verdict]
-    I --> J[No containers, no sandbox risk,<br/>15s timeout budget]
-```
-
-Trade-offs worth naming explicitly: this approach removes an entire class of infrastructure risk (container escapes, resource exhaustion, malicious code execution) at the cost of judging accuracy being bounded by the LLM's reasoning rather than ground-truth execution. The system compensates with a **strict, narrowly-scoped judge prompt** and a **parsing fallback that defaults to a `0` score** on any malformed or missing response, so failures are conservative rather than silently generous.
-
-### 4.2 Singleton Database Connection Pattern
+**Dard:** Backend developer ko yaad nahi rehta ki DB column `email` hai ya `user_email`, `createdAt` `Date` hai ya `string`.
 
 ```mermaid
 sequenceDiagram
-    participant Import as Module Import (app/lib/prisma.ts)
-    participant Global as globalThis.prisma
-    participant Client as new PrismaClient()
+    participant Schema as schema.prisma<br/>(Source of Truth)
+    participant Prisma as Prisma Generate
+    participant Types as @prisma/client<br/>(Auto TS Types)
+    participant Dev as Developer's Code
 
-    Import->>Global: Does globalThis.prisma exist?
-    alt Instance already exists
-        Global-->>Import: Return existing instance
-    else No instance yet
-        Import->>Client: Instantiate new PrismaClient()
-        Client-->>Global: Store on globalThis.prisma
-        Global-->>Import: Return new instance
-    end
+    Schema->>Prisma: Contest model defined<br/>(id, title, difficulty...)
+    Prisma->>Types: TypeScript interfaces<br/>auto-generate hoti hain
+    Dev->>Types: import { Contest } from "@prisma/client"
+    Dev->>Dev: contest.titel likha (typo)
+    Types-->>Dev: ❌ Red underline turant<br/>"Did you mean 'title'?"
 ```
 
-**Why this matters:** in serverless environments, each hot-reload during development (or each cold-start in production) re-runs module imports. Without this guard, every reload would spawn a fresh `PrismaClient`, and each client holds its own connection pool — quickly exhausting Postgres's max-connection limit under load. Pinning the instance to `globalThis` ensures at most one pool per running process.
+### Real Code Example
 
-### 4.3 Selective Forwarding Unit (SFU) Architecture
+```typescript
+import { prisma } from "@/lib/db";
+import { Contest } from "@prisma/client"; // Auto-generated by Prisma!
 
-```mermaid
-graph TD
-    subgraph P2P["Peer-to-Peer (NOT used) — O(N^2) bandwidth"]
-        A1((User A)) <--> A2((User B))
-        A1 <--> A3((User C))
-        A2 <--> A3
-    end
-
-    subgraph SFU["SFU via LiveKit (used) — O(N) bandwidth"]
-        B1((User A)) --> Hub[LiveKit SFU]
-        B2((User B)) --> Hub
-        B3((User C)) --> Hub
-        Hub --> B1
-        Hub --> B2
-        Hub --> B3
-    end
+async function getContestDetails(contestId: string): Promise<Contest | null> {
+  const contest = await prisma.contest.findUnique({
+    where: { id: contestId }
+  });
+  // contest.titel likhu (spelling mistake) -> TS turant red line dikhayega
+  return contest; 
+}
 ```
 
-Each participant uploads exactly one stream to the SFU and receives only the streams the SFU selects to forward down, so bandwidth cost per client grows linearly with participant count instead of quadratically. Join tokens are minted server-side at `/api/livekit/token` using `livekit-server-sdk`, so raw API secrets never reach the browser — only a short-lived signed JWT does.
+**Real-Life Scenario:** Jaise Aadhar Card ka centralized database hai — har government office same format follow karta hai kyunki wo ek hi source se data khींchte hain. Prisma schema tumhara "Aadhar system" hai — database aur code kabhi out-of-sync nahi ho sakte.
 
-### 4.4 Route Guard Middleware Architecture
-
-```mermaid
-flowchart TD
-    Req[Incoming Request] --> Match{Path in<br/>public allowlist?}
-    Match -->|"/, /blogs, /sign-in,<br/>/sign-up, /api/upload"| Allow[Serve without auth check]
-    Match -->|"/dsa, /dev, /history,<br/>/sessions, /leaderboard"| Protect[Clerk auth.protect]
-    Protect -->|Valid session| Allow2[Forward to route handler]
-    Protect -->|No/invalid session| Redirect[Redirect -> /sign-in]
-```
-
-Security is handled once, centrally, at the Edge Middleware layer — individual pages and API routes don't need to re-implement their own auth checks, which removes an entire category of "forgot to guard this route" bugs.
-
-### 4.5 Cloud Image Pipe & CDN Hosting
-
-```mermaid
-sequenceDiagram
-    actor Admin
-    participant FE as Admin Blog Editor
-    participant API as /api/upload
-    participant Cloudinary
-    participant DB as Postgres (Blog.imageUrl)
-
-    Admin->>FE: Selects image file
-    FE->>API: multipart/form-data upload
-    API->>Cloudinary: Stream binary buffer
-    Cloudinary-->>API: Returns CDN URL
-    API-->>FE: Return CDN URL
-    FE->>DB: Save Blog row with imageUrl = CDN URL
-```
-
-Only a lightweight string (the CDN URL) is ever stored in Postgres — the actual binary bytes never touch the application database, keeping row sizes small and read queries on `Blog` fast.
+**Website pe kya Enable karta hai:**
+- `ContestAttempt`, `Blog`, `LiveSession` — teeno models 100% synchronized rehte hain schema ke saath
+- Database migration (naya column add) karte hi, poori codebase mein IDE turant naya field suggest karne lagta hai — koi manual sync nahi
+- Backend development **kaafi fast** ho jaata hai kyunki autocomplete se pata chal jaata hai available fields kya hain
 
 ---
 
-## 5. Directory & Routing Architecture
+## 3. Strict API Requests & Responses (Network Safety)
 
-```
-├── app/
-│   ├── layout.tsx             # Root layout wraps ClerkProvider
-│   ├── page.tsx               # Landing page with GSAP animations
-│   ├── middleware.ts          # Clerk route-guard middleware
-│   ├── welcome/               # Track Selection onboarding page
-│   │
-│   ├── dsa/                   # Configures topics & launch parameters
-│   ├── contestdsa/            # Monaco editor + Problem statement workspace
-│   │
-│   ├── dev/                   # Configures Web/App/API tracks
-│   ├── contestdev/            # Monaco workspace + Kautilya Saarthi responses
-│   │
-│   ├── blogs/                 # Technical articles list (mode: ISR/Static)
-│   ├── admin/
-│   │   ├── blog/              # Create and edit articles (Admin restricted)
-│   │   └── sessions/          # Schedule/manage mentoring sessions
-│   │
-│   ├── sessions/              # View and join video rooms
-│   │   └── [id]/room/         # LiveKit WebRTC Video conferencing view
-│   │
-│   ├── leaderboard/           # Leaderboard aggregates rankings (grouped by userId)
-│   ├── history/               # Recharts dashboard visualizing XP & accuracies
-│   │
-│   └── api/                   # Serverless Endpoints
-│       ├── dsa/               # evaluate-all, generate, submit handlers
-│       ├── dev/                # generate, submit handlers
-│       ├── livekit/           # token generator
-│       └── upload/            # Cloudinary image pipeline
-```
-
-### 5.1 Route Map Visualized
-
-```mermaid
-graph TD
-    Root["/"] --> Welcome["/welcome"]
-    Root --> Blogs["/blogs"]
-    Root --> SignIn["/sign-in"]
-    Root --> SignUp["/sign-up"]
-
-    Welcome --> DSA["/dsa"]
-    Welcome --> Dev["/dev"]
-    DSA --> ContestDSA["/contestdsa"]
-    Dev --> ContestDev["/contestdev"]
-
-    ContestDSA --> History["/history"]
-    ContestDev --> History
-    ContestDSA --> Leaderboard["/leaderboard"]
-
-    Root --> Sessions["/sessions"]
-    Sessions --> Room["/sessions/[id]/room"]
-
-    Root --> Admin["/admin"]
-    Admin --> AdminBlog["/admin/blog"]
-    Admin --> AdminSessions["/admin/sessions"]
-
-    style Admin fill:#f9d,stroke:#333
-    style AdminBlog fill:#f9d,stroke:#333
-    style AdminSessions fill:#f9d,stroke:#333
-```
-
-*(Pink nodes indicate admin-restricted routes, gated by an additional role check on top of the base Clerk authentication.)*
-
----
-
-## 6. Component & State Architecture
-
-### 6.1 Client Component Tree (Contest Workspace Example)
-
-```mermaid
-graph TD
-    Layout[RootLayout<br/>ClerkProvider] --> ContestPage[contestdsa/page.tsx]
-    ContestPage --> ProblemPanel[Problem Statement Panel]
-    ContestPage --> EditorPanel["Monaco Editor<br/>dynamic ssr:false"]
-    ContestPage --> Timer[Contest Timer]
-    ContestPage --> SubmitBar[Submit Bar]
-
-    SubmitBar -->|onClick| EvalCall[POST /api/dsa/evaluate-all]
-    EvalCall --> ResultModal[Verdict Modal]
-    ResultModal --> SaveCall[POST /api/contest/save]
-    SaveCall --> Redirect[router.push /history]
-```
-
-### 6.2 Client-Side State Flow
-
-State is kept intentionally simple and local rather than introducing a global store (Redux/Zustand), since each workspace page is a largely self-contained flow:
-
-```mermaid
-stateDiagram-v2
-    [*] --> Loading: Page mounts
-    Loading --> InProgress: Questions fetched
-    InProgress --> InProgress: User edits code (local state per question)
-    InProgress --> Submitting: User clicks Submit
-    Submitting --> Evaluating: POST to evaluate-all
-    Evaluating --> Saving: Verdict received
-    Saving --> Complete: Contest saved to DB
-    Complete --> [*]: Redirect to /history
-    Evaluating --> Error: Timeout / malformed response
-    Error --> InProgress: Retry allowed
-```
-
----
-
-## 7. API Surface Reference
-
-| Endpoint | Method | Purpose | Backend Touched |
-|---|---|---|---|
-| `/api/dsa/generate` | POST | Generate a fresh set of DSA problems for a topic/difficulty | Gemini |
-| `/api/dsa/evaluate-all` | POST | Judge all submitted DSA solutions in one batch | Gemini |
-| `/api/dsa/submit` | POST | Persist an individual submission record | Prisma → Postgres |
-| `/api/dev/generate` | POST | Generate a Dev Arena challenge brief | Gemini |
-| `/api/dev/submit` | POST | Get Kautilya Saarthi mentor feedback on submitted code | Gemini |
-| `/api/contest/save` | POST | Persist a completed `ContestAttempt` row | Prisma → Postgres |
-| `/api/livekit/token` | POST | Mint a signed join token for a LiveKit room | LiveKit Server SDK |
-| `/api/upload` | POST | Upload an image and receive back a CDN URL | Cloudinary |
-
-### 7.1 Endpoint Interaction Overview
-
-```mermaid
-graph LR
-    subgraph Gemini-backed
-        G1[/dsa/generate/]
-        G2[/dsa/evaluate-all/]
-        G3[/dev/generate/]
-        G4[/dev/submit/]
-    end
-    subgraph Postgres-backed
-        P1[/dsa/submit/]
-        P2[/contest/save/]
-    end
-    subgraph External-service-backed
-        E1[/livekit/token/]
-        E2[/upload/]
-    end
-
-    Gemini((Google Gemini API)) --- G1
-    Gemini --- G2
-    Gemini --- G3
-    Gemini --- G4
-
-    Postgres[(Postgres/Supabase)] --- P1
-    Postgres --- P2
-
-    LiveKit[[LiveKit Cloud]] --- E1
-    Cloudinary[[Cloudinary]] --- E2
-```
-
----
-
-## 8. Authentication & Authorization Flow
+**Dard:** Frontend se backend tak data jaata hai bina kisi "contract" ke — backend ko pata hi nahi chalta ki request body mein kya expect karna hai.
 
 ```mermaid
 sequenceDiagram
     actor User
-    participant Browser
-    participant Clerk as Clerk Identity Provider
-    participant MW as Next.js Middleware
-    participant Route as Protected Route/API
+    participant FE as Frontend<br/>(SubmitCodeRequest)
+    participant API as Route Handler<br/>(/api/dsa/submit)
+    participant Gemini as Gemini API
 
-    User->>Browser: Visits /dsa
-    Browser->>MW: Request with session cookie
-    MW->>Clerk: Validate session
-    alt Session valid
-        Clerk-->>MW: User claims (id, email, role)
-        MW-->>Route: Attach auth context, forward
-        Route-->>Browser: Render protected content
-    else Session invalid/missing
-        Clerk-->>MW: Unauthenticated
-        MW-->>Browser: 307 redirect to /sign-in
+    User->>FE: Code submit karta hai
+    FE->>API: POST { contestId, problemId,<br/>sourceCode, language }
+    Note over API: body: SubmitCodeRequest<br/>TypeScript contract enforce hota hai
+    alt Payload malformed
+        API-->>FE: ❌ Compile-time hi<br/>pakda jaata (dev phase)
+    else Payload valid
+        API->>Gemini: Evaluate karne bheja
+        Gemini-->>API: Verdict JSON
+        API-->>FE: Success response
     end
 ```
 
-Role-based checks (e.g. for `/admin/*`) layer on top of the base Clerk session check: the middleware confirms *who* the user is, and the admin route handlers separately confirm *whether that identity is allow-listed* as an administrator before permitting writes to `Blog` or `LiveSession`.
+### Real Code Example
 
----
+```typescript
+interface SubmitCodeRequest {
+  contestId: string;
+  problemId: string;
+  sourceCode: string;
+  language: string;
+}
 
-## 9. Deployment & Infrastructure Topology
-
-```mermaid
-graph TD
-    Dev[Developer Push to Git] --> CI[Vercel Build Pipeline]
-    CI --> Edge[Vercel Edge Network]
-    Edge --> Static[Static/ISR Pages<br/>/blogs, /leaderboard]
-    Edge --> Functions[Serverless Functions<br/>/api/*]
-
-    Functions --> Supabase[(Supabase Postgres)]
-    Functions --> GeminiAPI[Google Gemini API]
-    Functions --> LiveKitCloud[LiveKit Cloud]
-    Functions --> CloudinaryCDN[Cloudinary CDN]
-
-    Edge --> Client[Browser Clients Worldwide]
+export async function POST(req: Request) {
+  const body: SubmitCodeRequest = await req.json();
+  console.log(`Evaluating code for contest: ${body.contestId}`);
+}
 ```
 
-The entire application deploys as a single Vercel project. There is no separately managed application server: Postgres (Supabase), video (LiveKit Cloud), storage (Cloudinary), and AI (Gemini) are all managed third-party services reached over HTTPS from within serverless functions, which is what allows the "Serverless-First" claim in §1 to hold end-to-end — there is no stateful process anywhere in the stack that CodeSaarthi's own team has to patch or scale manually.
+**Real-Life Scenario:** Jaise courier company ka fixed form hota hai — "Sender Name, Receiver Address, Weight, Pincode" — bina in fields ke parcel accept hi nahi hota counter pe. Interface ye **form template** hai jo frontend aur backend dono follow karte hain.
+
+**Website pe kya Enable karta hai:**
+- Frontend aur backend team alag-alag kaam kar sakti hain bina baar-baar confirm kiye "field ka naam kya hai" — interface hi documentation ban jaata hai
+- API mein galat shape ka data jaane se **development phase mein hi** rok diya jaata hai
+- Contest submission jaisa critical flow kabhi silently corrupt data receive nahi karta
 
 ---
 
-## 10. Error Handling & Resilience
+## 4. API Fetch Wrapper using Generics (Reusable Logic)
 
-### 10.1 Gemini Timeout & Fallback Path
+**Dard:** Har API call ke liye alag-alag `fetch()` + `res.json()` + manual typing likhna — duplicate, boring code.
 
 ```mermaid
 flowchart TD
-    Start["Evaluation Request Sent to Gemini"] --> Race{"Promise.race:<br/>Response vs 15s Timer"}
-    Race -->|Response arrives first| Parse{"Valid JSON<br/>matching schema?"}
-    Race -->|Timer fires first| Fallback["Return score = 0<br/>mark as evaluation failed"]
-    Parse -->|Yes| Success["Return verdict to client"]
-    Parse -->|No / malformed| Fallback
-    Fallback --> Log["Log incident for review"]
+    A["apiFetch&lt;T&gt;(url)<br/>Generic Function"] --> B{"Kaunsa Type<br/>Pass kiya gaya?"}
+    B -->|"apiFetch&lt;Contest[]&gt;"| C["Result: Contest[]<br/>(Contest list)"]
+    B -->|"apiFetch&lt;{score:number}&gt;"| D["Result: {score:number}<br/>(AI Analytics)"]
+    B -->|"apiFetch&lt;LiveSession&gt;"| E["Result: LiveSession<br/>(Room details)"]
+    
+    style A fill:#4a90d9,stroke:#333,color:#fff
 ```
 
-This is a deliberately **conservative failure mode**: rather than retrying indefinitely (which risks the user staring at a spinner) or guessing a passing score (which would be exploitable), any judging failure resolves to the lowest possible score plus a logged incident, and the UI is expected to clearly label these as "evaluation failed" rather than a genuine `0/N` performance.
+### Real Code Example
 
-### 10.2 Empty Submission Filtering
+```typescript
+async function apiFetch<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("API failed");
+  return response.json() as Promise<T>;
+}
 
-Before any Gemini call is made, `/api/dsa/evaluate-all` strips out questions the user left completely blank, scoring them as incorrect locally. This avoids spending LLM quota/latency judging nothing, and also avoids the (small but real) risk of a model hallucinating a "correct" verdict for an empty answer.
+// Use case 1:
+const contests = await apiFetch<Contest[]>("/api/contests"); 
+// Use case 2:
+const analysis = await apiFetch<{ score: number }>("/api/ai-judge");
+```
+
+**Real-Life Scenario:** Ye ek **universal charger** ki tarah hai — ek hi charger (function) alag-alag device (types) ko charge kar sakta hai bina alag-alag charger banaye. `<T>` ek "placeholder plug" hai jo har baar apni shape adjust kar leta hai.
+
+**Website pe kya Enable karta hai:**
+- Poore project mein sirf **ek hi** fetch function maintain karna padta hai — 15+ API endpoints ke liye 15+ alag functions nahi likhne padte
+- Naya API endpoint add karna 30-second ka kaam ban jaata hai: `apiFetch<NewType>("/api/new-route")`
+- Code review mein bugs kam milte hain kyunki duplicate logic hi nahi hai jo har jagah alag tarah se galat ho sake
 
 ---
 
-## 11. Performance & Optimization Strategy
+## 5. Type Guards for Untrusted AI Responses (Gemini Integration)
 
-1. **Incremental Static Regeneration (ISR)** — `/blogs` and `/leaderboard` use `revalidate = 60`, so most requests are served from Vercel's edge cache instead of hitting Postgres on every page load; the underlying data is at most 60 seconds stale.
-2. **Dynamic Imports (No SSR)** — `Monaco Editor` and `VideoRoom` depend on browser globals (`window`, `navigator`, `navigator.mediaDevices`) that don't exist during server rendering. Both are loaded via `dynamic(() => import(...), { ssr: false })`, avoiding build failures and unnecessary server compute spent server-rendering components that will be replaced on hydration anyway.
-3. **Optimized Animation Pipeline** — the landing page's GSAP ScrollTrigger animations check `prefersReducedMotion()` before running, saving CPU cycles and respecting accessibility preferences for motion-sensitive users.
-4. **Batched AI Calls** — as shown in §2.2, DSA evaluation batches every question into a single Gemini request rather than one call per question, reducing both latency (fewer round trips) and cost (fewer API calls billed).
+**Dard:** Gemini AI kabhi-kabhi malformed ya unexpected JSON return kar sakta hai — TypeScript `any`/`unknown` bolke seedha trust nahi karta.
 
 ```mermaid
-graph LR
-    A["ISR (revalidate=60)"] --> D["Fewer DB round trips"]
-    B["Dynamic ssr:false imports"] --> E["Faster server render, no build errors"]
-    C["Batched Gemini calls"] --> F["Lower latency + lower API cost"]
-    G["prefersReducedMotion check"] --> H["Accessible, CPU-friendly animations"]
+flowchart TD
+    A["Gemini API Response<br/>(unknown/any type)"] --> B{"isValidJudgment(data)<br/>Type Guard Check"}
+    B -->|"Schema match<br/>(passed, score, feedback)"| C["✅ TS confidently treats<br/>data as AIJudgment"]
+    B -->|"Malformed / missing fields"| D["❌ Fallback triggered<br/>score = 0, logged as failed"]
+    C --> E["UI safely renders<br/>feedback to user"]
+    D --> F["User dekhta hai:<br/>'Evaluation Failed' (honest message)"]
 ```
 
+### Real Code Example
+
+```typescript
+interface AIJudgment {
+  passed: boolean;
+  score: number;
+  feedback: string;
+}
+
+function isValidJudgment(data: any): data is AIJudgment {
+  return (
+    typeof data === "object" &&
+    typeof data.passed === "boolean" &&
+    typeof data.score === "number"
+  );
+}
+
+const aiRawResponse = await callGeminiAPI(code); 
+
+if (isValidJudgment(aiRawResponse)) {
+  console.log(aiRawResponse.feedback); 
+} else {
+  console.log("AI returned malformed JSON!");
+}
+```
+
+**Real-Life Scenario:** Jaise bank cheque clear karne se pehle signature verify karta hai — cheque "dikhta" to valid hai, lekin verification (type guard) ke bina blindly paisa release nahi karte. Agar signature match na kare, transaction reject (fallback score = 0).
+
+**Website pe kya Enable karta hai:**
+- Gemini kabhi crash-prone response de, poora contest-evaluation flow crash nahi hota — gracefully `0` score fallback hota hai
+- Users ko kabhi bhi ek **exploitable "free pass"** score nahi milta agar AI fail ho jaaye (security angle)
+- Poori app **AI ki unpredictability se insulate** ho jaati hai — untrusted external data safely handle hoti hai
+
 ---
 
-## 12. Security Considerations
+## 6. TypeScript Utility Types: Partial, Pick, Omit (Zero Code Duplication)
 
-* **No secrets in the client bundle** — Gemini API keys, LiveKit API secret, Cloudinary API secret, and the Postgres connection string all live server-side only, referenced from route handlers and never exposed to `NEXT_PUBLIC_*` environment variables.
-* **Short-lived, scoped LiveKit tokens** — join tokens are generated per-request with room-specific grants rather than a long-lived static credential, limiting the blast radius if a token leaks.
-* **Centralized auth gate** — because route protection lives in one middleware file (§4.4) rather than scattered per-page checks, there's a single place to audit for auth coverage gaps.
-* **LLM output is treated as untrusted input** — Gemini's JSON responses are parsed defensively with a fallback path (§10.1) rather than trusted blindly, since a malformed or unexpected model response should never crash a route handler or silently corrupt a `ContestAttempt` row.
-* **Public route allowlist is explicit, not inferred** — `/`, `/blogs`, `/sign-in`, `/sign-up`, `/api/upload` are the *only* paths excluded from the auth gate; everything else defaults to protected, which is the safer default direction for a route guard to fail toward.
-
----
-
-## 13. Future Scaling Roadmap
-
-Points worth flagging for a team growing beyond the current design:
-
-* **`ContestAttempt.submissions` as JSON** works well at current scale but will make per-question analytics (e.g. "which problems have the lowest pass rate") expensive once the table is large, since it requires JSON parsing at query time rather than indexed columns. A future migration could normalize this into a child `Submission` table if that analytics need materializes.
-* **LLM-as-a-Judge accuracy ceiling** — as contest difficulty grows, semantic judging without actual execution may need to be supplemented with a lightweight sandboxed execution path for problems where exact output-matching matters more than structural reasoning (e.g. strict Big-O/performance-sensitive problems).
-* **Admin role storage** — if the admin allowlist is currently a hardcoded email list, migrating it into Clerk's native role/metadata system would let admin management happen without a code deploy.
-* **Rate limiting on Gemini-backed routes** — batching helps cost, but as user count grows, per-user rate limiting on `/api/dsa/evaluate-all` and `/api/dev/submit` will likely be needed to prevent quota exhaustion from a small number of high-frequency users.
+**Dard:** Har screen (Signup, Leaderboard, Edit Profile) ke liye alag-alag `User` interface banana repetitive hai.
 
 ```mermaid
 graph TD
-    Now[Current Design] --> R1[Normalize submissions<br/>into child table]
-    Now --> R2["Hybrid judge: LLM + sandboxed exec for<br/>perf-sensitive problems"]
-    Now --> R3[Move admin roles<br/>into Clerk metadata]
-    Now --> R4[Add per-user rate limiting<br/>on Gemini-backed routes]
+    Base["interface User<br/>{ id, name, email,<br/>avatarUrl, createdAt }"]
+    
+    Base -->|"Pick&lt;User, 'name'|'avatarUrl'&gt;"| Leaderboard["LeaderboardData<br/>{ name, avatarUrl }"]
+    Base -->|"Partial&lt;User&gt;"| Update["UpdateProfilePayload<br/>{ id?, name?, email?... }"]
+    Base -->|"Omit&lt;User, 'id'|'createdAt'&gt;"| Register["RegisterPayload<br/>{ name, email, avatarUrl }"]
+    
+    style Base fill:#2d6e3e,stroke:#333,color:#fff
 ```
+
+### Real Code Example
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+  createdAt: Date;
+}
+
+type LeaderboardData = Pick<User, "name" | "avatarUrl">;
+type UpdateProfilePayload = Partial<User>;
+type RegisterPayload = Omit<User, "id" | "createdAt">;
+```
+
+**Real-Life Scenario:** Ek hi **Aadhar card** (base `User`) se alag-alag documents banate ho — Passport ke liye kuch fields chahiye (`Pick`), Voter ID ke liye kuch aur (`Omit`) — lekin source data ek hi hai, baar-baar naya form nahi bharte.
+
+**Website pe kya Enable karta hai:**
+- Leaderboard page sirf `name` + `avatarUrl` render karega — poora `User` object (email samet) leak nahi hoga frontend pe (privacy bhi improve hoti hai)
+- Profile edit form mein user sirf `name` change kare to poora object bhejne ki zaroorat nahi
+- Signup form automatically **sync rehta hai** `User` model ke saath — agar kal `phoneNumber` field add ho, `RegisterPayload` automatically update ho jaayega
 
 ---
 
-*End of document.*
+## 7. State Management with Type Narrowing (useState)
 
+**Dard:** Live session start hone se pehle state `null` hai, start hone ke baad object — bina check kiye crash: `Cannot read properties of null`.
+
+```mermaid
+stateDiagram-v2
+    [*] --> NullState: Page load hota hai<br/>session = null
+    NullState --> NullState: TS Error agar<br/>session.token access karo
+    NullState --> ActiveState: startSession() call hota hai<br/>setSession({roomId, token})
+    ActiveState --> ActiveState: if(session) check<br/>TS ab "narrow" kar deta hai
+    ActiveState --> [*]: session.token safely<br/>access hota hai
+```
+
+### Real Code Example
+
+```typescript
+interface LiveSession {
+  roomId: string;
+  token: string;
+}
+
+function LiveRoom() {
+  const [session, setSession] = useState<LiveSession | null>(null);
+
+  return (
+    <div>
+      {session ? (
+        <VideoPlayer token={session.token} />
+      ) : (
+        <button onClick={startSession}>Join Live Stream</button>
+      )}
+    </div>
+  );
+}
+```
+
+**Real-Life Scenario:** Flight boarding gate — jab tak boarding pass scan (session valid) nahi hota, gate khulta hi nahi (VideoPlayer render nahi hota). Security check (`if(session)`) pass kiye bina aage jaana possible hi nahi hai.
+
+**Website pe kya Enable karta hai:**
+- LiveKit video room kabhi bhi `null` token ke saath connect karne ki koshish nahi karega — connection crash impossible ban jaata hai
+- Developer ko manually `if (session === null) return` jaise defensive checks yaad nahi rakhne padte — TypeScript khud force karta hai
+- Real-time mentorship sessions **production-grade stable** rehti hain kyunki race-condition wale null-access bugs compile-time pe hi khatam ho jaate hain
+
+---
+
+## 8. Discriminated Unions — Contest Evaluation State Machine
+
+**Bonus concept jo document mein nahi tha, lekin CodeSaarthi ke evaluation flow ke liye critical hai.**
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Evaluating: User submits
+    Evaluating --> Success: Gemini returns valid JSON
+    Evaluating --> Error: Timeout / malformed
+    Success --> [*]: Redirect to /history
+    Error --> Idle: Retry allowed
+```
+
+### Real Code Example
+
+```typescript
+type EvalState =
+  | { status: 'idle' }
+  | { status: 'evaluating' }
+  | { status: 'success'; data: { correct: number; total: number; accuracy: number } }
+  | { status: 'error'; message: string };
+
+function renderResult(state: EvalState) {
+  if (state.status === 'success') {
+    return `Accuracy: ${state.data.accuracy}%`; // TS jaanta hai 'data' exists
+  }
+  if (state.status === 'error') {
+    return `Failed: ${state.message}`; // TS jaanta hai 'message' exists
+  }
+  return 'Loading...';
+}
+```
+
+**Real-Life Scenario:** Traffic signal — Red, Yellow, Green — ek time pe sirf ek hi state active ho sakti hai, aur har state ka apna fixed "meaning" hai (Red = rukna, Green = jaana). Tum kabhi "Red aur Green dono active" wali invalid state nahi bana sakte.
+
+**Website pe kya Enable karta hai:**
+- Contest submission flow mein `isLoading=true` aur `isError=true` **ek saath** hone jaisi buggy states **impossible** ban jaati hain
+- `/history` dashboard, Recharts analytics — sab predictable, finite states follow karte hain, koi "undefined behavior" nahi
+
+---
+
+## 🗺️ Master Diagram — Poora TypeScript Ecosystem CodeSaarthi Mein
+
+```mermaid
+graph TD
+    subgraph Frontend["Frontend Layer"]
+        Props["Component Props<br/>(interface EditorProps)"]
+        State["useState Type Narrowing<br/>(LiveSession | null)"]
+        Fetch["Generic apiFetch&lt;T&gt;<br/>(Reusable API calls)"]
+    end
+
+    subgraph Contract["Network Contract Layer"]
+        ReqRes["Request/Response Interfaces<br/>(SubmitCodeRequest)"]
+    end
+
+    subgraph Backend["Backend / Route Handlers"]
+        Guard["Type Guards<br/>(isValidJudgment)"]
+        Utility["Utility Types<br/>(Pick, Omit, Partial)"]
+    end
+
+    subgraph Database["Database Layer"]
+        Prisma["Prisma Auto-Generated Types<br/>(Contest, User, LiveSession)"]
+    end
+
+    subgraph External["External / Untrusted"]
+        Gemini["Gemini AI Response<br/>(unknown until validated)"]
+    end
+
+    Props --> ReqRes
+    Fetch --> ReqRes
+    ReqRes --> Guard
+    Guard --> Gemini
+    Guard --> Utility
+    Utility --> Prisma
+    State --> Fetch
+
+    style Prisma fill:#2d6e3e,stroke:#333,color:#fff
+    style Gemini fill:#a33,stroke:#333,color:#fff
+    style Guard fill:#4a90d9,stroke:#333,color:#fff
+```
+
+**Is diagram ka matlab:** TypeScript ek single, unbroken chain banata hai — Database (Prisma) se lekar UI Component tak, har layer pe type-safety guaranteed hai. Sirf **ek jagah** (Gemini AI response) jaha external/untrusted data aata hai, wahi Type Guard ek "checkpoint" ki tarah kaam karta hai taaki untrusted data kabhi trusted zone mein bina validation ke na ghuse.
+
+---
+
+## 🎯 Summary Cheat-Sheet For the Interview (Master Answer)
+
+**Agar interviewer direct pooche:** *"Explain how TypeScript improved CodeSaarthi's architecture?"*
+
+> "TypeScript was the backbone of CodeSaarthi's type-safety and developer velocity. We enforced a serverless-first type safety model. Prisma automatically generated our database types, which we fed directly into our React components via props and Next.js route handlers as strict request/response payloads. For external integrations, we wrote custom Type Guards for untrusted Gemini AI responses, and engineered Generic fetch wrappers for network requests. By utilizing utility types like Pick and Omit, we kept our data contracts unified and DRY, ensuring zero critical runtime crashes across our entire real-time coding workspace."
+
+---
+
+## 📝 Quick Recall Table
+
+| Concept | Diagram Shows | Real-Life Analogy | Website Benefit |
+|---|---|---|---|
+| Props Typing | Compile-time rejection flow | ATM fixed menu | UI crash prevention |
+| Prisma Types | Schema → Types → Code sync | Aadhar centralized DB | Zero DB-code mismatch |
+| API Interfaces | Request/Response contract | Courier fixed form | FE/BE decoupled dev |
+| Generics | One function, many types | Universal charger | Zero duplicate fetch code |
+| Type Guards | Untrusted → Validated flow | Bank cheque signature check | AI failure isolated safely |
+| Utility Types | One base, many derived shapes | One Aadhar, many documents | DRY, privacy-safe payloads |
+| Type Narrowing | null → valid state check | Flight boarding gate | Null-crash impossible |
+| Discriminated Union | Finite state machine | Traffic signal | Impossible states impossible |
+
+---
