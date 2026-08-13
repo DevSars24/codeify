@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import type { EditorProps } from "@monaco-editor/react";
 import Select from "react-select";
@@ -89,9 +89,10 @@ export default function Home() {
   const [code, setCode] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mobileView, setMobileView] =
-    useState<"editor" | "response">("editor");
+  const [mobileView, setMobileView] = useState<"editor" | "response">("editor");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const syncTheme = () => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
@@ -104,8 +105,17 @@ export default function Home() {
   async function runAICommand(cmd: string) {
     if (!code.trim()) return alert("Please enter code first");
 
+    // Cancel in-flight request if user clicks another AI command
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setLoading(true);
     setResponse("");
+    setMobileView("response");
 
     try {
       const res = await fetch("/api/gemini", {
@@ -113,25 +123,40 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: `${cmd.toUpperCase()} this ${language.value} code:\n\n${code}`,
+          stream: true,
         }),
+        signal: controller.signal,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "AI Error");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "AI Error");
+      }
 
-      setResponse(data.text);
-      setMobileView("response");
+      if (!res.body) throw new Error("Response body missing");
+
+      setLoading(false); // Stop loading indicator instantly as stream starts
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        setResponse((prev) => prev + chunk);
+      }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       setResponse(`ERROR: ${err.message}`);
-      setMobileView("response");
     } finally {
       setLoading(false);
+      abortControllerRef.current = null;
     }
   }
 
   return (
     <div className="flex flex-col h-dvh bg-background text-foreground overflow-hidden">
-
       {/* MOBILE TABS */}
       <div className="md:hidden flex shrink-0 border-b border-border">
         {["editor", "response"].map((tab) => (
@@ -174,7 +199,6 @@ export default function Home() {
 
       {/* MAIN CONTENT */}
       <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-4 p-3 md:p-6 overflow-hidden">
-
         {/* EDITOR */}
         <div
           className={`flex-1 min-h-0 ${
@@ -204,13 +228,14 @@ export default function Home() {
             mobileView === "editor" ? "hidden md:flex" : "flex"
           }`}
         >
-          <div className="px-4 py-3 border-b border-border font-semibold shrink-0">
-            AI Response
+          <div className="px-4 py-3 border-b border-border font-semibold shrink-0 flex items-center justify-between">
+            <span>AI Response</span>
+            {loading && <span className="text-xs text-muted-foreground animate-pulse">Streaming...</span>}
           </div>
 
           {/* SCROLL AREA */}
           <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-20">
-            {loading ? (
+            {loading && !response ? (
               <div className="h-full flex items-center justify-center">
                 <RingLoader color="var(--foreground)" size={54} />
               </div>

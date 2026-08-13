@@ -1,6 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiCache } from "@/lib/ai/cache";
+import { getAIModel, executeAIWithRetry } from "@/lib/ai/client";
+import { NextResponse } from "next/server";
 
-/* ---------- HELPERS ---------- */
 function isQuotaError(error: any) {
   const msg = error?.message?.toLowerCase?.() || "";
   return (
@@ -14,16 +15,14 @@ function isQuotaError(error: any) {
 
 function safeJson(text: string) {
   try {
-    return JSON.parse(
-      text.replace(/```json/g, "").replace(/```/g, "").trim()
-    );
+    return JSON.parse(text.replace(/```json/g, "").replace(/```/g, "").trim());
   } catch {
     return null;
   }
 }
 
-/* ---------- API ---------- */
 export async function POST(req: Request) {
+  const startTime = Date.now();
   try {
     const body = await req.json();
     const { task, code } = body;
@@ -35,147 +34,111 @@ export async function POST(req: Request) {
       typeof code !== "string" ||
       code.trim().length < 5
     ) {
-      return new Response(
-        JSON.stringify({
-          verdict: "Invalid Submission",
-          score: 0,
-          feedback: "Task description or code is invalid.",
-        }),
-        { status: 200 }
-      );
+      return NextResponse.json({
+        verdict: "Invalid Submission",
+        score: 0,
+        feedback: "Task description or code is invalid.",
+      });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      return new Response(
-        JSON.stringify({
-          verdict: "Judge Unavailable",
-          score: 0,
-          feedback:
-            "Practice evaluation service is currently unavailable. Please contact Saurabh Singh.",
-        }),
-        { status: 200 }
-      );
+    // 1. In-Memory Cache Check
+    const cacheKey = aiCache.generateKey("dev_submit", { task, code });
+    const cachedResult = aiCache.get<any>(cacheKey);
+
+    if (cachedResult) {
+      console.log(`[Dev Submit Cache Hit] Returned in ${Date.now() - startTime}ms`);
+      return NextResponse.json(cachedResult, {
+        headers: {
+          "X-Cache": "HIT",
+          "X-Response-Time": `${Date.now() - startTime}ms`,
+        },
+      });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-flash-lite-latest",
-    });
     const prompt = `
-    You are Kautilya Saarthi — a strategic mentor inspired by Chanakya.
-    
-    Your role:
-    - Guide the coder logically
-    - Correct wrong intuition
-    - Explain WHY the approach succeeds or fails
-    - NEVER write full code
-    - NEVER give direct solutions
-    - Think like an interviewer
-    
-    Start your feedback with:
-    "Hey coder, don’t worry — Kautilya Saarthi is here to guide you."
-    
-    Task:
-    ${task}
-    
-    User Code:
-    ${code}
-    
-    Evaluation rules:
-    - Judge correctness logically
-    - Focus on design, clarity, and edge cases
-    - Penalize bad practices or weak structure
-    - Reward correct thinking even if code is imperfect
-    
-    Return ONLY valid JSON.
-    No markdown. No extra text.
-    
-    JSON format:
-    {
-      "verdict": "Accepted | Needs Improvement | Incorrect Approach",
-      "score": 0 or 1,
-      "feedback": "Explain mistakes, intuition gaps, clean-code advice, and interview-level guidance. Do NOT give full code."
-    }
-    `.trim();
-    
+You are Kautilya Saarthi — a strategic mentor inspired by Chanakya.
 
-    let result;
+Role:
+- Guide the coder logically and correct wrong intuition.
+- Start feedback with: "Hey coder, don’t worry — Kautilya Saarthi is here to guide you."
+- NEVER write full code or give direct solutions.
+
+Task:
+${task}
+
+User Code:
+${code}
+
+Return ONLY valid JSON matching:
+{
+  "verdict": "Accepted" | "Needs Improvement" | "Incorrect Approach",
+  "score": 0 | 1,
+  "feedback": "string"
+}
+`.trim();
+
     try {
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), 15000)
+      const model = getAIModel("gemini-flash-lite-latest");
+
+      const result = await executeAIWithRetry(() =>
+        model.generateContent({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2,
+          },
+        })
       );
-      result = await Promise.race([
-        model.generateContent(prompt),
-        timeoutPromise
-      ]) as any;
-    } catch (aiError: any) {
-      console.error("DEV SUBMIT AI ERROR:", aiError);
 
-      if (aiError.message === "Timeout") {
-        return new Response(
-          JSON.stringify({
-            error: "Evaluation timed out, please retry."
-          }),
-          { status: 504, headers: { "Content-Type": "application/json" } }
-        );
-      }
+      const rawText = result?.response?.text?.();
+      const parsed = rawText ? safeJson(rawText) : null;
 
-      if (isQuotaError(aiError)) {
-        return new Response(
-          JSON.stringify({
-            verdict: "Judge Busy",
-            score: 0,
-            feedback:
-              "Many users are submitting solutions right now. The evaluation server is temporarily busy. Please retry shortly.",
-          }),
-          { status: 200 }
-        );
-      }
-
-      return new Response(
-        JSON.stringify({
-          verdict: "Judge Error",
-          score: 0,
-          feedback: "AI failed to evaluate your solution.",
-        }),
-        { status: 200 }
-      );
-    }
-
-    const rawText = result?.response?.text?.();
-    const parsed = rawText ? safeJson(rawText) : null;
-
-    if (!parsed) {
-      return new Response(
-        JSON.stringify({
+      if (!parsed) {
+        return NextResponse.json({
           verdict: "Evaluation Error",
           score: 0,
-          feedback:
-            "Evaluation engine returned invalid output. Please retry.",
-        }),
-        { status: 200 }
-      );
-    }
+          feedback: "Evaluation engine returned invalid output. Please retry.",
+        });
+      }
 
-    return new Response(
-      JSON.stringify({
+      const finalPayload = {
         verdict: parsed.verdict ?? "Needs Improvement",
         score: parsed.score === 1 ? 1 : 0,
         feedback: parsed.feedback ?? "No feedback provided.",
-      }),
-      { status: 200 }
-    );
+      };
+
+      aiCache.set(cacheKey, finalPayload);
+
+      return NextResponse.json(finalPayload, {
+        headers: {
+          "X-Cache": "MISS",
+          "X-Response-Time": `${Date.now() - startTime}ms`,
+        },
+      });
+    } catch (aiError: any) {
+      console.error("DEV SUBMIT AI ERROR:", aiError);
+
+      if (isQuotaError(aiError)) {
+        return NextResponse.json({
+          verdict: "Judge Busy",
+          score: 0,
+          feedback:
+            "Many users are submitting solutions right now. The evaluation server is temporarily busy. Please retry shortly.",
+        });
+      }
+
+      return NextResponse.json({
+        verdict: "Judge Error",
+        score: 0,
+        feedback: "AI failed to evaluate your solution.",
+      });
+    }
   } catch (error) {
     console.error("DEV SUBMIT FATAL:", error);
-
-    return new Response(
-      JSON.stringify({
-        verdict: "Internal Error",
-        score: 0,
-        feedback:
-          "An internal server error occurred. Please contact Saurabh Singh.",
-      }),
-      { status: 200 }
-    );
+    return NextResponse.json({
+      verdict: "Internal Error",
+      score: 0,
+      feedback: "An internal server error occurred.",
+    });
   }
 }
