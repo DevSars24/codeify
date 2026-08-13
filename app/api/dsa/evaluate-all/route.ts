@@ -1,7 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiCache } from "@/lib/ai/cache";
+import { getAIModel, executeAIWithRetry } from "@/lib/ai/client";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
   try {
     const { questions, submissions, language } = await req.json();
 
@@ -12,116 +14,98 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      console.error("GEMINI_API_KEY is not set");
-      return NextResponse.json(
-        { error: "API configuration error" },
-        { status: 500 }
-      );
-    }
-
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-
-    // Count total questions
     const total = questions.length;
 
-    // STRICT CHECK: Count how many submissions are actually non-empty
-    const submissionEntries = Object.entries(submissions)
-      .map(([idx, code]: [string, any]) => {
-        const question = questions[parseInt(idx)];
-        const submittedCode = (code || "").trim();
-        return {
-          questionIndex: parseInt(idx),
-          questionTitle: question?.title || "Unknown",
-          questionDescription: question?.description || "",
-          testCases: question?.testCases || [],
-          submission: submittedCode,
-          isEmpty: submittedCode.length === 0 || submittedCode.length < 10 // Less than 10 chars = empty
-        };
-      });
+    // Filter valid submission entries
+    const submissionEntries = Object.entries(submissions).map(([idx, code]: [string, any]) => {
+      const question = questions[parseInt(idx)];
+      const submittedCode = (code || "").trim();
+      return {
+        questionIndex: parseInt(idx),
+        questionTitle: question?.title || "Unknown",
+        questionDescription: question?.description || "",
+        testCases: question?.testCases || [],
+        submission: submittedCode,
+        isEmpty: submittedCode.length < 10,
+      };
+    });
 
-    // Count how many are actually submitted (non-empty)
-    const validSubmissions = submissionEntries.filter(e => !e.isEmpty);
+    const validSubmissions = submissionEntries.filter((e) => !e.isEmpty);
 
-    // If ALL submissions are empty or nearly empty, return 0 immediately
     if (validSubmissions.length === 0) {
       return NextResponse.json({
         correct: 0,
         total: total,
-        accuracy: 0
+        accuracy: 0,
       });
     }
 
-    const prompt = `
-      You are a STRICT competitive programming judge.
-      Language: ${language}
-      
-      IMPORTANT: Be VERY STRICT. Only mark a submission as correct if the code logic is completely correct.
-      Empty submissions or placeholder code = WRONG.
-      Incomplete code = WRONG.
-      Syntax errors = WRONG.
-      
-      Evaluate ${validSubmissions.length} submissions. For each submission, check if the code logic is correct based on the problem description and test cases.
-      
-      Submissions to evaluate:
-      ${JSON.stringify(validSubmissions, null, 2)}
-      
-      Return ONLY a JSON object with this exact structure (no other text):
-      {"correct": <number>, "total": ${total}, "accuracy": <number>}
-      
-      Remember: accuracy = (correct / ${total}) * 100. Round to nearest integer.
-    `;
+    // 1. In-Memory Cache Check
+    const cacheKey = aiCache.generateKey("dsa_eval_all", { validSubmissions, language });
+    const cachedResult = aiCache.get<any>(cacheKey);
 
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), 15000)
+    if (cachedResult) {
+      console.log(`[Evaluate All Cache Hit] Returned in ${Date.now() - startTime}ms`);
+      return NextResponse.json(cachedResult, {
+        headers: {
+          "X-Cache": "HIT",
+          "X-Response-Time": `${Date.now() - startTime}ms`,
+        },
+      });
+    }
+
+    // 2. Optimized Prompt and JSON Mode
+    const prompt = `
+You are a STRICT competitive programming judge.
+Language: ${language}
+
+Evaluate ${validSubmissions.length} submissions against their problems and test cases.
+Submissions:
+${JSON.stringify(validSubmissions)}
+
+Return ONLY JSON with this structure:
+{"correct": <number>, "total": ${total}, "accuracy": <number>}
+`.trim();
+
+    const model = getAIModel("gemini-flash-lite-latest");
+
+    const result = await executeAIWithRetry(() =>
+      model.generateContent({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.1,
+        },
+      })
     );
 
-    const result = await Promise.race([
-      model.generateContent(prompt),
-      timeoutPromise
-    ]) as any;
-
     const rawText = result.response.text();
-    const text = rawText.replace(/```json|```/g, "").trim();
+    const cleanedText = rawText.replace(/```json|```/g, "").trim();
 
     let parsed;
     try {
-      // Try to extract JSON from the response
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        parsed = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("No JSON found");
-      }
-    } catch (parseError) {
-      console.error("JSON Parse Error:", text);
-      // STRICT: If parsing fails, give 0 credit
-      parsed = {
-        correct: 0,
-        total: total,
-        accuracy: 0
-      };
+      parsed = JSON.parse(cleanedText);
+    } catch {
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+      parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : { correct: 0, total, accuracy: 0 };
     }
 
-    // Validate and clamp values
     const correct = Math.min(Math.max(0, parsed.correct || 0), total);
     const accuracy = Math.round((correct / total) * 100);
+    const finalPayload = { correct, total, accuracy };
 
-    return NextResponse.json({ correct, total, accuracy });
+    aiCache.set(cacheKey, finalPayload);
+
+    return NextResponse.json(finalPayload, {
+      headers: {
+        "X-Cache": "MISS",
+        "X-Response-Time": `${Date.now() - startTime}ms`,
+      },
+    });
   } catch (error: any) {
     console.error("EVALUATE_ALL_ERROR:", error);
-    if (error.message === "Timeout") {
-      return NextResponse.json(
-        { error: "Evaluation timed out, please retry." },
-        { status: 504 }
-      );
-    }
     return NextResponse.json(
-      {
-        error: error.message || "Evaluation failed",
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      },
+      { error: error.message || "Evaluation failed" },
       { status: 500 }
     );
   }
