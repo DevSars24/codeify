@@ -2,7 +2,7 @@
 
 import { useEffect, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Cpu, Zap, Layers, ListOrdered, Play, Code2, Sparkles } from "lucide-react";
+import { Cpu, Zap, Layers, ListOrdered, Play, Code2, Sparkles, Sliders } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 const TOPICS = ["Arrays", "Strings", "Stack", "Queue", "LinkedList", "BinarySearch", "Recursion", "DP"];
@@ -24,67 +24,90 @@ export default function DsaPracticeArena() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-background text-foreground">
-        <main className="max-w-6xl mx-auto pt-28 pb-20 px-4 md:px-6">
-          <div className="mb-12 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted border border-border text-xs font-medium text-muted-foreground mb-4">
-              <Zap size={14} className="text-primary" /> DSA Arena
+      <div className="min-h-screen bg-ambient-mesh text-foreground pt-28 pb-20 px-4 md:px-6">
+        <main className="max-w-6xl mx-auto space-y-10">
+          {/* Header */}
+          <div className="max-w-2xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-muted-foreground shadow-xs">
+              <Zap size={13} className="text-primary" />
+              <span>DSA Practice Arena</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">Configure your practice session</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-frost">
+              Configure your practice round
+            </h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Select topic, programming language, difficulty, and problem count to launch your AI practice contest.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <section className="lg:col-span-8 surface-card p-6 md:p-8">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-6 flex items-center gap-2">
-                <Layers size={14} /> Topic
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-                {TOPICS.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setConfig({ ...config, topic: t })}
-                    className={`py-4 rounded-md text-sm font-medium border transition-colors cursor-pointer ${
-                      config.topic === t
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
+            {/* Left Selection Area */}
+            <section className="lg:col-span-8 glass-card p-6 md:p-8 space-y-8">
+              {/* Topics Grid */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                  <Layers size={14} className="text-primary" /> Select Topic
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {TOPICS.map((t) => {
+                    const isSelected = config.topic === t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setConfig({ ...config, topic: t })}
+                        className={`py-3.5 px-3 rounded-xl text-xs font-medium border transition-all cursor-pointer text-center ${
+                          isSelected
+                            ? "bg-foreground text-background border-white shadow-md font-semibold"
+                            : "bg-white/[0.02] border-white/[0.07] text-muted-foreground hover:border-white/[0.18] hover:text-foreground hover:bg-white/[0.04]"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Language Selector */}
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-                <Code2 size={14} /> Language
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {["Python", "C++", "JavaScript", "Java"].map((lang) => (
-                  <button
-                    key={lang}
-                    type="button"
-                    onClick={() => setConfig({ ...config, language: lang })}
-                    className={`py-3 rounded-md text-xs font-mono font-medium border transition-colors cursor-pointer ${
-                      config.language === lang
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                    }`}
-                  >
-                    {lang}
-                  </button>
-                ))}
+              {/* Language Selection */}
+              <div className="pt-2 border-t border-white/[0.06]">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                  <Code2 size={14} className="text-primary" /> Target Language
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {["Python", "C++", "JavaScript", "Java"].map((lang) => {
+                    const isSelected = config.language === lang;
+                    return (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => setConfig({ ...config, language: lang })}
+                        className={`py-3 px-3 rounded-xl text-xs font-mono transition-all cursor-pointer text-center border ${
+                          isSelected
+                            ? "bg-white/[0.1] border-white/[0.3] text-foreground font-semibold shadow-xs"
+                            : "bg-white/[0.02] border-white/[0.07] text-muted-foreground hover:border-white/[0.18] hover:text-foreground"
+                        }`}
+                      >
+                        {lang}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </section>
 
+            {/* Right Sidebar Config */}
             <section className="lg:col-span-4 space-y-4">
-              <div className="surface-card p-6">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-                  <ListOrdered size={14} /> Questions: {config.count}
-                </h3>
+              {/* Question Count Slider */}
+              <div className="glass-card p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <ListOrdered size={14} className="text-primary" /> Questions
+                  </h3>
+                  <span className="font-mono text-sm font-bold text-foreground">
+                    {config.count}
+                  </span>
+                </div>
                 <input
                   type="range"
                   min="1"
@@ -93,32 +116,41 @@ export default function DsaPracticeArena() {
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setConfig({ ...config, count: parseInt(e.target.value) })
                   }
-                  className="w-full accent-primary"
+                  className="w-full accent-primary h-1.5 rounded-lg cursor-pointer bg-white/[0.1]"
                 />
-              </div>
-
-              <div className="surface-card p-6">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-                  <Cpu size={14} /> Difficulty
-                </h3>
-                <div className="flex gap-2">
-                  {["Basic", "Medium", "Hard"].map((l) => (
-                    <button
-                      key={l}
-                      type="button"
-                      onClick={() => setConfig({ ...config, level: l })}
-                      className={`flex-1 py-2 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
-                        config.level === l
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "border-border text-muted-foreground hover:bg-muted"
-                      }`}
-                    >
-                      {l}
-                    </button>
-                  ))}
+                <div className="flex justify-between text-[10px] text-muted-foreground/60 font-mono">
+                  <span>1 Question</span>
+                  <span>10 Questions</span>
                 </div>
               </div>
 
+              {/* Difficulty Selection */}
+              <div className="glass-card p-5 space-y-3">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Cpu size={14} className="text-primary" /> Difficulty Level
+                </h3>
+                <div className="flex gap-2">
+                  {["Basic", "Medium", "Hard"].map((l) => {
+                    const isSelected = config.level === l;
+                    return (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => setConfig({ ...config, level: l })}
+                        className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-white/[0.12] border-white/[0.25] text-foreground font-semibold"
+                            : "border-white/[0.06] bg-white/[0.02] text-muted-foreground hover:bg-white/[0.05]"
+                        }`}
+                      >
+                        {l}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Launch Contest Button */}
               <button
                 type="button"
                 onClick={() => {
@@ -130,17 +162,20 @@ export default function DsaPracticeArena() {
                   }).toString();
                   router.push(`/contestdsa?${query}`);
                 }}
-                className="btn-primary w-full cursor-pointer flex items-center justify-center gap-2"
+                className="btn-primary w-full cursor-pointer h-12 flex items-center justify-center gap-2 shadow-lg"
               >
-                Start Practice Contest <Play size={14} />
+                <span>Launch Practice Contest</span>
+                <Play size={14} />
               </button>
 
-              <div className="surface-card p-5 overflow-hidden rounded-xl border border-border mt-4 space-y-2">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <Sparkles size={12} className="text-primary" /> AI Evaluation Mode
-                </h4>
+              {/* Information Pill */}
+              <div className="glass-card p-4 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <Sparkles size={13} className="text-emerald-400" />
+                  <span>AI Simulation & Review</span>
+                </div>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  Submissions receive AI-estimated assessments and edge-case feedback powered by ultra-low latency Groq AI with Gemini fallback.
+                  Fast output prediction and algorithmic complexity assessment powered by ultra-low latency Groq with Gemini fallback.
                 </p>
               </div>
             </section>

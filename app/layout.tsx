@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" data-theme="light" suppressHydrationWarning>
-        <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased theme-transition`}>
+      <html lang="en" data-theme="dark" suppressHydrationWarning>
+        <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased`}>
           {children}
         </body>
       </html>
