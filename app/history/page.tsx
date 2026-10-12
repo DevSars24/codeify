@@ -95,7 +95,12 @@ export default function HistoryPage() {
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-28 space-y-8">
         <div>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Mission logs</p>
+          <div className="flex items-center gap-2 mb-1">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Mission logs</p>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-medium">
+              AI-Estimated Practice Scores
+            </span>
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight">Welcome back, {user?.firstName || "coder"}</h1>
         </div>
 

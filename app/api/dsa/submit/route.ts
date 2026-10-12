@@ -1,101 +1,66 @@
-import { aiCache } from "@/lib/ai/cache";
-import { getAIModel, executeAIWithRetry } from "@/lib/ai/client";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { assessCodeWithAI } from "@/lib/ai/service";
 
-function getSystemErrorMessage(error: any) {
-  const msg = error?.message?.toLowerCase() || "";
-  if (msg.includes("api_key") || msg.includes("key not found"))
-    return "API Configuration Error: Check your GEMINI_API_KEY environment variable.";
-  if (msg.includes("quota") || msg.includes("429"))
-    return "Quota Exceeded: Your Gemini API free tier limit has been reached.";
-  if (msg.includes("overloaded") || msg.includes("503"))
-    return "Model Overloaded: Server is currently busy. Retried automatically.";
-  return "Internal Judge Error: " + msg;
-}
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const startTime = Date.now();
   try {
-    const { question, code, language } = await req.json();
+    const { userId } = await auth();
+    const body = await req.json();
+    const { question, title, code, language, problemId, description } = body;
 
-    if (!question || !code) {
+    const problemTitle = title || question || "DSA Problem";
+    const userCode = code?.trim();
+
+    if (!userCode) {
       return NextResponse.json({
         verdict: "Input Error",
+        verdictLabel: "Input Error",
         score: 0,
-        feedback: "The judge received empty code or question text.",
+        aiEstimatedScore: 0,
+        scoreLabel: "AI-estimated score",
+        feedback: "Empty code submitted. Please write a solution before submitting.",
+        isVerified: false,
+        disclaimer: "AI-estimated assessment — code was not executed on a sandbox runner.",
       });
     }
 
-    // 1. In-Memory LRU Cache Check
-    const cacheKey = aiCache.generateKey("dsa_submit", { question, code, language });
-    const cachedResult = aiCache.get<any>(cacheKey);
-
-    if (cachedResult) {
-      console.log(`[DSA Submit Cache Hit] Returned in ${Date.now() - startTime}ms`);
-      return NextResponse.json(cachedResult, {
-        headers: {
-          "X-Cache": "HIT",
-          "X-Response-Time": `${Date.now() - startTime}ms`,
-        },
-      });
-    }
-
-    // 2. Strict & Compressed Prompt
-    const prompt = `
-JUDGE TASK: Evaluate DSA Code.
-QUESTION: ${question}
-USER_CODE (${language || "auto"}): ${code}
-
-RULES:
-1. One concise sentence feedback maximum.
-2. Return ONLY a JSON object with keys: verdict ("Accepted" | "Wrong Answer" | "Time Limit Exceeded"), score (1 or 0), feedback (string).
-`.trim();
-
-    try {
-      const model = getAIModel("gemini-flash-lite-latest");
-
-      const result = await executeAIWithRetry(() =>
-        model.generateContent({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.1,
-          },
-        })
-      );
-
-      const response = await result.response;
-      const rawText = response.text();
-      const cleanedJson = rawText.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(cleanedJson);
-
-      const finalPayload = {
-        verdict: parsed.verdict || "Evaluated",
-        score: parsed.score ?? 0,
-        feedback: parsed.feedback || "Evaluation complete.",
-      };
-
-      // Store in LRU cache
-      aiCache.set(cacheKey, finalPayload);
-
-      return NextResponse.json(finalPayload, {
-        headers: {
-          "X-Cache": "MISS",
-          "X-Response-Time": `${Date.now() - startTime}ms`,
-        },
-      });
-    } catch (apiErr: any) {
-      return NextResponse.json({
-        verdict: "System Error",
-        score: 0,
-        feedback: getSystemErrorMessage(apiErr),
-      });
-    }
-  } catch (err: any) {
-    return NextResponse.json({
-      verdict: "Request Error",
-      score: 0,
-      feedback: "Failed to process the request payload.",
+    const assessment = await assessCodeWithAI({
+      userId: userId || "anonymous",
+      code: userCode,
+      language: language || "python",
+      problemId: problemId,
+      problemTitle,
+      problemDescription: description || "",
     });
+
+    return NextResponse.json({
+      verdict: assessment.verdictLabel,
+      verdictLabel: assessment.verdictLabel,
+      score: assessment.aiEstimatedScore >= 70 ? 1 : 0, // Legacy 0/1 score
+      aiEstimatedScore: assessment.aiEstimatedScore, // Accurate 0-100 AI estimate
+      scoreLabel: "AI-estimated score",
+      isVerified: false,
+      disclaimer: assessment.disclaimer,
+      feedback: assessment.summary,
+      timeComplexity: assessment.timeComplexity,
+      spaceComplexity: assessment.spaceComplexity,
+      likelyEdgeCaseFailures: assessment.likelyEdgeCaseFailures,
+      confidence: assessment.confidence,
+      provider: assessment.provider,
+      model: assessment.model,
+      cached: assessment.cached,
+      assessmentId: assessment.assessmentId,
+    });
+  } catch (error: any) {
+    console.error("[DSA Submit API Error]:", error);
+    return NextResponse.json(
+      {
+        error: error?.message || "Failed to assess submission.",
+        disclaimer: "AI-estimated assessment — code was not executed on a sandbox runner.",
+      },
+      { status: error?.status || 500 }
+    );
   }
 }

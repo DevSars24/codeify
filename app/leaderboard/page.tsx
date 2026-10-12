@@ -72,7 +72,7 @@ export default async function LeaderboardPage() {
             <Trophy size={14} className="text-primary" /> Global rankings
           </div>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Leaderboard</h1>
-          <p className="text-muted-foreground">Top developers ranked by XP from contests.</p>
+          <p className="text-muted-foreground text-sm">Top developers ranked by practice XP earned from AI-assessed DSA challenges.</p>
         </div>
         <LeaderboardList leaderboard={leaderboard} />
       </main>
