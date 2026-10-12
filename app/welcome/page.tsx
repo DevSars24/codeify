@@ -13,7 +13,7 @@ import {
   ArrowRight,
   Terminal,
   BookOpen,
-  Trophy
+  Trophy,
 } from "lucide-react";
 
 export default function WelcomePage() {
@@ -22,8 +22,12 @@ export default function WelcomePage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn) router.replace("/sign-in");
-    setMounted(true);
+    if (isLoaded && !isSignedIn) {
+      router.replace("/sign-in");
+    } else if (isLoaded && isSignedIn) {
+      const timer = setTimeout(() => setMounted(true), 10);
+      return () => clearTimeout(timer);
+    }
   }, [isLoaded, isSignedIn, router]);
 
   if (!isLoaded || !isSignedIn) return null;
@@ -31,115 +35,113 @@ export default function WelcomePage() {
   const quickActions = [
     {
       title: "DSA Arena",
-      desc: "Practice Data Structures & Algorithms",
-      icon: <Terminal className="w-5 h-5" />,
+      desc: "Practice Data Structures & Algorithms with AI feedback",
+      icon: <Terminal className="w-5 h-5 text-foreground" />,
       href: "/dsa",
+      tag: "Algorithms",
     },
     {
       title: "Dev Lab",
-      desc: "Build real-world projects",
-      icon: <Code2 className="w-5 h-5" />,
+      desc: "Build real-world fullstack challenges",
+      icon: <Code2 className="w-5 h-5 text-foreground" />,
       href: "/dev",
+      tag: "Projects",
     },
     {
       title: "Live Sessions",
-      desc: "Join interactive mentorship",
-      icon: <Zap className="w-5 h-5" />,
+      desc: "Join real-time interactive peer coding rooms",
+      icon: <Zap className="w-5 h-5 text-foreground" />,
       href: "/sessions",
+      tag: "Realtime",
     },
   ];
 
   const stats = [
-    { label: "Topics", value: "50+", icon: <BookOpen className="w-4 h-4" /> },
-    { label: "Problems", value: "200+", icon: <Code2 className="w-4 h-4" /> },
-    { label: "Compete", value: "Live", icon: <Trophy className="w-4 h-4" /> },
+    { label: "Topics", value: "50+", icon: <BookOpen className="w-4 h-4 text-primary" /> },
+    { label: "Problems", value: "200+", icon: <Code2 className="w-4 h-4 text-primary" /> },
+    { label: "Compete", value: "Live", icon: <Trophy className="w-4 h-4 text-primary" /> },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-ambient-mesh text-foreground overflow-hidden relative">
       <Navbar />
 
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.035]"
-          style={{
-            backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }}
-        />
-      </div>
-
       {/* Main Content */}
-      <main className="relative z-10 pt-28 md:pt-36 pb-20 px-4 md:px-6">
-        <div className="max-w-6xl mx-auto">
-
+      <main className="relative z-10 pt-32 md:pt-40 pb-20 px-4 md:px-6">
+        <div className="max-w-6xl mx-auto space-y-16">
           {/* Hero Section */}
           <div
-            className={`text-center mb-20 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`text-center space-y-5 transition-all duration-700 ${
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
           >
             {/* Greeting Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-muted border border-border backdrop-blur-sm mb-8">
-              <Sparkles className="w-4 h-4 text-foreground" />
-              <span className="text-sm text-muted-foreground">Welcome back to your workspace</span>
+            <div className="badge-pill mx-auto">
+              <Sparkles className="w-3.5 h-3.5 text-foreground" />
+              <span>Workspace Active</span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-6">
-              <span className="text-foreground">Hello, </span>
-              <span className="relative">
-                <span className="text-foreground">
-                  {user?.firstName || "Developer"}
-                </span>
-              </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-frost">
+              Hello, {user?.firstName || "Developer"}
             </h1>
 
             {/* Subtitle */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Your practice queue is ready. Pick the next move and keep the streak honest.
+            <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+              Your practice queue is ready. Step into the arena, solve challenges, and hone your algorithmic instincts.
             </p>
           </div>
 
           {/* Quick Stats */}
           <div
-            className={`flex justify-center gap-8 md:gap-16 mb-16 transition-all duration-1000 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`flex justify-center gap-8 md:gap-16 transition-all duration-700 delay-150 ${
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
           >
             {stats.map((stat, i) => (
               <div key={i} className="text-center group cursor-default">
-                <div className="flex items-center justify-center gap-2 text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+                <div className="flex items-center justify-center gap-1.5 text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
                   {stat.icon}
-                  <span className="text-xs uppercase tracking-wider font-medium">{stat.label}</span>
+                  <span className="text-[11px] font-mono uppercase tracking-wider">{stat.label}</span>
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-2xl md:text-3xl font-bold font-mono text-foreground">{stat.value}</p>
               </div>
             ))}
           </div>
 
           {/* Action Cards */}
           <div
-            className={`grid grid-cols-1 md:grid-cols-3 gap-5 mb-16 transition-all duration-1000 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`grid grid-cols-1 md:grid-cols-3 gap-5 transition-all duration-700 delay-300 ${
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
           >
             {quickActions.map((action, idx) => (
               <button
                 key={idx}
                 onClick={() => router.push(action.href)}
-                className="group relative text-left"
+                className="glass-card p-7 text-left group transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
               >
-                <div className="relative h-full p-8 rounded-md bg-card backdrop-blur-xl border border-border hover:border-foreground transition-all duration-300 hover:-translate-y-1">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-md border border-border bg-muted mb-6 group-hover:scale-105 transition-transform duration-300">
-                    {action.icon}
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-11 h-11 rounded-xl border border-white/[0.1] bg-white/[0.03] flex items-center justify-center group-hover:scale-105 group-hover:border-white/[0.2] transition-all">
+                      {action.icon}
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-muted-foreground">
+                      {action.tag}
+                    </span>
                   </div>
 
-                  <h3 className="text-xl font-semibold text-foreground mb-2 transition-all">
+                  <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-white transition-colors">
                     {action.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                  <p className="text-muted-foreground text-xs leading-relaxed mb-6">
                     {action.desc}
                   </p>
+                </div>
 
-                  <div className="flex items-center text-muted-foreground group-hover:text-foreground transition-colors">
-                    <span className="text-sm font-medium">Enter</span>
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </div>
+                <div className="flex items-center text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors pt-2 border-t border-white/[0.05]">
+                  <span>Launch Module</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </button>
             ))}
@@ -147,18 +149,20 @@ export default function WelcomePage() {
 
           {/* Bottom CTA */}
           <div
-            className={`text-center transition-all duration-1000 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`text-center space-y-4 pt-4 transition-all duration-700 delay-500 ${
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
           >
             <Button
-              onClick={() => router.push("/home")}
-              className="group h-14 px-8 sm:px-10 rounded-md bg-primary text-primary-foreground hover:opacity-80 font-semibold text-base transition-all duration-300"
+              onClick={() => router.push("/dsa")}
+              className="btn-primary cursor-pointer px-8 h-12 text-sm font-semibold"
             >
-              <span>Explore All Features</span>
-              <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span>Explore Practice Challenges</span>
+              <ChevronRight className="ml-1.5 w-4 h-4" />
             </Button>
 
-            <p className="mt-6 text-muted-foreground text-xs uppercase tracking-[0.25em] font-medium">
-              CodeSaarthi • Your Coding Companion
+            <p className="text-muted-foreground/60 text-[11px] font-mono tracking-widest uppercase">
+              CodeSaarthi Workspace Engine
             </p>
           </div>
         </div>

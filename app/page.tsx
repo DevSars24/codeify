@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import {
-  Terminal, Cpu, Zap, Globe, ArrowRight, Lock, Users, Command, Layers, Sparkles
+  Terminal, Cpu, Zap, Globe, ArrowRight, Lock, Users, Command, Layers, Sparkles, ChevronRight, ShieldCheck
 } from "lucide-react";
 import { prefersReducedMotion } from "@/lib/motion";
 import TypingText from "@/components/TypingText";
@@ -26,30 +26,30 @@ export default function LandingPage() {
     if (prefersReducedMotion()) return;
 
     gsap.fromTo(".hero-line", 
-      { opacity: 0, y: 12 },
+      { opacity: 0, y: 14 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.45,
-        stagger: 0.08,
+        duration: 0.5,
+        stagger: 0.09,
         ease: "power2.out",
       }
     );
 
     gsap.fromTo(".hero-terminal", 
-      { opacity: 0, x: 24 },
+      { opacity: 0, x: 20 },
       {
         opacity: 1,
         x: 0,
-        duration: 0.5,
-        delay: 0.25,
+        duration: 0.55,
+        delay: 0.2,
         ease: "power3.out",
       }
     );
 
     if (featuresRef.current) {
       gsap.fromTo(".feature-card",
-        { opacity: 0, y: 16 },
+        { opacity: 0, y: 18 },
         {
           scrollTrigger: {
             trigger: featuresRef.current,
@@ -58,8 +58,8 @@ export default function LandingPage() {
           },
           opacity: 1,
           y: 0,
-          duration: 0.4,
-          stagger: 0.12,
+          duration: 0.45,
+          stagger: 0.1,
           ease: "power2.out",
         }
       );
@@ -69,95 +69,163 @@ export default function LandingPage() {
   return (
     <>
       <Navbar />
-      <main ref={heroRef} className="min-h-screen bg-background text-foreground overflow-x-hidden">
-        {/* Hero */}
-        <section className="pt-28 pb-20 md:pt-36 md:pb-28 px-6 max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <div className="hero-line inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted border border-border text-xs font-medium text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-foreground" />
-                Serious practice environment
+      <main ref={heroRef} className="min-h-screen bg-ambient-mesh text-foreground overflow-x-hidden relative">
+        {/* Ambient Top Light Beam */}
+        <div className="absolute top-0 inset-x-0 h-96 pointer-events-none overflow-hidden -z-10">
+          <div className="absolute left-1/2 -top-40 -translate-x-1/2 w-[650px] h-[350px] bg-indigo-500/[0.07] blur-[120px] rounded-full" />
+          <div className="absolute left-1/3 -top-20 w-[400px] h-[250px] bg-cyan-500/[0.04] blur-[100px] rounded-full" />
+        </div>
+
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 md:pt-40 md:pb-28 px-4 sm:px-6 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            {/* Left Hero Content */}
+            <div className="lg:col-span-7 space-y-7">
+              <div className="hero-line inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-muted-foreground shadow-xs">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span>CodeSaarthi Developer Arena v2</span>
+                <ChevronRight size={13} className="text-muted-foreground/60" />
               </div>
 
-              <h1 className="hero-line text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-tight leading-[1.1] text-foreground">
-                Practice, compete, and ship code in one focused workspace.
+              <h1 className="hero-line text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.08] text-frost">
+                Practice, compete, and master code without noise.
               </h1>
 
-              <p className="hero-line text-lg text-muted-foreground max-w-lg leading-relaxed">
-                CodeSaarthi gives you structured DSA contests, dev challenges, live sessions, and mission logs — without leaving the browser.
+              <p className="hero-line text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
+                A focused developer workspace for algorithmic mastery. Real-time AI simulation, edge-case evaluations, and deliberate practice directly in your browser.
               </p>
 
-              <div className="hero-line flex flex-col sm:flex-row gap-3">
+              <div className="hero-line flex flex-col sm:flex-row gap-3 pt-2">
                 <button
                   onClick={() => router.push("/welcome")}
-                  className="btn-primary cursor-pointer"
+                  className="btn-primary cursor-pointer text-sm font-semibold"
                 >
-                  Get started <ArrowRight size={16} />
+                  Start practicing free <ArrowRight size={15} />
                 </button>
                 <button
-                  onClick={() => router.push("/sign-in")}
-                  className="btn-secondary cursor-pointer"
+                  onClick={() => router.push("/dsa")}
+                  className="btn-secondary cursor-pointer text-sm font-medium"
                 >
-                  Sign in
+                  Browse DSA Topics
                 </button>
+              </div>
+
+              {/* Sub-hero trust metrics */}
+              <div className="hero-line pt-4 flex items-center gap-6 text-xs text-muted-foreground/80 font-mono">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck size={14} className="text-emerald-500/80" />
+                  <span>Sub-second AI feedback</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/30" />
+                  <span>4 Languages supported</span>
+                </div>
               </div>
             </div>
 
-            {/* Terminal preview */}
-            <div className="hero-terminal surface-card overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/50">
-                <div className="w-2.5 h-2.5 rounded-full border border-border bg-background" />
-                <div className="w-2.5 h-2.5 rounded-full border border-border bg-background" />
-                <div className="w-2.5 h-2.5 rounded-full border border-border bg-background" />
-                <span className="ml-2 text-xs text-muted-foreground font-mono">mission.stream</span>
-              </div>
-              <div className="min-h-[280px] p-6 font-mono text-sm leading-relaxed bg-card">
-                <p className="text-muted-foreground">09:42:11 / arena attached</p>
-                <p className="mt-4 text-muted-foreground">mentor: silent until needed</p>
-                <p className="mt-4 text-muted-foreground">focus: arrays / graph bfs / dp</p>
-                <div className="mt-8 text-lg md:text-xl">
-                  <TypingText
-                    text={[
-                      "> calibrate contest pace",
-                      "> solve without noise",
-                      "> review edge cases",
-                      "> ship the clean answer",
-                    ]}
-                  />
+            {/* Right Hero Terminal Mockup */}
+            <div className="lg:col-span-5 hero-terminal">
+              <div className="glass-card overflow-hidden shadow-2xl shadow-black/80 border border-white/[0.1]">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/30 border border-red-500/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/30 border border-amber-500/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/30 border border-emerald-500/50" />
+                  </div>
+                  <span className="text-[11px] text-muted-foreground font-mono">arena.stream.py</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-muted-foreground/70">
+                    AI-assessed
+                  </span>
+                </div>
+
+                <div className="p-5 font-mono text-xs leading-relaxed space-y-3.5 bg-black/40 min-h-[290px]">
+                  <div className="text-muted-foreground/60">// Workspace initialized</div>
+                  <div className="text-muted-foreground flex items-center gap-2">
+                    <span className="text-indigo-400">def</span>
+                    <span className="text-emerald-400">solve_problem</span>(arr: List[int]) -&gt; int:
+                  </div>
+                  <div className="pl-4 text-muted-foreground">
+                    <span className="text-purple-400">if</span> not arr: <span className="text-purple-400">return</span> -1
+                  </div>
+                  <div className="pl-4 text-muted-foreground">
+                    <span className="text-cyan-400"># Linear scan with edge-case guard</span>
+                  </div>
+                  <div className="pl-4 text-emerald-300">
+                    <TypingText
+                      text={[
+                        "return max_consecutive_ones(arr)",
+                        "solve_with_two_pointers(arr)",
+                        "check_boundary_conditions(arr)",
+                        "ship_optimal_solution(arr)",
+                      ]}
+                    />
+                  </div>
+                  
+                  <div className="pt-4 border-t border-white/[0.06] text-[11px] text-emerald-400 flex items-center gap-2">
+                    <Sparkles size={12} className="text-emerald-400 shrink-0" />
+                    <span>AI Simulation: Output predicted in 18ms</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Features */}
-        <section ref={featuresRef} id="features" className="py-20 px-6 border-t border-border bg-muted/30">
+        {/* Features Grid */}
+        <section ref={featuresRef} id="features" className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-12 max-w-2xl">
-              <div className="flex items-center gap-2 text-primary mb-4">
-                <Layers size={18} />
-                <span className="text-xs font-semibold uppercase tracking-wider">Platform</span>
+            <div className="mb-14 max-w-2xl">
+              <div className="inline-flex items-center gap-2 text-muted-foreground mb-3 font-mono text-xs uppercase tracking-wider">
+                <Layers size={13} className="text-foreground" /> Platform Capabilities
               </div>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
-                Everything you need to level up
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-frost mb-3">
+                Engineered for deliberate practice
               </h2>
-              <p className="text-muted-foreground">
-                Contests, analytics, blogs, and live sessions — built for engineers who want deliberate practice.
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                Contests, complexity diagnostics, and mentor explanations built for developers who take their craft seriously.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-5">
               {[
-                { icon: Terminal, title: "DSA Arena", desc: "Topic-based contests with AI evaluation and instant feedback on your submissions." },
-                { icon: Cpu, title: "Dev Challenges", desc: "Real-world tasks across web, backend, and system design — graded by AI mentors." },
-                { icon: Zap, title: "Mission Logs", desc: "Track accuracy, XP, and progress over time with clear analytics dashboards." },
-              ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="feature-card surface-card p-6 hover:border-foreground transition-colors">
-                  <div className="w-10 h-10 rounded-md border border-border bg-muted flex items-center justify-center mb-4">
-                    <Icon size={20} className="text-primary" />
+                {
+                  icon: Terminal,
+                  title: "Simulated Execution",
+                  desc: "Test custom inputs without waiting for heavy sandbox containers. AI predicts exact console output in milliseconds.",
+                  tag: "Low Latency",
+                },
+                {
+                  icon: Cpu,
+                  title: "Algorithmic Review",
+                  desc: "Submissions receive instant asymptotic complexity analysis (O(N) time/space) and concrete edge-case diagnostics.",
+                  tag: "Smart Review",
+                },
+                {
+                  icon: Zap,
+                  title: "Mission Logs & XP",
+                  desc: "Track solved challenges, accuracy trends, and problem-solving history on your interactive developer dashboard.",
+                  tag: "Analytics",
+                },
+              ].map(({ icon: Icon, title, desc, tag }) => (
+                <div
+                  key={title}
+                  className="feature-card glass-card p-6 flex flex-col justify-between group hover:border-white/[0.2] transition-all"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-10 h-10 rounded-xl border border-white/[0.1] bg-white/[0.03] flex items-center justify-center transition-colors group-hover:border-white/[0.25] group-hover:bg-white/[0.06]">
+                        <Icon size={18} className="text-foreground" />
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-muted-foreground">
+                        {tag}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-base mb-2 text-foreground">{title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
                   </div>
-                  <h3 className="font-semibold mb-2">{title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
                 </div>
               ))}
             </div>
@@ -165,89 +233,89 @@ export default function LandingPage() {
         </section>
 
         {/* Platform Showcase */}
-        <section className="py-20 px-6 border-t border-border bg-background">
+        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06]">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-12 text-center max-w-2xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted border border-border text-xs font-medium text-muted-foreground mb-4">
-                <Sparkles size={12} className="text-primary" /> Visual Walkthrough
+            <div className="mb-14 text-center max-w-2xl mx-auto space-y-3">
+              <div className="badge-pill inline-flex mx-auto">
+                <Sparkles size={12} className="text-foreground" /> Visual Tour
               </div>
-              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
-                Deliberate Practice in Action
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-frost">
+                The Interface in Action
               </h2>
-              <p className="text-muted-foreground">
-                Take a look at the developer workspace designed for pure focus, deep learning, and zero distractions.
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Take a look at the developer workspace designed for deep focus, crisp contrast, and zero distractions.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6">
               {/* Card 1 */}
-              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+              <div className="group glass-card overflow-hidden">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
                   <img
                     src="/work2.jpg"
                     alt="DSA Practice Arena"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">DSA Practice</span>
-                  <h3 className="text-xl font-semibold mt-2 mb-2">Interactive Coding Arena</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Solve core algorithmic problems with real-time feedback, detailed performance metrics, and a custom Monaco-based editor built for speed.
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">01 / Practice</span>
+                  <h3 className="text-lg font-semibold mt-1 mb-2">Interactive Coding Arena</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Solve core algorithmic problems with instant AI output simulation, complexity diagnostics, and integrated Monaco Editor.
                   </p>
                 </div>
               </div>
 
               {/* Card 2 */}
-              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+              <div className="group glass-card overflow-hidden">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
                   <img
                     src="/work3.jpg"
                     alt="Dev Challenges Lab"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">Dev Lab</span>
-                  <h3 className="text-xl font-semibold mt-2 mb-2">Real-world Project Environments</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Build real full-stack features, integrate databases, and configure system architecture. Code is verified against practical engineering test suites.
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">02 / Development</span>
+                  <h3 className="text-lg font-semibold mt-1 mb-2">Real-world Project Environments</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Build practical web and backend features evaluated against rigorous real-world architectural guidelines.
                   </p>
                 </div>
               </div>
 
               {/* Card 3 */}
-              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+              <div className="group glass-card overflow-hidden">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
                   <img
                     src="/work1.jpg"
                     alt="Mobile Coding Experience"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">Mobile First</span>
-                  <h3 className="text-xl font-semibold mt-2 mb-2">Code Anywhere, Anytime</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Laptop? No need. Anytime, Anywhere. CodeSaarthi is optimized for mobile browser interactions, allowing you to review and write code on your commute.
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">03 / Mobility</span>
+                  <h3 className="text-lg font-semibold mt-1 mb-2">Mobile Responsive Workspace</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Review problem statements, inspect code, and read mentor explanations smoothly on mobile browsers.
                   </p>
                 </div>
               </div>
 
               {/* Card 4 */}
-              <div className="group surface-card overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-foreground/50 transition-all duration-300">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+              <div className="group glass-card overflow-hidden">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
                   <img
                     src="/work4.jpg"
                     alt="Analytics Dashboard & History"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wider">Analytics</span>
-                  <h3 className="text-xl font-semibold mt-2 mb-2">History & Mission Logs</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Track your growth over time with interactive history visualizations, contest archives, and accuracy charts that highlight your strength areas.
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">04 / Growth</span>
+                  <h3 className="text-lg font-semibold mt-1 mb-2">Mission Logs & Growth Metrics</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Track your solved problems, review past submissions, and climb the developer leaderboard.
                   </p>
                 </div>
               </div>
@@ -255,101 +323,42 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Integrations */}
-        <section className="py-20 px-6">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div className="surface-card p-8 flex items-center justify-center min-h-[280px]">
-              <div className="relative w-48 h-48">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">CS</div>
-                </div>
-                {[Globe, Terminal, Cpu, Zap].map((Icon, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-10 h-10 rounded-md border border-border bg-card flex items-center justify-center"
-                    style={{
-                      top: `${[10, 10, 70, 70][i]}%`,
-                      left: `${[10, 70, 30, 70][i]}%`,
-                    }}
-                  >
-                    <Icon size={16} className="text-muted-foreground" />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-3">Workflow</p>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
-                From practice to production
-              </h2>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                Connect contests to your learning path. Review mission logs, climb the leaderboard, and join live coding sessions with mentors.
-              </p>
-              <Link href="/blogs" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">
-                Explore resources <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Trust */}
-        <section className="py-20 px-6 border-t border-border bg-muted/30">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center shrink-0">
-                <Lock size={18} className="text-muted-foreground" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Secure by default</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Authentication via Clerk, encrypted connections, and isolated contest environments.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center shrink-0">
-                <Users size={18} className="text-muted-foreground" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Built for teams</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Leaderboards, live sessions, and admin tools for instructors running cohorts.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-20 px-6 border-t border-border">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
-              Ready to start practicing?
+        {/* CTA Section */}
+        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative overflow-hidden">
+          <div className="absolute inset-0 bg-radial-glow pointer-events-none opacity-40" />
+          <div className="max-w-xl mx-auto text-center relative z-10 space-y-4">
+            <h2 className="text-3xl font-bold tracking-tight text-frost">
+              Ready to elevate your code?
             </h2>
-            <p className="text-muted-foreground mb-8">
-              Join contests, track your progress, and compete on the global leaderboard.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Step into the arena, test your solutions with AI guidance, and track your engineering progress.
             </p>
-            <button onClick={() => router.push("/welcome")} className="btn-primary cursor-pointer">
-              Start free <ArrowRight size={16} />
-            </button>
+            <div className="pt-2">
+              <button
+                onClick={() => router.push("/welcome")}
+                className="btn-primary cursor-pointer px-6"
+              >
+                Launch Workspace <ArrowRight size={15} />
+              </button>
+            </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="py-12 px-6 border-t border-border">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-8">
+        <footer className="py-12 px-4 sm:px-6 border-t border-white/[0.06] bg-black/30">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-md border border-border bg-muted flex items-center justify-center">
-                <Command size={14} className="text-primary" />
+              <div className="w-6 h-6 rounded-md border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
+                <Command size={12} className="text-foreground" />
               </div>
-              <span className="font-semibold text-sm">codesaarthi</span>
+              <span className="font-semibold text-foreground">CodeSaarthi</span>
             </div>
-            <div className="flex gap-6 text-sm text-muted-foreground">
+            <div className="flex gap-6">
               <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
               <Link href="/blogs" className="hover:text-foreground transition-colors">Blog</Link>
               <Link href="/leaderboard" className="hover:text-foreground transition-colors">Leaderboard</Link>
             </div>
-            <p className="text-xs text-muted-foreground">© 2026 CodeSaarthi</p>
+            <p className="font-mono text-[11px]">© 2026 CodeSaarthi</p>
           </div>
         </footer>
       </main>

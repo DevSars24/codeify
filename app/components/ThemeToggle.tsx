@@ -6,20 +6,18 @@ import gsap from "gsap";
 import { prefersReducedMotion } from "@/lib/motion";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const iconRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    const active = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+    if (active !== theme) {
+      setTheme(active);
+    }
   }, [theme]);
 
-  useEffect(() => {
-    const current = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-    setTheme(current);
-  }, []);
-
   const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
+    const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
     document.documentElement.dataset.theme = nextTheme;
 
@@ -27,7 +25,7 @@ export default function ThemeToggle() {
       gsap.fromTo(
         iconRef.current,
         { rotate: -90, scale: 0.75, opacity: 0 },
-        { rotate: 0, scale: 1, opacity: 1, duration: 0.28, ease: "power2.out" }
+        { rotate: 0, scale: 1, opacity: 1, duration: 0.25, ease: "power2.out" }
       );
     }
   };
@@ -35,16 +33,12 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="h-9 w-9 rounded-md border border-border bg-background hover:bg-muted text-foreground transition-colors cursor-pointer flex items-center justify-center"
+      className="h-8 w-8 rounded-lg border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] text-foreground transition-all cursor-pointer flex items-center justify-center shadow-xs"
       aria-label="Toggle theme"
-      title={theme === "light" ? "Switch to black theme" : "Switch to white theme"}
+      title={theme === "dark" ? "Switch to light theme" : "Switch to obsidian black theme"}
     >
       <span ref={iconRef} className="inline-flex">
-        {theme === "light" ? (
-          <Moon size={15} className="text-muted-foreground" />
-        ) : (
-          <Sun size={15} className="text-foreground" />
-        )}
+        {theme === "dark" ? <Sun size={14} className="text-amber-400/90" /> : <Moon size={14} className="text-indigo-400" />}
       </span>
     </button>
   );
