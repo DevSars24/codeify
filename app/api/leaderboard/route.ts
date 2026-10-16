@@ -75,8 +75,8 @@ export async function GET() {
 
         return NextResponse.json(leaderboard);
     } catch (error: any) {
-        console.error("LEADERBOARD_ERROR:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.warn("[Leaderboard API] Database unreachable, returning empty leaderboard:", error?.message);
+        return NextResponse.json([]);
     }
 }
 

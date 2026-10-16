@@ -9,14 +9,18 @@ import { SignedIn, SignedOut, SignOutButton, UserButton, useUser } from "@clerk/
 
 const PUBLIC_LINKS = [
   { label: "Features", href: "/#features" },
+  { label: "Playground", href: "/home" },
   { label: "Blogs", href: "/blogs" },
 ];
 
 const PROTECTED_LINKS = [
   { label: "Dashboard", href: "/welcome" },
+  { label: "Playground", href: "/home" },
+  { label: "DSA Arena", href: "/dsa" },
+  { label: "Dev Lab", href: "/dev" },
+  { label: "Sessions", href: "/sessions" },
   { label: "Mission Logs", href: "/history" },
   { label: "Leaderboard", href: "/leaderboard" },
-  { label: "Sessions", href: "/sessions" },
 ];
 
 export default function Navbar() {

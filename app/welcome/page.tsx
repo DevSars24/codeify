@@ -48,6 +48,13 @@ export default function WelcomePage() {
       tag: "Projects",
     },
     {
+      title: "Code Playground",
+      desc: "Instant code review & execution simulation across 11 programming languages",
+      icon: <Sparkles className="w-5 h-5 text-violet-400" />,
+      href: "/home",
+      tag: "11 Languages",
+    },
+    {
       title: "Live Sessions",
       desc: "Join real-time interactive peer coding rooms",
       icon: <Zap className="w-5 h-5 text-foreground" />,
@@ -58,7 +65,7 @@ export default function WelcomePage() {
 
   const stats = [
     { label: "Topics", value: "50+", icon: <BookOpen className="w-4 h-4 text-primary" /> },
-    { label: "Problems", value: "200+", icon: <Code2 className="w-4 h-4 text-primary" /> },
+    { label: "Languages", value: "11", icon: <Code2 className="w-4 h-4 text-primary" /> },
     { label: "Compete", value: "Live", icon: <Trophy className="w-4 h-4 text-primary" /> },
   ];
 
@@ -111,7 +118,7 @@ export default function WelcomePage() {
 
           {/* Action Cards */}
           <div
-            className={`grid grid-cols-1 md:grid-cols-3 gap-5 transition-all duration-700 delay-300 ${
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 transition-all duration-700 delay-300 ${
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
           >
