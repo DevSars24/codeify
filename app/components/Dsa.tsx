@@ -24,7 +24,7 @@ export default function DsaPracticeArena() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-ambient-mesh text-foreground pt-28 pb-20 px-4 md:px-6">
+      <div className="min-h-screen bg-black text-foreground pt-28 pb-20 px-4 md:px-6">
         <main className="max-w-6xl mx-auto space-y-10">
           {/* Header */}
           <div className="max-w-2xl space-y-3">
@@ -125,19 +125,18 @@ export default function DsaPracticeArena() {
               </div>
 
               {/* Visual Arena Preview */}
-              <div className="glass-card overflow-hidden p-0 relative aspect-[16/7] rounded-xl border border-white/[0.08]">
+              <div className="glass-card overflow-hidden p-0 relative aspect-[16/7] rounded-xl border border-white/[0.08] bg-black">
                 <img
                   src="/assets/DSA-arena.jpg"
                   alt="DSA Arena Live Preview"
-                  className="object-cover w-full h-full opacity-65"
+                  className="object-cover w-full h-full opacity-70"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#08080e] via-[#08080e]/40 to-transparent" />
                 <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs font-mono">
-                  <span className="text-white/90 font-semibold flex items-center gap-1.5">
+                  <span className="text-white font-semibold flex items-center gap-1.5 bg-black/80 px-2 py-0.5 rounded border border-white/10">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     Cloud Arena Active
                   </span>
-                  <span className="text-violet-300 text-[10px] bg-violet-500/20 px-2 py-0.5 rounded-full border border-violet-500/30">
+                  <span className="text-white text-[10px] bg-black/80 px-2 py-0.5 rounded-full border border-white/20">
                     Groq Engine
                   </span>
                 </div>

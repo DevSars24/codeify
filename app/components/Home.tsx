@@ -259,9 +259,9 @@ const customStyles = {
   }),
   menu: (base: any) => ({
     ...base,
-    backgroundColor: "#08080e",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.8)",
+    backgroundColor: "#000000",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.9)",
     borderRadius: 8,
     zIndex: 9999,
   }),
@@ -395,16 +395,16 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-4.5rem)] bg-ambient-mesh text-foreground overflow-hidden">
+    <div className="flex flex-col h-[calc(100dvh-4.5rem)] bg-black text-foreground overflow-hidden">
       {/* MOBILE TABS */}
-      <div className="md:hidden flex shrink-0 border-b border-white/[0.08] bg-[#050508]">
+      <div className="md:hidden flex shrink-0 border-b border-white/[0.08] bg-black">
         {["editor", "response"].map((tab) => (
-          <button
+            <button
             key={tab}
             onClick={() => setMobileView(tab as any)}
             className={`flex-1 py-3 text-xs font-mono font-semibold tracking-wider transition-colors ${
               mobileView === tab
-                ? "text-white border-b-2 border-violet-400 bg-white/[0.03]"
+                ? "text-white border-b-2 border-white bg-white/[0.05]"
                 : "text-muted-foreground"
             }`}
           >
@@ -414,7 +414,7 @@ export default function Home() {
       </div>
 
       {/* TOP CONTROLS & COMMANDS */}
-      <div className="shrink-0 p-3 sm:p-4 border-b border-white/[0.06] bg-[#08080e]/60 backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="shrink-0 p-3 sm:p-4 border-b border-white/[0.06] bg-black flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-56 sm:w-64">
             <Select

@@ -80,7 +80,7 @@ export default async function SessionsPage() {
     new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(date));
 
   return (
-    <div className="min-h-screen bg-ambient-mesh text-foreground overflow-hidden">
+    <div className="min-h-screen bg-black text-foreground overflow-hidden">
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-32 pb-20">
         <div className="text-center max-w-2xl mx-auto mb-12">

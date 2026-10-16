@@ -86,13 +86,7 @@ export default function LandingPage() {
   return (
     <>
       <Navbar />
-      <main ref={heroRef} className="min-h-screen bg-ambient-mesh text-foreground overflow-x-hidden relative">
-        {/* Ambient Cosmic Glow Beams */}
-        <div className="absolute top-0 inset-x-0 h-[600px] pointer-events-none overflow-hidden -z-10">
-          <div className="absolute left-1/2 -top-40 -translate-x-1/2 w-[800px] h-[450px] bg-violet-600/[0.12] blur-[150px] rounded-full" />
-          <div className="absolute left-1/4 -top-20 w-[500px] h-[300px] bg-cyan-500/[0.08] blur-[130px] rounded-full" />
-          <div className="absolute right-1/4 -top-10 w-[400px] h-[250px] bg-emerald-500/[0.06] blur-[110px] rounded-full" />
-        </div>
+      <main ref={heroRef} className="min-h-screen bg-black text-foreground overflow-x-hidden relative">
 
         {/* ─── Hero Section ─────────────────────────────────────────── */}
         <section className="pt-32 pb-20 md:pt-44 md:pb-28 px-4 sm:px-6 max-w-6xl mx-auto">
@@ -100,21 +94,21 @@ export default function LandingPage() {
             {/* Left Content */}
             <div className="lg:col-span-6 space-y-7">
               {/* Badge */}
-              <div className="hero-line inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-medium text-muted-foreground shadow-lg shadow-black/40 backdrop-blur-xl">
+              <div className="hero-line badge-pill inline-flex items-center gap-2.5 px-3.5 py-1.5 border-white/[0.15]">
                 <span className="flex h-2 w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
                 <span className="text-white/90 font-mono">CodeSaarthi v2</span>
-                <span className="text-white/30">|</span>
-                <span className="text-violet-300">Multi-Model Groq LPU</span>
+                <span className="text-white/20">|</span>
+                <span className="text-violet-300 font-mono">Multi-Model Groq LPU</span>
                 <ChevronRight size={13} className="text-muted-foreground/60" />
               </div>
 
               {/* Main Headline */}
-              <h1 className="hero-line text-4xl sm:text-5xl lg:text-[3.6rem] font-bold tracking-tight leading-[1.08]">
+              <h1 className="hero-line text-4xl sm:text-5xl lg:text-[3.6rem] font-bold tracking-tight leading-[1.08] text-white">
                 Practice, compete, and{" "}
-                <span className="gradient-text-cosmic">master code</span>{" "}
+                <span className="text-white underline decoration-white/20 underline-offset-8">master code</span>{" "}
                 without noise.
               </h1>
 
@@ -160,7 +154,7 @@ export default function LandingPage() {
 
             {/* Right Hero Showcase: Anime Coder Hero Artwork & Floating Matrix */}
             <div className="lg:col-span-6 hero-visual">
-              <div className="relative group rounded-2xl overflow-hidden glass-card-glow border border-white/[0.12] p-1.5 shadow-[0_0_50px_rgba(139,92,246,0.15)]">
+              <div className="relative group rounded-2xl overflow-hidden glass-card border border-white/[0.12] p-1.5">
                 {/* Visual Image */}
                 <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-black">
                   <Image
@@ -171,17 +165,16 @@ export default function LandingPage() {
                     className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
 
                   {/* Floating Top Hologram Pill */}
-                  <div className="absolute top-3 left-3 flex items-center gap-2 px-3 py-1 rounded-full bg-black/80 border border-violet-500/40 backdrop-blur-md text-[11px] font-mono text-violet-300 shadow-lg">
+                  <div className="absolute top-3 left-3 flex items-center gap-2 px-3 py-1 rounded-full bg-black/90 border border-white/20 text-[11px] font-mono text-white">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     <span>Mobile Round · Active</span>
                   </div>
 
                   {/* Floating Right Pill */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 border border-emerald-500/40 backdrop-blur-md text-[10px] font-mono text-emerald-300 shadow-lg">
-                    <Zap size={11} />
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/90 border border-white/20 text-[10px] font-mono text-white">
+                    <Zap size={11} className="text-yellow-400" />
                     <span>15/15 Passed</span>
                   </div>
 
@@ -239,24 +232,24 @@ export default function LandingPage() {
                   title: "Simulated Execution",
                   desc: "Test custom inputs without waiting for heavy sandbox containers. AI predicts exact console output in sub-200ms.",
                   tag: "Groq Powered",
-                  border: "hover:border-violet-500/40",
-                  iconColor: "text-violet-400",
+                  border: "hover:border-white/30",
+                  iconColor: "text-white",
                 },
                 {
                   icon: Cpu,
                   title: "Algorithmic Review",
                   desc: "Submissions receive instant asymptotic complexity analysis (O(N) time/space) and concrete edge-case diagnostics.",
                   tag: "Smart Review",
-                  border: "hover:border-cyan-500/40",
-                  iconColor: "text-cyan-400",
+                  border: "hover:border-white/30",
+                  iconColor: "text-white",
                 },
                 {
                   icon: Zap,
                   title: "11-Language Playground",
                   desc: "Instant code review, auto-fix, and logic explanations across Python, Java, C++, JS, TS, Go, Rust, and more.",
                   tag: "11 Languages",
-                  border: "hover:border-emerald-500/40",
-                  iconColor: "text-emerald-400",
+                  border: "hover:border-white/30",
+                  iconColor: "text-white",
                 },
               ].map(({ icon: Icon, title, desc, tag, border, iconColor }) => (
                 <div
@@ -302,21 +295,20 @@ export default function LandingPage() {
 
             <div className="grid md:grid-cols-2 gap-6">
               {/* Card 1: Anime Mobile Coder (Mobile & Desktop Round) */}
-              <div className="group glass-card overflow-hidden hover:border-violet-500/40 transition-all duration-300 hover:-translate-y-1">
+              <div className="group glass-card overflow-hidden hover:border-white/30 transition-all duration-300 hover:-translate-y-1">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-black">
                   <Image
                     src="/assets/anime_mobile_coder.jpg"
                     alt="Anime student solving coding interview round on mobile with floating holograms"
                     fill
-                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/80 border border-violet-500/40 text-violet-300 backdrop-blur-md">
+                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/90 border border-white/20 text-white">
                     01 / Mobile Coding Rounds
                   </span>
                 </div>
-                <div className="p-6">
+                <div className="p-6 bg-black">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Solve Coding Rounds Anywhere
                   </h3>
@@ -327,21 +319,20 @@ export default function LandingPage() {
               </div>
 
               {/* Card 2: Anime Coding Contest (Tournaments & Peer Battles) */}
-              <div className="group glass-card overflow-hidden hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1">
+              <div className="group glass-card overflow-hidden hover:border-white/30 transition-all duration-300 hover:-translate-y-1">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-black">
                   <Image
                     src="/assets/anime_coding_contest.jpg"
                     alt="Futuristic competitive coding tournament and leaderboard"
                     fill
-                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/80 border border-cyan-500/40 text-cyan-300 backdrop-blur-md">
+                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/90 border border-white/20 text-white">
                     02 / Competitive Battles
                   </span>
                 </div>
-                <div className="p-6">
+                <div className="p-6 bg-black">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Live Tournament & Leaderboard
                   </h3>
@@ -352,21 +343,20 @@ export default function LandingPage() {
               </div>
 
               {/* Card 3: 11-Language Playground & Anime Coder Hero */}
-              <div className="group glass-card overflow-hidden hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1">
+              <div className="group glass-card overflow-hidden hover:border-white/30 transition-all duration-300 hover:-translate-y-1">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-black">
                   <Image
                     src="/assets/anime_coder_hero.jpg"
                     alt="11 Language playground with AI code simulation and auto fix"
                     fill
-                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/80 border border-emerald-500/40 text-emerald-300 backdrop-blur-md">
+                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/90 border border-white/20 text-white">
                     03 / 11-Language Studio
                   </span>
                 </div>
-                <div className="p-6">
+                <div className="p-6 bg-black">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Multi-Language AI Code Studio
                   </h3>
@@ -377,21 +367,20 @@ export default function LandingPage() {
               </div>
 
               {/* Card 4: DSA Arena Curriculum */}
-              <div className="group glass-card overflow-hidden hover:border-amber-500/40 transition-all duration-300 hover:-translate-y-1">
+              <div className="group glass-card overflow-hidden hover:border-white/30 transition-all duration-300 hover:-translate-y-1">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-black">
                   <Image
                     src="/assets/DSA-arena.jpg"
                     alt="Real-world development challenges and algorithmic practice"
                     fill
-                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                    className="object-cover group-hover:scale-[1.03] transition-transform duration-500 opacity-90 group-hover:opacity-100"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/80 border border-amber-500/40 text-amber-300 backdrop-blur-md">
+                  <span className="absolute top-3 left-3 text-[10px] font-mono px-2.5 py-1 rounded-full bg-black/90 border border-white/20 text-white">
                     04 / Algorithmic Arena
                   </span>
                 </div>
-                <div className="p-6">
+                <div className="p-6 bg-black">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Structured Topic Tracks
                   </h3>
@@ -405,15 +394,12 @@ export default function LandingPage() {
         </section>
 
         {/* ─── Bottom CTA ───────────────────────────────────────────── */}
-        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-violet-600/[0.1] blur-[140px] rounded-full" />
-          </div>
+        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative bg-black">
           <div className="max-w-xl mx-auto text-center relative z-10 space-y-5">
-            <div className="badge-pill inline-flex mx-auto border-emerald-500/30 text-emerald-300">
+            <div className="badge-pill inline-flex mx-auto border-white/20 text-white">
               <Trophy size={13} /> Join Thousands of Developers
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-frost">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
               Ready to elevate your code?
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">

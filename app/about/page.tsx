@@ -10,16 +10,8 @@ export default function AboutDeveloperPage() {
   return (
     <main className="relative min-h-screen bg-black text-white overflow-hidden">
 
-      {/* ===== AURORA BACKGROUND (SOFT) ===== */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-purple-500/20 blur-[160px] rounded-full" />
-        <div className="absolute top-1/4 -right-40 w-[500px] h-[500px] bg-pink-500/20 blur-[160px] rounded-full" />
-        <div className="absolute -bottom-40 left-1/3 w-[500px] h-[500px] bg-cyan-500/20 blur-[160px] rounded-full" />
-      </div>
-
-      {/* Top & Bottom Fade */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 h-28 z-10 bg-gradient-to-b from-black to-transparent" />
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 h-28 z-10 bg-gradient-to-t from-black to-transparent" />
+      {/* Top & Bottom Header space */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-16 z-10 bg-black" />
 
       {/* ===== CONTENT ===== */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-24 space-y-24">
@@ -34,7 +26,7 @@ export default function AboutDeveloperPage() {
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
               Welcome to{" "}
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="text-white">
                 Sars Workspace
               </span>
             </h1>
@@ -164,7 +156,7 @@ export default function AboutDeveloperPage() {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-2xl sm:text-3xl font-semibold text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+    <h2 className="text-2xl sm:text-3xl font-semibold text-center text-white">
       {children}
     </h2>
   );
@@ -175,7 +167,7 @@ function ProfileLink({ label, href }: { label: string; href: string }) {
     <Link
       href={href}
       target="_blank"
-      className="px-4 py-2 rounded-full border border-white/10 text-zinc-200 hover:text-purple-400 hover:border-purple-400/40 transition"
+      className="px-4 py-2 rounded-full border border-white/10 text-zinc-200 hover:text-white hover:border-white/40 transition"
     >
       {label}
     </Link>

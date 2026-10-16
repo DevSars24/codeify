@@ -132,12 +132,7 @@ export default function ContestDev() {
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
 
     return (
-      <div className="h-[100dvh] bg-background text-foreground flex flex-col items-center justify-center overflow-hidden relative">
-        {/* Ambient Glow */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-1/2 top-1/3 -translate-x-1/2 w-[500px] h-[300px] bg-violet-500/[0.06] blur-[140px] rounded-full" />
-          <div className="absolute right-1/3 bottom-1/4 w-[300px] h-[200px] bg-emerald-500/[0.04] blur-[100px] rounded-full" />
-        </div>
+      <div className="h-[100dvh] bg-black text-foreground flex flex-col items-center justify-center overflow-hidden relative">
 
         <div className="relative z-10 max-w-md w-full glass-card p-8 text-center space-y-6 shadow-2xl shadow-black/60 mx-4">
           <h2 className="text-3xl font-black text-frost">
@@ -190,9 +185,9 @@ export default function ContestDev() {
 
   /* ================= UI ================= */
   return (
-    <div className="h-[100dvh] bg-background text-foreground flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-black text-foreground flex flex-col overflow-hidden">
 
-      <div className="shrink-0 p-3 border-b border-white/[0.06] bg-[#050508]/80 backdrop-blur-2xl z-20 flex justify-between items-center">
+      <div className="shrink-0 p-3 border-b border-white/[0.06] bg-black z-20 flex justify-between items-center">
         <div>
           <h1 className="font-bold text-sm">{title}</h1>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
@@ -209,9 +204,9 @@ export default function ContestDev() {
 
       <div className="flex-1 flex flex-col md:flex-row min-h-0 relative">
 
-        <div className={`md:w-1/2 border-b md:border-b-0 md:border-r border-white/[0.06] bg-[#050508]/40 flex flex-col ${mobileView === 'response' ? 'hidden md:flex' : 'hidden md:flex'}`}>
+        <div className={`md:w-1/2 border-b md:border-b-0 md:border-r border-white/[0.06] bg-black flex flex-col ${mobileView === 'response' ? 'hidden md:flex' : 'hidden md:flex'}`}>
           <div className="p-6 overflow-y-auto">
-            <h2 className="font-bold text-lg mb-4 text-violet-400">{currentTask.title}</h2>
+            <h2 className="font-bold text-lg mb-4 text-white">{currentTask.title}</h2>
             <div className="prose prose-sm dark:prose-invert text-muted-foreground">
               {currentTask.description}
             </div>
@@ -219,8 +214,8 @@ export default function ContestDev() {
         </div>
 
         {/* Mobile Question Overlay */}
-        <div className={`md:hidden p-4 bg-[#050508] border-b border-white/[0.06] ${mobileView === 'editor' ? 'block' : 'hidden'} max-h-[30vh] overflow-y-auto shrink-0`}>
-          <h2 className="font-bold text-sm text-violet-400 mb-1">{currentTask.title}</h2>
+        <div className={`md:hidden p-4 bg-black border-b border-white/[0.06] ${mobileView === 'editor' ? 'block' : 'hidden'} max-h-[30vh] overflow-y-auto shrink-0`}>
+          <h2 className="font-bold text-sm text-white mb-1">{currentTask.title}</h2>
           <p className="text-xs text-muted-foreground">{currentTask.description}</p>
         </div>
 
@@ -243,7 +238,7 @@ export default function ContestDev() {
           </div>
 
           {/* Feedback / Result View (Mobile) */}
-          <div className={`flex-1 p-6 bg-[#050508] ${mobileView === 'response' ? 'block' : 'hidden md:hidden'}`}>
+          <div className={`flex-1 p-6 bg-black ${mobileView === 'response' ? 'block' : 'hidden md:hidden'}`}>
             <div className="h-full flex flex-col justify-center items-center text-center">
               <div className="text-4xl mb-4">{verdict.includes("❌") ? "❌" : verdict.includes("⚠️") ? "⚠️" : "⚡"}</div>
               <pre className="whitespace-pre-wrap text-sm text-muted-foreground font-mono bg-white/[0.02] p-4 rounded-xl border border-white/[0.06] w-full">
@@ -253,10 +248,10 @@ export default function ContestDev() {
             </div>
           </div>
 
-          <div className="bg-[#050508] border-t border-white/[0.06] p-3 md:p-4 shrink-0 flex gap-3 z-50">
+          <div className="bg-black border-t border-white/[0.06] p-3 md:p-4 shrink-0 flex gap-3 z-50">
             <button
               onClick={submit}
-              className="flex-1 bg-violet-600 hover:bg-violet-500 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95"
+              className="flex-1 bg-white hover:bg-neutral-200 text-black py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95"
             >
               Run Code
             </button>

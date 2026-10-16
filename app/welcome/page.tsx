@@ -77,7 +77,7 @@ export default function WelcomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-ambient-mesh text-foreground overflow-hidden relative">
+    <div className="min-h-screen bg-black text-foreground overflow-hidden relative">
       <Navbar />
 
       {/* Main Content */}
@@ -90,15 +90,15 @@ export default function WelcomePage() {
             }`}
           >
             {/* Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-white/[0.02] text-xs font-mono text-muted-foreground backdrop-blur-md">
+            <div className="badge-pill inline-flex items-center gap-2 border-white/[0.14]">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <Sparkles className="w-3.5 h-3.5 text-foreground" />
+              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
               <span>Workspace Active · Cloud Database Connected</span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-frost">
-              Hello, {user?.firstName || "Developer"}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white">
+              Hello, <span className="gradient-text-cosmic">{user?.firstName || "Developer"}</span>
             </h1>
 
             {/* Subtitle */}
@@ -134,30 +134,29 @@ export default function WelcomePage() {
               <button
                 key={idx}
                 onClick={() => router.push(action.href)}
-                className="glass-card overflow-hidden p-0 text-left group transition-all duration-300 hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] border border-white/[0.08] hover:border-white/[0.2]"
+                className="glass-card overflow-hidden p-0 text-left group transition-all duration-300 hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between border border-white/[0.08] hover:border-white/[0.25]"
               >
                 {/* Visual Thumbnail */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/60">
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
                   <Image
                     src={action.image}
                     alt={action.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-75 group-hover:opacity-90"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
                     sizes="(max-width: 768px) 100vw, 25vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#08080e] via-[#08080e]/40 to-transparent" />
 
                   {/* Icon & Tag */}
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-lg bg-black/70 backdrop-blur-md border border-white/[0.12] flex items-center justify-center">
+                  <div className="absolute top-3 left-3 w-8 h-8 rounded-lg bg-black/90 border border-white/[0.15] flex items-center justify-center">
                     {action.icon}
                   </div>
-                  <span className="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.12] bg-black/70 backdrop-blur-md text-white/90">
+                  <span className="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.15] bg-black/90 text-white">
                     {action.tag}
                   </span>
                 </div>
 
                 {/* Card Content */}
-                <div className="p-5 flex-1 flex flex-col justify-between">
+                <div className="p-5 flex-1 flex flex-col justify-between bg-black">
                   <div>
                     <h3 className="text-base font-semibold text-foreground mb-1.5 group-hover:text-white transition-colors">
                       {action.title}
@@ -167,7 +166,7 @@ export default function WelcomePage() {
                     </p>
                   </div>
 
-                  <div className="flex items-center text-xs font-semibold text-violet-400 group-hover:text-violet-300 transition-colors pt-4 mt-4 border-t border-white/[0.06]">
+                  <div className="flex items-center text-xs font-semibold text-white/80 group-hover:text-white transition-colors pt-4 mt-4 border-t border-white/[0.06]">
                     <span>Launch Module</span>
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -184,7 +183,7 @@ export default function WelcomePage() {
           >
             <Button
               onClick={() => router.push("/dsa")}
-              className="btn-primary cursor-pointer px-8 h-12 text-sm font-semibold"
+              className="btn-cyber cursor-pointer px-8 h-12 text-sm font-semibold"
             >
               <span>Explore Practice Challenges</span>
               <ChevronRight className="ml-1.5 w-4 h-4" />

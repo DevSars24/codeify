@@ -291,9 +291,9 @@ export default function ContestDsa() {
   }
 
   return (
-    <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden font-sans">
+    <div className="h-screen bg-black text-foreground flex flex-col overflow-hidden font-sans">
       {/* Top Navbar */}
-      <nav className="h-14 border-b border-white/[0.06] flex items-center justify-between px-4 md:px-6 bg-[#050508]/90 backdrop-blur-2xl z-[100] shrink-0">
+      <nav className="h-14 border-b border-white/[0.06] flex items-center justify-between px-4 md:px-6 bg-black z-[100] shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
@@ -390,7 +390,7 @@ export default function ContestDsa() {
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* Left Pane: Problem Description */}
         <div
-          className={`w-full lg:w-[38%] overflow-y-auto p-6 md:p-8 border-r border-white/[0.06] bg-[#050508] ${
+          className={`w-full lg:w-[38%] overflow-y-auto p-6 md:p-8 border-r border-white/[0.06] bg-black ${
             mobileTab === "problem" ? "block" : "hidden lg:block"
           }`}
         >
@@ -444,7 +444,7 @@ export default function ContestDsa() {
 
         {/* Right Pane: Code Editor + Split AI Console */}
         <div
-          className={`w-full lg:flex-1 flex flex-col bg-[#08080e]/60 overflow-hidden ${
+          className={`w-full lg:flex-1 flex flex-col bg-black overflow-hidden ${
             mobileTab === "problem" ? "hidden lg:flex" : "flex"
           }`}
         >
@@ -474,7 +474,7 @@ export default function ContestDsa() {
 
           {/* Split Pane: Interactive AI Console */}
           <div
-            className={`w-full border-t border-white/[0.06] bg-[#050508] flex flex-col flex-1 overflow-hidden ${
+            className={`w-full border-t border-white/[0.06] bg-black flex flex-col flex-1 overflow-hidden ${
               mobileTab === "editor" ? "hidden lg:flex" : "flex"
             }`}
           >
@@ -777,7 +777,7 @@ export default function ContestDsa() {
             </div>
 
             {/* Bottom Contest Navigation Bar */}
-            <div className="h-14 border-t border-white/[0.06] px-4 flex items-center justify-between bg-[#050508]/95 backdrop-blur-xl shrink-0">
+            <div className="h-14 border-t border-white/[0.06] px-4 flex items-center justify-between bg-black shrink-0">
               <div className="text-[11px] text-muted-foreground hidden sm:block">
                 Auto-saved locally for this practice round
               </div>
