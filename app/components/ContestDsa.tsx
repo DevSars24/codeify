@@ -17,6 +17,8 @@ import {
   HelpCircle,
   Clock,
   Layers,
+  Code2,
+  ArrowRight,
 } from "lucide-react";
 
 const Editor = dynamic<EditorProps>(() => import("@monaco-editor/react"), { ssr: false });
@@ -291,29 +293,29 @@ export default function ContestDsa() {
   }
 
   return (
-    <div className="h-screen bg-black text-foreground flex flex-col overflow-hidden font-sans">
+    <div className="h-[100dvh] min-h-[100dvh] bg-black text-foreground flex flex-col overflow-hidden font-sans">
       {/* Top Navbar */}
-      <nav className="h-14 border-b border-white/[0.06] flex items-center justify-between px-4 md:px-6 bg-black z-[100] shrink-0">
-        <div className="flex items-center gap-3">
+      <nav className="h-14 border-b border-white/[0.06] flex items-center justify-between px-3 md:px-6 bg-black z-[100] shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <button
             onClick={() => router.back()}
-            className="p-1.5 hover:bg-muted rounded-md transition-colors"
+            className="p-1.5 hover:bg-muted rounded-md transition-colors shrink-0"
             title="Go Back"
           >
             <ChevronLeft size={18} />
           </button>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-black uppercase tracking-wider text-foreground">
+          <div className="flex items-center gap-2 truncate">
+            <span className="text-xs font-black uppercase tracking-wider text-foreground truncate">
               {params.get("topic") || "DSA"}
             </span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-semibold">
-              AI Practice Arena
+            <span className="hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-semibold shrink-0">
+              AI Arena
             </span>
           </div>
         </div>
 
         {/* Question Stepper */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-[40%] sm:max-w-none py-1">
           {questions.map((_: any, i: number) => (
             <button
               key={i}
@@ -322,12 +324,12 @@ export default function ContestDsa() {
                 setCurrentIndex(i);
                 setCode(submissions[i] || "");
               }}
-              className={`h-2 rounded-full transition-all ${
+              className={`h-2 rounded-full transition-all shrink-0 ${
                 i === currentIndex
-                  ? "w-7 bg-primary"
+                  ? "w-6 sm:w-7 bg-primary"
                   : submissions[i]
-                  ? "w-4 bg-muted-foreground/60"
-                  : "w-4 bg-muted hover:bg-muted-foreground/30"
+                  ? "w-3 sm:w-4 bg-muted-foreground/60"
+                  : "w-3 sm:w-4 bg-muted hover:bg-muted-foreground/30"
               }`}
               title={`Question ${i + 1}`}
             />
@@ -335,62 +337,65 @@ export default function ContestDsa() {
         </div>
 
         {/* Language Selector & Progress */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <select
             value={selectedLanguage}
             onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="bg-muted text-foreground text-xs font-mono px-2.5 py-1.5 rounded-md border border-border focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+            className="bg-muted text-foreground text-xs font-mono px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-md border border-border focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
           >
-            <option value="python">Python 3</option>
-            <option value="cpp">C++ (g++)</option>
-            <option value="javascript">JavaScript (Node)</option>
-            <option value="java">Java 17</option>
+            <option value="python">Python</option>
+            <option value="cpp">C++</option>
+            <option value="javascript">JS</option>
+            <option value="java">Java</option>
           </select>
           <span className="text-[11px] font-bold text-muted-foreground font-mono">
-            {currentIndex + 1} / {questions.length}
+            {currentIndex + 1}/{questions.length}
           </span>
         </div>
       </nav>
 
       {/* Mobile Tab Switcher */}
-      <div className="flex lg:hidden bg-white/[0.02] border-b border-white/[0.06] shrink-0">
+      <div className="flex lg:hidden bg-white/[0.02] border-b border-white/[0.08] shrink-0">
         <button
           onClick={() => setMobileTab("problem")}
-          className={`flex-1 py-3 text-[11px] font-bold tracking-wider transition-all ${
+          className={`flex-1 py-3 text-[11px] font-bold tracking-wider transition-all cursor-pointer ${
             mobileTab === "problem"
-              ? "text-foreground border-b-2 border-primary bg-background"
-              : "text-muted-foreground"
+              ? "text-white border-b-2 border-white bg-white/[0.06]"
+              : "text-muted-foreground hover:text-white"
           }`}
         >
           PROBLEM
         </button>
         <button
           onClick={() => setMobileTab("editor")}
-          className={`flex-1 py-3 text-[11px] font-bold tracking-wider transition-all ${
+          className={`flex-1 py-3 text-[11px] font-bold tracking-wider transition-all cursor-pointer ${
             mobileTab === "editor"
-              ? "text-foreground border-b-2 border-primary bg-background"
-              : "text-muted-foreground"
+              ? "text-white border-b-2 border-white bg-white/[0.06]"
+              : "text-muted-foreground hover:text-white"
           }`}
         >
           CODE
         </button>
         <button
           onClick={() => setMobileTab("console")}
-          className={`flex-1 py-3 text-[11px] font-bold tracking-wider transition-all ${
+          className={`flex-1 py-3 text-[11px] font-bold tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
             mobileTab === "console"
-              ? "text-foreground border-b-2 border-primary bg-background"
-              : "text-muted-foreground"
+              ? "text-white border-b-2 border-white bg-white/[0.06]"
+              : "text-muted-foreground hover:text-white"
           }`}
         >
-          AI CONSOLE
+          <span>AI CONSOLE</span>
+          {(simulationResult || assessmentResult) && (
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          )}
         </button>
       </div>
 
       {/* Main Workspace Layout */}
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative min-h-0">
         {/* Left Pane: Problem Description */}
         <div
-          className={`w-full lg:w-[38%] overflow-y-auto p-6 md:p-8 border-r border-white/[0.06] bg-black ${
+          className={`w-full lg:w-[38%] overflow-y-auto p-4 sm:p-6 md:p-8 border-r border-white/[0.06] bg-black flex-1 min-h-0 ${
             mobileTab === "problem" ? "block" : "hidden lg:block"
           }`}
         >
@@ -412,7 +417,7 @@ export default function ContestDsa() {
           </div>
 
           {/* Sample Test Cases */}
-          <div className="space-y-3 mb-10">
+          <div className="space-y-3 mb-8">
             <h3 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
               <Terminal size={13} className="text-primary" /> Sample Test Cases
             </h3>
@@ -440,50 +445,122 @@ export default function ContestDsa() {
               </div>
             ))}
           </div>
+
+          {/* Mobile Quick Switch to Editor Button */}
+          <div className="lg:hidden pb-10">
+            <button
+              onClick={() => setMobileTab("editor")}
+              className="btn-cyber w-full py-3 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-xl"
+            >
+              <Code2 size={15} />
+              <span>Solve Challenge (Open Editor)</span>
+              <ArrowRight size={15} />
+            </button>
+          </div>
         </div>
 
         {/* Right Pane: Code Editor + Split AI Console */}
         <div
-          className={`w-full lg:flex-1 flex flex-col bg-black overflow-hidden ${
+          className={`w-full lg:flex-1 flex flex-col bg-black overflow-hidden flex-1 min-h-0 ${
             mobileTab === "problem" ? "hidden lg:flex" : "flex"
           }`}
         >
           {/* Top Editor Area */}
           <div
-            className={`w-full ${
-              mobileTab === "console" ? "hidden lg:block lg:h-[48%]" : "h-[50%] lg:h-[52%]"
+            className={`w-full flex flex-col relative ${
+              mobileTab === "console"
+                ? "hidden lg:flex lg:h-[52%]"
+                : "flex-1 min-h-0 h-full lg:h-[52%]"
             }`}
           >
-            <Editor
-              theme={theme === "dark" ? "vs-dark" : "vs"}
-              language={selectedLanguage === "cpp" ? "cpp" : selectedLanguage}
-              value={code}
-              onChange={(v: string | undefined) => setCode(v ?? "")}
-              options={{
-                fontSize: 13,
-                minimap: { enabled: false },
-                fontFamily: "JetBrains Mono, Fira Code, monospace",
-                wordWrap: "on",
-                automaticLayout: true,
-                padding: { top: 12, bottom: 12 },
-                scrollBeyondLastLine: false,
-                lineNumbers: "on",
-              }}
-            />
+            {/* Mobile Editor Header */}
+            <div className="lg:hidden h-9 px-3 border-b border-white/[0.06] bg-white/[0.02] flex items-center justify-between text-xs font-mono shrink-0">
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1.5 truncate max-w-[65%]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="truncate">{q?.title || "Problem"}</span>
+              </span>
+              <span className="text-[10px] text-violet-300 font-bold bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/20">
+                {selectedLanguage}
+              </span>
+            </div>
+
+            {/* Monaco Editor Wrapper */}
+            <div className="flex-1 min-h-0 h-full w-full relative">
+              <Editor
+                height="100%"
+                theme={theme === "dark" ? "vs-dark" : "vs"}
+                language={selectedLanguage === "cpp" ? "cpp" : selectedLanguage}
+                value={code}
+                onChange={(v: string | undefined) => setCode(v ?? "")}
+                options={{
+                  fontSize: 13,
+                  minimap: { enabled: false },
+                  fontFamily: "JetBrains Mono, Fira Code, monospace",
+                  wordWrap: "on",
+                  automaticLayout: true,
+                  padding: { top: 12, bottom: 12 },
+                  scrollBeyondLastLine: false,
+                  lineNumbers: "on",
+                  lineNumbersMinChars: 3,
+                  fixedOverflowWidgets: true,
+                  tabSize: 2,
+                }}
+              />
+            </div>
+
+            {/* Mobile Editor Docked Quick Action Bar */}
+            <div className="lg:hidden h-13 border-t border-white/[0.08] px-3 bg-black/95 backdrop-blur-md flex items-center justify-between gap-2 shrink-0 z-10">
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={handleSimulate}
+                  disabled={isSimulating}
+                  className="px-2.5 py-1.5 bg-white/[0.05] hover:bg-white/[0.1] text-foreground text-xs font-semibold rounded-lg border border-white/[0.1] flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  title="Simulate output"
+                >
+                  {isSimulating ? (
+                    <Loader2 size={12} className="animate-spin text-primary" />
+                  ) : (
+                    <Zap size={12} className="text-emerald-400" />
+                  )}
+                  <span>Simulate</span>
+                </button>
+                <button
+                  onClick={handleAssess}
+                  disabled={isAssessing}
+                  className="px-2.5 py-1.5 bg-violet-500/20 hover:bg-violet-500/30 text-violet-200 text-xs font-bold rounded-lg border border-violet-500/30 flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  title="Submit for AI Assessment"
+                >
+                  {isAssessing ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <Sparkles size={12} className="text-violet-400" />
+                  )}
+                  <span>Assess</span>
+                </button>
+              </div>
+
+              <button
+                onClick={handleSaveAndNext}
+                className="px-3 py-1.5 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-lg flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer"
+              >
+                <span>{currentIndex === questions.length - 1 ? "Save" : "Next"}</span>
+                <ChevronLeft size={13} className="rotate-180" />
+              </button>
+            </div>
           </div>
 
           {/* Split Pane: Interactive AI Console */}
           <div
-            className={`w-full border-t border-white/[0.06] bg-black flex flex-col flex-1 overflow-hidden ${
+            className={`w-full border-t border-white/[0.06] bg-black flex flex-col flex-1 min-h-0 overflow-hidden ${
               mobileTab === "editor" ? "hidden lg:flex" : "flex"
             }`}
           >
             {/* Console Tabs Header */}
             <div className="h-10 border-b border-white/[0.06] flex items-center justify-between px-3 bg-white/[0.02] shrink-0">
-              <div className="flex gap-1">
+              <div className="flex gap-1 overflow-x-auto py-1">
                 <button
                   onClick={() => setConsoleTab("simulate")}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-colors ${
+                  className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer ${
                     consoleTab === "simulate"
                       ? "bg-background text-foreground border border-border shadow-xs"
                       : "text-muted-foreground hover:text-foreground"
@@ -493,7 +570,7 @@ export default function ContestDsa() {
                 </button>
                 <button
                   onClick={() => setConsoleTab("assess")}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-colors ${
+                  className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer ${
                     consoleTab === "assess"
                       ? "bg-background text-foreground border border-border shadow-xs"
                       : "text-muted-foreground hover:text-foreground"
@@ -504,7 +581,7 @@ export default function ContestDsa() {
                 {assessmentResult && (
                   <button
                     onClick={() => setConsoleTab("mentor")}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-colors ${
+                    className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-colors whitespace-nowrap cursor-pointer ${
                       consoleTab === "mentor"
                         ? "bg-background text-foreground border border-border shadow-xs"
                         : "text-muted-foreground hover:text-foreground"
@@ -515,12 +592,20 @@ export default function ContestDsa() {
                 )}
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons & Mobile Back Button */}
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setMobileTab("editor")}
+                  className="lg:hidden px-2.5 py-1 bg-white/[0.06] text-white text-xs font-semibold rounded border border-white/[0.12] flex items-center gap-1 cursor-pointer"
+                >
+                  <Code2 size={12} />
+                  <span>Editor</span>
+                </button>
+
                 <button
                   onClick={handleSimulate}
                   disabled={isSimulating}
-                  className="px-3 py-1 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold rounded border border-border flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  className="hidden sm:inline-flex px-3 py-1 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold rounded border border-border items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                   title="Predict standard output using Groq AI without server execution"
                 >
                   {isSimulating ? (
@@ -528,7 +613,7 @@ export default function ContestDsa() {
                   ) : (
                     <Zap size={12} className="text-primary" />
                   )}
-                  Simulate with AI
+                  Simulate
                 </button>
                 <button
                   onClick={handleAssess}
@@ -541,7 +626,7 @@ export default function ContestDsa() {
                   ) : (
                     <CheckCircle2 size={12} />
                   )}
-                  Submit for Assessment
+                  Submit
                 </button>
               </div>
             </div>
@@ -782,10 +867,18 @@ export default function ContestDsa() {
                 Auto-saved locally for this practice round
               </div>
 
-              <div className="flex gap-2.5 ml-auto">
+              <div className="flex gap-2 sm:gap-2.5 ml-auto items-center">
+                <button
+                  onClick={() => setMobileTab("editor")}
+                  className="lg:hidden px-3 py-2 bg-white/[0.06] hover:bg-white/[0.12] text-foreground font-bold text-xs uppercase tracking-wider rounded-md border border-white/[0.12] transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Code2 size={13} className="text-violet-400" />
+                  <span>Edit Code</span>
+                </button>
+
                 <button
                   onClick={handleSaveAndNext}
-                  className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground font-bold text-xs uppercase tracking-wider rounded-md border border-border transition-all active:scale-95 cursor-pointer"
+                  className="px-3.5 sm:px-4 py-2 bg-muted hover:bg-muted/80 text-foreground font-bold text-xs uppercase tracking-wider rounded-md border border-border transition-all active:scale-95 cursor-pointer"
                 >
                   {currentIndex === questions.length - 1 ? "Save Current" : "Save & Next"}
                 </button>
