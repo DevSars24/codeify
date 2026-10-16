@@ -28,7 +28,7 @@ export default function DsaPracticeArena() {
         <main className="max-w-6xl mx-auto space-y-10">
           {/* Header */}
           <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-muted-foreground shadow-xs">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-mono text-muted-foreground shadow-xs">
               <Zap size={13} className="text-primary" />
               <span>DSA Practice Arena</span>
             </div>
@@ -56,10 +56,10 @@ export default function DsaPracticeArena() {
                         key={t}
                         type="button"
                         onClick={() => setConfig({ ...config, topic: t })}
-                        className={`py-3.5 px-3 rounded-xl text-xs font-medium border transition-all cursor-pointer text-center ${
+                        className={`py-3.5 px-3 rounded-xl text-xs font-medium border transition-all duration-200 cursor-pointer text-center ${
                           isSelected
-                            ? "bg-foreground text-background border-white shadow-md font-semibold"
-                            : "bg-white/[0.02] border-white/[0.07] text-muted-foreground hover:border-white/[0.18] hover:text-foreground hover:bg-white/[0.04]"
+                            ? "bg-foreground text-background border-white/50 shadow-lg shadow-black/30 font-semibold"
+                            : "bg-white/[0.02] border-white/[0.06] text-muted-foreground hover:border-white/[0.14] hover:text-foreground hover:bg-white/[0.04]"
                         }`}
                       >
                         {t}
@@ -70,7 +70,7 @@ export default function DsaPracticeArena() {
               </div>
 
               {/* Language Selection */}
-              <div className="pt-2 border-t border-white/[0.06]">
+              <div className="pt-2 border-t border-white/[0.05]">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                   <Code2 size={14} className="text-primary" /> Target Language
                 </h3>
@@ -82,10 +82,10 @@ export default function DsaPracticeArena() {
                         key={lang}
                         type="button"
                         onClick={() => setConfig({ ...config, language: lang })}
-                        className={`py-3 px-3 rounded-xl text-xs font-mono transition-all cursor-pointer text-center border ${
+                        className={`py-3 px-3 rounded-xl text-xs font-mono transition-all duration-200 cursor-pointer text-center border ${
                           isSelected
-                            ? "bg-white/[0.1] border-white/[0.3] text-foreground font-semibold shadow-xs"
-                            : "bg-white/[0.02] border-white/[0.07] text-muted-foreground hover:border-white/[0.18] hover:text-foreground"
+                            ? "bg-white/[0.08] border-white/[0.2] text-foreground font-semibold shadow-md shadow-black/20"
+                            : "bg-white/[0.02] border-white/[0.06] text-muted-foreground hover:border-white/[0.14] hover:text-foreground"
                         }`}
                       >
                         {lang}
@@ -116,9 +116,9 @@ export default function DsaPracticeArena() {
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setConfig({ ...config, count: parseInt(e.target.value) })
                   }
-                  className="w-full accent-primary h-1.5 rounded-lg cursor-pointer bg-white/[0.1]"
+                  className="w-full accent-primary h-1.5 rounded-lg cursor-pointer bg-white/[0.08]"
                 />
-                <div className="flex justify-between text-[10px] text-muted-foreground/60 font-mono">
+                <div className="flex justify-between text-[10px] text-muted-foreground/50 font-mono">
                   <span>1 Question</span>
                   <span>10 Questions</span>
                 </div>
@@ -137,10 +137,10 @@ export default function DsaPracticeArena() {
                         key={l}
                         type="button"
                         onClick={() => setConfig({ ...config, level: l })}
-                        className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
+                        className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? "bg-white/[0.12] border-white/[0.25] text-foreground font-semibold"
-                            : "border-white/[0.06] bg-white/[0.02] text-muted-foreground hover:bg-white/[0.05]"
+                            ? "bg-white/[0.1] border-white/[0.2] text-foreground font-semibold"
+                            : "border-white/[0.05] bg-white/[0.02] text-muted-foreground hover:bg-white/[0.04]"
                         }`}
                       >
                         {l}
@@ -162,7 +162,7 @@ export default function DsaPracticeArena() {
                   }).toString();
                   router.push(`/contestdsa?${query}`);
                 }}
-                className="btn-primary w-full cursor-pointer h-12 flex items-center justify-center gap-2 shadow-lg"
+                className="btn-primary w-full cursor-pointer h-12 flex items-center justify-center gap-2 shadow-lg shadow-black/30"
               >
                 <span>Launch Practice Contest</span>
                 <Play size={14} />
@@ -172,10 +172,10 @@ export default function DsaPracticeArena() {
               <div className="glass-card p-4 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                   <Sparkles size={13} className="text-emerald-400" />
-                  <span>AI Simulation & Review</span>
+                  <span>Multi-Model AI Engine</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  Fast output prediction and algorithmic complexity assessment powered by ultra-low latency Groq with Gemini fallback.
+                  Groq-powered simulation with multi-key load balancing. Gemini fallback ensures zero-downtime AI coverage.
                 </p>
               </div>
             </section>

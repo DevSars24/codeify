@@ -37,7 +37,7 @@ export default function DevPracticePlatform() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <section className="lg:col-span-8 surface-card p-6 md:p-8">
+            <section className="lg:col-span-8 glass-card p-6 md:p-8">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-6 flex items-center gap-2">
                 <Layers size={14} /> Track
               </h3>
@@ -60,7 +60,7 @@ export default function DevPracticePlatform() {
             </section>
 
             <section className="lg:col-span-4 space-y-4">
-              <div className="surface-card p-6">
+              <div className="glass-card p-6">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                   <ListOrdered size={14} /> Tasks
                 </h3>
@@ -80,7 +80,7 @@ export default function DevPracticePlatform() {
                 </div>
               </div>
 
-              <div className="surface-card p-6">
+              <div className="glass-card p-6">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                   <Cpu size={14} /> Difficulty
                 </h3>
@@ -112,7 +112,7 @@ export default function DevPracticePlatform() {
                 Start practice <Play size={14} />
               </button>
 
-              <div className="surface-card p-5 overflow-hidden rounded-xl border border-border mt-4">
+              <div className="glass-card p-5 overflow-hidden rounded-xl border border-white/[0.06] mt-4">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
                   <Play size={12} className="text-primary" /> Lab Preview
                 </h4>

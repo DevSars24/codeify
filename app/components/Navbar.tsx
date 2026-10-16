@@ -34,35 +34,38 @@ export default function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50 py-3.5 px-4 sm:px-6 transition-all">
       <div className="mx-auto max-w-6xl">
         <div
-          className={`flex items-center justify-between h-13 px-4 sm:px-5 rounded-xl border transition-all duration-300 ${
+          className={`flex items-center justify-between h-13 px-4 sm:px-5 rounded-2xl border transition-all duration-500 ${
             scrolled
-              ? "border-white/[0.09] bg-[#0c0c12]/85 backdrop-blur-xl shadow-2xl shadow-black/50"
-              : "border-white/[0.05] bg-[#0c0c12]/60 backdrop-blur-md"
+              ? "border-white/[0.08] bg-[#08080e]/80 backdrop-blur-2xl shadow-2xl shadow-black/60"
+              : "border-white/[0.04] bg-[#08080e]/50 backdrop-blur-xl"
           }`}
+          style={{
+            backdropFilter: scrolled ? "blur(24px) saturate(1.4)" : "blur(16px) saturate(1.2)",
+          }}
         >
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 rounded-lg border border-white/[0.12] bg-white/[0.04] flex items-center justify-center transition-all duration-300 group-hover:border-white/[0.25] group-hover:bg-white/[0.08] shadow-xs">
+            <div className="w-7 h-7 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center transition-all duration-300 group-hover:border-white/[0.2] group-hover:bg-white/[0.06] group-hover:shadow-[0_0_12px_rgba(139,92,246,0.15)]">
               <Command size={14} className="text-foreground transition-transform group-hover:scale-105" />
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-semibold tracking-tight text-foreground">
                 CodeSaarthi
               </span>
-              <span className="hidden sm:inline-flex text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/[0.05] border border-white/[0.08] text-muted-foreground">
+              <span className="hidden sm:inline-flex text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/[0.06] text-muted-foreground">
                 v2
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5">
             {PUBLIC_LINKS.map(({ label, href }) => {
               if (!isSignedIn) {
                 return (
                   <span
                     key={label}
-                    className="px-3 py-1.5 text-xs font-medium text-muted-foreground/50 cursor-not-allowed select-none"
+                    className="px-3 py-1.5 text-xs font-medium text-muted-foreground/40 cursor-not-allowed select-none"
                   >
                     {label}
                   </span>
@@ -72,7 +75,7 @@ export default function Navbar() {
                 <Link
                   key={label}
                   href={href}
-                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-all"
+                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-all duration-200"
                 >
                   {label}
                 </Link>
@@ -84,7 +87,7 @@ export default function Navbar() {
                 <Link
                   key={label}
                   href={href}
-                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-all"
+                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-all duration-200"
                 >
                   {label}
                 </Link>
@@ -105,7 +108,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/sign-up"
-                className="h-8 px-3.5 rounded-lg text-xs font-semibold bg-foreground text-background hover:opacity-90 inline-flex items-center justify-center transition-all shadow-xs"
+                className="h-8 px-3.5 rounded-lg text-xs font-semibold bg-foreground text-background hover:opacity-90 inline-flex items-center justify-center transition-all shadow-md shadow-black/30"
               >
                 Get started
               </Link>
@@ -114,13 +117,13 @@ export default function Navbar() {
             <SignedIn>
               <Link
                 href="/welcome"
-                className="h-8 px-3 rounded-lg text-xs font-medium text-foreground border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] inline-flex items-center justify-center transition-all"
+                className="h-8 px-3 rounded-lg text-xs font-medium text-foreground border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.05] inline-flex items-center justify-center transition-all duration-200"
               >
                 Dashboard
               </Link>
               <SignOutButton>
                 <button
-                  className="h-8 inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.06] transition-all cursor-pointer"
+                  className="h-8 inline-flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.02] px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.05] transition-all duration-200 cursor-pointer"
                   title="Sign out"
                 >
                   <LogOut size={12} />
@@ -135,7 +138,7 @@ export default function Navbar() {
           <div className="flex md:hidden items-center gap-2">
             <ThemeToggle />
             <button
-              className="p-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-muted-foreground hover:text-foreground transition-colors"
+              className="p-1.5 rounded-lg border border-white/[0.07] bg-white/[0.03] text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setIsOpen((v) => !v)}
               aria-label="Toggle menu"
             >
@@ -146,13 +149,16 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {isOpen && (
-          <div className="md:hidden mt-2 rounded-xl border border-white/[0.09] bg-[#0c0c12]/95 backdrop-blur-2xl p-4 flex flex-col gap-2.5 shadow-2xl">
+          <div
+            className="md:hidden mt-2 rounded-2xl border border-white/[0.07] bg-[#08080e]/95 backdrop-blur-2xl p-4 flex flex-col gap-2.5 shadow-2xl shadow-black/50"
+            style={{ backdropFilter: "blur(24px) saturate(1.4)" }}
+          >
             {PUBLIC_LINKS.map(({ label, href }) => {
               if (!isSignedIn) {
                 return (
                   <span
                     key={label}
-                    className="py-2 px-3 text-xs text-muted-foreground/50 cursor-not-allowed select-none"
+                    className="py-2 px-3 text-xs text-muted-foreground/40 cursor-not-allowed select-none"
                   >
                     {label}
                   </span>
@@ -183,7 +189,7 @@ export default function Navbar() {
               ))}
             </SignedIn>
 
-            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
+            <div className="pt-2 border-t border-white/[0.05] flex items-center justify-between">
               <SignedOut>
                 <Link
                   href="/sign-in"

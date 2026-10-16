@@ -119,7 +119,7 @@ export default function WelcomePage() {
               <button
                 key={idx}
                 onClick={() => router.push(action.href)}
-                className="glass-card p-7 text-left group transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+                className="glass-card p-7 text-left group transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between hover:shadow-[0_0_24px_rgba(139,92,246,0.08)]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
@@ -139,7 +139,7 @@ export default function WelcomePage() {
                   </p>
                 </div>
 
-                <div className="flex items-center text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors pt-2 border-t border-white/[0.05]">
+                <div className="flex items-center text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-colors pt-2 border-t border-white/[0.04]">
                   <span>Launch Module</span>
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
                 </div>

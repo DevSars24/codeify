@@ -70,10 +70,11 @@ export default function LandingPage() {
     <>
       <Navbar />
       <main ref={heroRef} className="min-h-screen bg-ambient-mesh text-foreground overflow-x-hidden relative">
-        {/* Ambient Top Light Beam */}
-        <div className="absolute top-0 inset-x-0 h-96 pointer-events-none overflow-hidden -z-10">
-          <div className="absolute left-1/2 -top-40 -translate-x-1/2 w-[650px] h-[350px] bg-indigo-500/[0.07] blur-[120px] rounded-full" />
-          <div className="absolute left-1/3 -top-20 w-[400px] h-[250px] bg-cyan-500/[0.04] blur-[100px] rounded-full" />
+        {/* Ambient Top Light Beam — Softer, more diffused */}
+        <div className="absolute top-0 inset-x-0 h-[500px] pointer-events-none overflow-hidden -z-10">
+          <div className="absolute left-1/2 -top-48 -translate-x-1/2 w-[700px] h-[400px] bg-violet-500/[0.06] blur-[140px] rounded-full" />
+          <div className="absolute left-1/3 -top-24 w-[450px] h-[280px] bg-blue-500/[0.04] blur-[120px] rounded-full" />
+          <div className="absolute right-1/4 -top-16 w-[300px] h-[200px] bg-emerald-500/[0.03] blur-[100px] rounded-full" />
         </div>
 
         {/* Hero Section */}
@@ -81,7 +82,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             {/* Left Hero Content */}
             <div className="lg:col-span-7 space-y-7">
-              <div className="hero-line inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-medium text-muted-foreground shadow-xs">
+              <div className="hero-line inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-medium text-muted-foreground shadow-xs">
                 <span className="flex h-2 w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -120,7 +121,7 @@ export default function LandingPage() {
                   <span>Sub-second AI feedback</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/30" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
                   <span>4 Languages supported</span>
                 </div>
               </div>
@@ -128,30 +129,30 @@ export default function LandingPage() {
 
             {/* Right Hero Terminal Mockup */}
             <div className="lg:col-span-5 hero-terminal">
-              <div className="glass-card overflow-hidden shadow-2xl shadow-black/80 border border-white/[0.1]">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
+              <div className="glass-card overflow-hidden shadow-2xl shadow-black/80 border border-white/[0.08] glow-subtle">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] bg-white/[0.015]">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/30 border border-red-500/50" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/30 border border-amber-500/50" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/30 border border-emerald-500/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/25 border border-red-500/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/25 border border-amber-500/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/25 border border-emerald-500/40" />
                   </div>
                   <span className="text-[11px] text-muted-foreground font-mono">arena.stream.py</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-muted-foreground/70">
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.03] text-muted-foreground/70">
                     AI-assessed
                   </span>
                 </div>
 
-                <div className="p-5 font-mono text-xs leading-relaxed space-y-3.5 bg-black/40 min-h-[290px]">
-                  <div className="text-muted-foreground/60">// Workspace initialized</div>
+                <div className="p-5 font-mono text-xs leading-relaxed space-y-3.5 bg-black/30 min-h-[290px]">
+                  <div className="text-muted-foreground/50">// Workspace initialized</div>
                   <div className="text-muted-foreground flex items-center gap-2">
-                    <span className="text-indigo-400">def</span>
+                    <span className="text-violet-400">def</span>
                     <span className="text-emerald-400">solve_problem</span>(arr: List[int]) -&gt; int:
                   </div>
                   <div className="pl-4 text-muted-foreground">
-                    <span className="text-purple-400">if</span> not arr: <span className="text-purple-400">return</span> -1
+                    <span className="text-violet-400">if</span> not arr: <span className="text-violet-400">return</span> -1
                   </div>
                   <div className="pl-4 text-muted-foreground">
-                    <span className="text-cyan-400"># Linear scan with edge-case guard</span>
+                    <span className="text-blue-400/80"># Linear scan with edge-case guard</span>
                   </div>
                   <div className="pl-4 text-emerald-300">
                     <TypingText
@@ -164,7 +165,7 @@ export default function LandingPage() {
                     />
                   </div>
                   
-                  <div className="pt-4 border-t border-white/[0.06] text-[11px] text-emerald-400 flex items-center gap-2">
+                  <div className="pt-4 border-t border-white/[0.05] text-[11px] text-emerald-400 flex items-center gap-2">
                     <Sparkles size={12} className="text-emerald-400 shrink-0" />
                     <span>AI Simulation: Output predicted in 18ms</span>
                   </div>
@@ -175,7 +176,7 @@ export default function LandingPage() {
         </section>
 
         {/* Features Grid */}
-        <section ref={featuresRef} id="features" className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative">
+        <section ref={featuresRef} id="features" className="py-24 px-4 sm:px-6 border-t border-white/[0.05] relative">
           <div className="max-w-6xl mx-auto">
             <div className="mb-14 max-w-2xl">
               <div className="inline-flex items-center gap-2 text-muted-foreground mb-3 font-mono text-xs uppercase tracking-wider">
@@ -212,14 +213,14 @@ export default function LandingPage() {
               ].map(({ icon: Icon, title, desc, tag }) => (
                 <div
                   key={title}
-                  className="feature-card glass-card p-6 flex flex-col justify-between group hover:border-white/[0.2] transition-all"
+                  className="feature-card glass-card p-6 flex flex-col justify-between group hover:border-white/[0.15] transition-all"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-5">
-                      <div className="w-10 h-10 rounded-xl border border-white/[0.1] bg-white/[0.03] flex items-center justify-center transition-colors group-hover:border-white/[0.25] group-hover:bg-white/[0.06]">
+                      <div className="w-10 h-10 rounded-xl border border-white/[0.08] bg-white/[0.02] flex items-center justify-center transition-all group-hover:border-white/[0.2] group-hover:bg-white/[0.04] group-hover:shadow-[0_0_16px_rgba(139,92,246,0.1)]">
                         <Icon size={18} className="text-foreground" />
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-muted-foreground">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-muted-foreground">
                         {tag}
                       </span>
                     </div>
@@ -233,7 +234,7 @@ export default function LandingPage() {
         </section>
 
         {/* Platform Showcase */}
-        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06]">
+        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.05]">
           <div className="max-w-6xl mx-auto">
             <div className="mb-14 text-center max-w-2xl mx-auto space-y-3">
               <div className="badge-pill inline-flex mx-auto">
@@ -250,11 +251,11 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-2 gap-6">
               {/* Card 1 */}
               <div className="group glass-card overflow-hidden">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.04] bg-black/40">
                   <img
                     src="/work2.jpg"
                     alt="DSA Practice Arena"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-85 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
@@ -268,11 +269,11 @@ export default function LandingPage() {
 
               {/* Card 2 */}
               <div className="group glass-card overflow-hidden">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.04] bg-black/40">
                   <img
                     src="/work3.jpg"
                     alt="Dev Challenges Lab"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-85 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
@@ -286,11 +287,11 @@ export default function LandingPage() {
 
               {/* Card 3 */}
               <div className="group glass-card overflow-hidden">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.04] bg-black/40">
                   <img
                     src="/work1.jpg"
                     alt="Mobile Coding Experience"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-85 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
@@ -304,11 +305,11 @@ export default function LandingPage() {
 
               {/* Card 4 */}
               <div className="group glass-card overflow-hidden">
-                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.06] bg-black/50">
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-white/[0.04] bg-black/40">
                   <img
                     src="/work4.jpg"
                     alt="Analytics Dashboard & History"
-                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                    className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-500 opacity-85 group-hover:opacity-100"
                   />
                 </div>
                 <div className="p-6">
@@ -324,8 +325,11 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative overflow-hidden">
-          <div className="absolute inset-0 bg-radial-glow pointer-events-none opacity-40" />
+        <section className="py-24 px-4 sm:px-6 border-t border-white/[0.05] relative overflow-hidden">
+          {/* Subtle ambient glow behind CTA */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[250px] bg-violet-500/[0.06] blur-[120px] rounded-full" />
+          </div>
           <div className="max-w-xl mx-auto text-center relative z-10 space-y-4">
             <h2 className="text-3xl font-bold tracking-tight text-frost">
               Ready to elevate your code?
@@ -345,10 +349,10 @@ export default function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 px-4 sm:px-6 border-t border-white/[0.06] bg-black/30">
+        <footer className="py-12 px-4 sm:px-6 border-t border-white/[0.05] bg-black/20">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-md border border-white/[0.08] bg-white/[0.02] flex items-center justify-center">
                 <Command size={12} className="text-foreground" />
               </div>
               <span className="font-semibold text-foreground">CodeSaarthi</span>

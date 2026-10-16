@@ -1,5 +1,5 @@
 import { aiCache } from "@/lib/ai/cache";
-import { getAIModel, executeAIWithRetry } from "@/lib/ai/client";
+import { executeAIRequest } from "@/lib/ai/provider";
 import { NextResponse } from "next/server";
 
 function isQuotaError(error: any) {
@@ -55,42 +55,34 @@ export async function POST(req: Request) {
       });
     }
 
-    const prompt = `
-You are Kautilya Saarthi — a strategic mentor inspired by Chanakya.
-
+    const systemPrompt = `You are Kautilya Saarthi — a strategic mentor inspired by Chanakya.
 Role:
 - Guide the coder logically and correct wrong intuition.
 - Start feedback with: "Hey coder, don’t worry — Kautilya Saarthi is here to guide you."
 - NEVER write full code or give direct solutions.
-
-Task:
-${task}
-
-User Code:
-${code}
-
 Return ONLY valid JSON matching:
 {
   "verdict": "Accepted" | "Needs Improvement" | "Incorrect Approach",
   "score": 0 | 1,
   "feedback": "string"
-}
-`.trim();
+}`;
+
+    const prompt = `Task:
+${task}
+
+User Code:
+${code}`;
 
     try {
-      const model = getAIModel("gemini-flash-lite-latest");
+      const aiRes = await executeAIRequest({
+        systemPrompt,
+        userPrompt: prompt,
+        responseFormat: "json",
+        modelType: "fast",
+        temperature: 0.2,
+      });
 
-      const result = await executeAIWithRetry(() =>
-        model.generateContent({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.2,
-          },
-        })
-      );
-
-      const rawText = result?.response?.text?.();
+      const rawText = aiRes.text;
       const parsed = rawText ? safeJson(rawText) : null;
 
       if (!parsed) {
@@ -105,6 +97,8 @@ Return ONLY valid JSON matching:
         verdict: parsed.verdict ?? "Needs Improvement",
         score: parsed.score === 1 ? 1 : 0,
         feedback: parsed.feedback ?? "No feedback provided.",
+        provider: aiRes.provider,
+        model: aiRes.model,
       };
 
       aiCache.set(cacheKey, finalPayload);
@@ -113,6 +107,7 @@ Return ONLY valid JSON matching:
         headers: {
           "X-Cache": "MISS",
           "X-Response-Time": `${Date.now() - startTime}ms`,
+          "X-Provider": aiRes.provider,
         },
       });
     } catch (aiError: any) {
