@@ -98,7 +98,7 @@ export default function WelcomePage() {
 
             {/* Main Heading */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white">
-              Hello, <span className="gradient-text-cosmic">{user?.firstName || "Developer"}</span>
+              Hello, <span>{user?.firstName || "Developer"}</span>
             </h1>
 
             {/* Subtitle */}
