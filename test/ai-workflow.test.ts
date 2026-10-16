@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AICache } from "../app/lib/ai/cache.ts";
-import { SimulateResultSchema, AssessResultSchema } from "../app/lib/ai/types.ts";
-import { executeAIRequest } from "../app/lib/ai/provider.ts";
+import { AICache } from "../app/lib/ai/cache";
+import { SimulateResultSchema, AssessResultSchema } from "../app/lib/ai/types";
+import { executeAIRequest } from "../app/lib/ai/provider";
 
 test("Cache Key Generation & User Isolation", () => {
   const cache = new AICache();
@@ -33,7 +33,7 @@ test("Cache Hit triggers zero underlying calls", async () => {
   }
 
   // First call (Miss)
-  let val = cache.get(testKey);
+  let val = cache.get<any>(testKey);
   if (!val) {
     val = await mockExpensiveAICall();
     cache.set(testKey, val);
@@ -41,12 +41,12 @@ test("Cache Hit triggers zero underlying calls", async () => {
   assert.equal(callCount, 1, "First invocation should call AI once");
 
   // Second call (Hit)
-  val = cache.get(testKey);
+  val = cache.get<any>(testKey);
   if (!val) {
     val = await mockExpensiveAICall();
   }
   assert.equal(callCount, 1, "Cache hit must trigger ZERO model calls");
-  assert.equal(val.predictedOutput, "4");
+  assert.equal(val?.predictedOutput, "4");
   assert.equal(cache.hits, 1);
 });
 

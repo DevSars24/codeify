@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json([]);
     }
 
     const attempts = await prisma.contestAttempt.findMany({
@@ -16,7 +16,7 @@ export async function GET() {
 
     return NextResponse.json(attempts);
   } catch (error) {
-    console.error("HISTORY_API_ERROR", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.warn("[History API] Database unreachable, returning empty attempts list:", error);
+    return NextResponse.json([]);
   }
 }

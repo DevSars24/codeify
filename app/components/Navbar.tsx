@@ -9,14 +9,19 @@ import { SignedIn, SignedOut, SignOutButton, UserButton, useUser } from "@clerk/
 
 const PUBLIC_LINKS = [
   { label: "Features", href: "/#features" },
+  { label: "Playground", href: "/home" },
   { label: "Blogs", href: "/blogs" },
+  { label: "Leaderboard", href: "/leaderboard" },
 ];
 
 const PROTECTED_LINKS = [
-  { label: "Dashboard", href: "/welcome" },
-  { label: "Mission Logs", href: "/history" },
-  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "DSA Arena", href: "/dsa" },
+  { label: "Dev Lab", href: "/dev" },
+  { label: "Playground", href: "/home" },
   { label: "Sessions", href: "/sessions" },
+  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "Blogs", href: "/blogs" },
+  { label: "Mission Logs", href: "/history" },
 ];
 
 export default function Navbar() {
@@ -31,65 +36,58 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 py-3.5 px-4 sm:px-6 transition-all">
+    <header className="fixed inset-x-0 top-0 z-50 py-3 px-4 sm:px-6 transition-all">
       <div className="mx-auto max-w-6xl">
         <div
-          className={`flex items-center justify-between h-13 px-4 sm:px-5 rounded-xl border transition-all duration-300 ${
+          className={`flex items-center justify-between h-13 px-4 sm:px-5 rounded-2xl border transition-all duration-300 ${
             scrolled
-              ? "border-white/[0.09] bg-[#0c0c12]/85 backdrop-blur-xl shadow-2xl shadow-black/50"
-              : "border-white/[0.05] bg-[#0c0c12]/60 backdrop-blur-md"
+              ? "border-white/[0.14] bg-black/75 shadow-2xl shadow-black/90"
+              : "border-white/[0.09] bg-black/55 shadow-xl shadow-black/60"
           }`}
+          style={{
+            backdropFilter: "blur(24px) saturate(190%)",
+            WebkitBackdropFilter: "blur(24px) saturate(190%)",
+            boxShadow: "inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 16px 36px -10px rgba(0, 0, 0, 0.9)",
+          }}
         >
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 rounded-lg border border-white/[0.12] bg-white/[0.04] flex items-center justify-center transition-all duration-300 group-hover:border-white/[0.25] group-hover:bg-white/[0.08] shadow-xs">
+            <div className="w-7 h-7 rounded-lg border border-white/[0.12] bg-white/[0.04] backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:border-white/[0.25] group-hover:bg-white/[0.08] group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]">
               <Command size={14} className="text-foreground transition-transform group-hover:scale-105" />
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-semibold tracking-tight text-foreground">
                 CodeSaarthi
               </span>
-              <span className="hidden sm:inline-flex text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/[0.05] border border-white/[0.08] text-muted-foreground">
+              <span className="hidden sm:inline-flex text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/[0.08] text-muted-foreground">
                 v2
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
-            {PUBLIC_LINKS.map(({ label, href }) => {
-              if (!isSignedIn) {
-                return (
-                  <span
-                    key={label}
-                    className="px-3 py-1.5 text-xs font-medium text-muted-foreground/50 cursor-not-allowed select-none"
-                  >
-                    {label}
-                  </span>
-                );
-              }
-              return (
+          <nav className="hidden md:flex items-center gap-0.5">
+            {!isSignedIn ? (
+              PUBLIC_LINKS.map(({ label, href }) => (
                 <Link
                   key={label}
                   href={href}
-                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-all"
+                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.05] transition-all duration-200"
                 >
                   {label}
                 </Link>
-              );
-            })}
-
-            <SignedIn>
-              {PROTECTED_LINKS.map(({ label, href }) => (
+              ))
+            ) : (
+              PROTECTED_LINKS.map(({ label, href }) => (
                 <Link
                   key={label}
                   href={href}
-                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-all"
+                  className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.05] transition-all duration-200"
                 >
                   {label}
                 </Link>
-              ))}
-            </SignedIn>
+              ))
+            )}
           </nav>
 
           {/* Right Action Buttons */}
@@ -105,7 +103,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/sign-up"
-                className="h-8 px-3.5 rounded-lg text-xs font-semibold bg-foreground text-background hover:opacity-90 inline-flex items-center justify-center transition-all shadow-xs"
+                className="h-8 px-3.5 rounded-lg text-xs font-semibold bg-white/[0.08] text-white border border-white/[0.18] hover:bg-white/[0.15] backdrop-blur-md inline-flex items-center justify-center transition-all shadow-md shadow-black/40"
               >
                 Get started
               </Link>
@@ -114,13 +112,16 @@ export default function Navbar() {
             <SignedIn>
               <Link
                 href="/welcome"
-                className="h-8 px-3 rounded-lg text-xs font-medium text-foreground border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] inline-flex items-center justify-center transition-all"
+                className="h-8 px-3 rounded-lg text-xs font-medium text-white border border-white/[0.16] bg-white/[0.06] hover:bg-white/[0.12] backdrop-blur-md inline-flex items-center justify-center transition-all duration-200 shadow-sm"
+                style={{
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
+                }}
               >
                 Dashboard
               </Link>
               <SignOutButton>
                 <button
-                  className="h-8 inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.02] px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.06] transition-all cursor-pointer"
+                  className="h-8 inline-flex items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.08] backdrop-blur-md transition-all duration-200 cursor-pointer"
                   title="Sign out"
                 >
                   <LogOut size={12} />
@@ -135,7 +136,7 @@ export default function Navbar() {
           <div className="flex md:hidden items-center gap-2">
             <ThemeToggle />
             <button
-              className="p-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-muted-foreground hover:text-foreground transition-colors"
+              className="p-1.5 rounded-lg border border-white/[0.07] bg-white/[0.03] text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setIsOpen((v) => !v)}
               aria-label="Toggle menu"
             >
@@ -146,13 +147,15 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {isOpen && (
-          <div className="md:hidden mt-2 rounded-xl border border-white/[0.09] bg-[#0c0c12]/95 backdrop-blur-2xl p-4 flex flex-col gap-2.5 shadow-2xl">
+          <div
+            className="md:hidden mt-2 rounded-2xl border border-white/[0.1] bg-black/95 backdrop-blur-2xl p-4 flex flex-col gap-2.5 shadow-2xl shadow-black/80"
+          >
             {PUBLIC_LINKS.map(({ label, href }) => {
               if (!isSignedIn) {
                 return (
                   <span
                     key={label}
-                    className="py-2 px-3 text-xs text-muted-foreground/50 cursor-not-allowed select-none"
+                    className="py-2 px-3 text-xs text-muted-foreground/40 cursor-not-allowed select-none"
                   >
                     {label}
                   </span>
@@ -183,7 +186,7 @@ export default function Navbar() {
               ))}
             </SignedIn>
 
-            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
+            <div className="pt-2 border-t border-white/[0.05] flex items-center justify-between">
               <SignedOut>
                 <Link
                   href="/sign-in"
