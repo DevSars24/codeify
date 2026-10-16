@@ -33,7 +33,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="h-8 w-8 rounded-lg border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] text-foreground transition-all cursor-pointer flex items-center justify-center shadow-xs"
+      className="h-8 w-8 rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] text-foreground transition-all duration-200 cursor-pointer flex items-center justify-center shadow-xs"
       aria-label="Toggle theme"
       title={theme === "dark" ? "Switch to light theme" : "Switch to obsidian black theme"}
     >

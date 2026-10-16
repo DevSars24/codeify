@@ -1,6 +1,5 @@
 import { aiCache } from "@/lib/ai/cache";
-import { getAIModel, executeAIWithRetry } from "@/lib/ai/client";
-import { createTextResponseStream } from "@/lib/ai/stream";
+import { executeAIRequest, executeAIStreamRequest } from "@/lib/ai/provider";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -23,7 +22,6 @@ export async function POST(req: Request) {
       console.log(`[AI Cache Hit] Returned in ${cacheLatency}ms`);
 
       if (streamMode) {
-        // Return stream from cached text instantly
         const encoder = new TextEncoder();
         const stream = new ReadableStream({
           start(controller) {
@@ -51,81 +49,83 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. Optimized Model & System Instruction
-    const model = getAIModel("gemini-flash-lite-latest");
-
-    const controlledPrompt = `
-You are a senior software architect. Answer clearly, accurately, and concisely.
-
+    const systemPrompt = `You are a senior software architect. Answer clearly, accurately, and concisely.
 Rules:
 - Provide high-quality, professional code and explanations.
-- Avoid unnecessary fluff or redundant disclaimers.
-
-Question/Task:
-${userPrompt}
-`.trim();
+- Avoid unnecessary fluff or redundant disclaimers.`;
 
     if (streamMode) {
-      // 3. Ultra-Low TTFB Response Streaming
-      const resultStream = await executeAIWithRetry(() =>
-        model.generateContentStream(controlledPrompt)
-      );
+      // 2. High-Speed Multi-Model Streaming (Groq Primary Pool -> Gemini Fallback)
+      const { stream: rawStream, provider, model } = await executeAIStreamRequest({
+        systemPrompt,
+        userPrompt,
+        temperature: 0.2,
+      });
 
       let accumulatedText = "";
-      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      const reader = rawStream.getReader();
 
-      const transformStream = new ReadableStream({
-        async start(controller) {
+      const cachingStream = new ReadableStream<Uint8Array>({
+        async pull(controller) {
           try {
-            for await (const chunk of resultStream.stream) {
-              const chunkText = chunk.text();
-              if (chunkText) {
-                accumulatedText += chunkText;
-                controller.enqueue(encoder.encode(chunkText));
+            const { done, value } = await reader.read();
+            if (done) {
+              if (accumulatedText.trim()) {
+                aiCache.set(cacheKey, accumulatedText);
               }
+              controller.close();
+              return;
             }
-            // Store accumulated response in LRU Cache for future instant calls
-            if (accumulatedText.trim()) {
-              aiCache.set(cacheKey, accumulatedText);
+            if (value) {
+              accumulatedText += decoder.decode(value, { stream: true });
+              controller.enqueue(value);
             }
-            controller.close();
           } catch (err) {
-            console.error("[Gemini Stream Process Error]", err);
+            console.error("[Stream Process Error]", err);
             controller.error(err);
           }
         },
+        cancel() {
+          reader.cancel();
+        },
       });
 
-      return new Response(transformStream, {
+      return new Response(cachingStream, {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
           "X-Cache": "MISS",
           "X-Response-Time": `${Date.now() - startTime}ms`,
+          "X-Provider": provider,
+          "X-Model": model,
         },
       });
     } else {
-      // Non-streaming fallback option
-      const result = await executeAIWithRetry(() =>
-        model.generateContent(controlledPrompt)
-      );
-      const text = result.response.text()?.trim() || "";
+      // Non-streaming multi-model fallback
+      const aiRes = await executeAIRequest({
+        systemPrompt,
+        userPrompt,
+        temperature: 0.2,
+      });
 
-      if (text) {
-        aiCache.set(cacheKey, text);
+      if (aiRes.text) {
+        aiCache.set(cacheKey, aiRes.text);
       }
 
       return NextResponse.json(
-        { text },
+        { text: aiRes.text, provider: aiRes.provider, model: aiRes.model },
         {
           headers: {
             "X-Cache": "MISS",
             "X-Response-Time": `${Date.now() - startTime}ms`,
+            "X-Provider": aiRes.provider,
+            "X-Model": aiRes.model,
           },
         }
       );
     }
   } catch (error: any) {
-    console.error("Gemini API Error:", error);
+    console.error("AI API Error:", error);
     return NextResponse.json(
       { error: error?.message || "Failed to generate response" },
       { status: 500 }

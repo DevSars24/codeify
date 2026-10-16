@@ -20,17 +20,11 @@ export default function HistoryVisualizations({ activityData, langData }: Visual
         <div className="h-[280px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={activityData}>
-              <defs>
-                <linearGradient id="colorAccuracy" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--foreground)" stopOpacity={0.16} />
-                  <stop offset="95%" stopColor="var(--foreground)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis dataKey="name" hide />
               <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "6px" }} />
-              <Area type="monotone" dataKey="accuracy" stroke="var(--foreground)" strokeWidth={2} fill="url(#colorAccuracy)" />
+              <Tooltip contentStyle={{ backgroundColor: "#000000", borderColor: "rgba(255,255,255,0.15)", borderRadius: "6px" }} />
+              <Area type="monotone" dataKey="accuracy" stroke="#ffffff" strokeWidth={2} fillOpacity={0} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
