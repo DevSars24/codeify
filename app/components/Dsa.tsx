@@ -124,6 +124,25 @@ export default function DsaPracticeArena() {
                 </div>
               </div>
 
+              {/* Visual Arena Preview */}
+              <div className="glass-card overflow-hidden p-0 relative aspect-[16/7] rounded-xl border border-white/[0.08]">
+                <img
+                  src="/assets/DSA-arena.jpg"
+                  alt="DSA Arena Live Preview"
+                  className="object-cover w-full h-full opacity-65"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#08080e] via-[#08080e]/40 to-transparent" />
+                <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs font-mono">
+                  <span className="text-white/90 font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Cloud Arena Active
+                  </span>
+                  <span className="text-violet-300 text-[10px] bg-violet-500/20 px-2 py-0.5 rounded-full border border-violet-500/30">
+                    Groq Engine
+                  </span>
+                </div>
+              </div>
+
               {/* Difficulty Selection */}
               <div className="glass-card p-5 space-y-3">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
