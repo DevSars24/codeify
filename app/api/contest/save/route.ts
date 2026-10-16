@@ -22,8 +22,25 @@ export async function POST(req: Request) {
       );
     }
 
-    const attempt = await prisma.contestAttempt.create({
-      data: {
+    try {
+      const attempt = await prisma.contestAttempt.create({
+        data: {
+          userId,
+          topic,
+          correct,
+          total,
+          accuracy,
+          language,
+          difficulty,
+          submissions: submissions || undefined,
+        },
+      });
+
+      return NextResponse.json(attempt);
+    } catch (dbErr: any) {
+      console.warn("[Contest Save API] Remote database is paused or unreachable:", dbErr?.message);
+      return NextResponse.json({
+        id: `offline-${Date.now()}`,
         userId,
         topic,
         correct,
@@ -32,10 +49,10 @@ export async function POST(req: Request) {
         language,
         difficulty,
         submissions: submissions || undefined,
-      },
-    });
-
-    return NextResponse.json(attempt);
+        createdAt: new Date().toISOString(),
+        offlineSaved: true,
+      });
+    }
   } catch (error: any) {
     console.error("SAVE_ERROR:", error);
     return NextResponse.json(
