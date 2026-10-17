@@ -24,6 +24,9 @@ import {
 } from "lucide-react";
 import { prefersReducedMotion } from "@/lib/motion";
 import TypingText from "@/components/TypingText";
+import PlaygroundPreviewSection from "@/components/PlaygroundPreviewSection";
+import MeetDeveloperSection from "@/components/MeetDeveloperSection";
+import PricingSection from "@/components/PricingSection";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -121,17 +124,24 @@ export default function LandingPage() {
               <div className="hero-line flex flex-col sm:flex-row gap-3 pt-2">
                 <button
                   onClick={() => router.push("/welcome")}
-                  className="btn-cyber cursor-pointer text-sm font-semibold flex items-center justify-center gap-2"
+                  className="btn-primary cursor-pointer text-sm font-semibold flex items-center justify-center gap-2.5 group"
                 >
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                  </span>
                   <span>Start Practicing Free</span>
-                  <ArrowRight size={16} />
+                  <ArrowRight size={16} className="text-emerald-300 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
                   onClick={() => router.push("/home")}
-                  className="btn-secondary cursor-pointer text-sm font-medium flex items-center justify-center gap-2"
+                  className="btn-secondary group cursor-pointer text-sm font-medium flex items-center justify-center gap-2.5"
                 >
-                  <Code2 size={16} className="text-violet-400" />
+                  <Code2 size={16} className="text-violet-400 group-hover:scale-110 transition-transform" />
                   <span>11-Language Playground</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                    Free · No Login
+                  </span>
                 </button>
               </div>
 
@@ -209,6 +219,9 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* ─── Pinned 11-Language Playground (No Signup Needed) ─────── */}
+        <PlaygroundPreviewSection />
 
         {/* ─── Platform Capabilities Grid ────────────────────────────── */}
         <section ref={featuresRef} id="features" className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative">
@@ -308,7 +321,7 @@ export default function LandingPage() {
                     01 / Mobile Coding Rounds
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-white/[0.02] backdrop-blur-md border-t border-white/[0.06]">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Solve Coding Rounds Anywhere
                   </h3>
@@ -332,7 +345,7 @@ export default function LandingPage() {
                     02 / Competitive Battles
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-white/[0.02] backdrop-blur-md border-t border-white/[0.06]">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Live Tournament & Leaderboard
                   </h3>
@@ -356,7 +369,7 @@ export default function LandingPage() {
                     03 / 11-Language Studio
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-white/[0.02] backdrop-blur-md border-t border-white/[0.06]">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Multi-Language AI Code Studio
                   </h3>
@@ -380,7 +393,7 @@ export default function LandingPage() {
                     04 / Algorithmic Arena
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-white/[0.02] backdrop-blur-md border-t border-white/[0.06]">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Structured Topic Tracks
                   </h3>
@@ -392,6 +405,12 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* ─── Explore Paid Services & Future Planning ───────────────── */}
+        <PricingSection />
+
+        {/* ─── Meet the Developer Behind CodeSaarthi ─────────────────── */}
+        <MeetDeveloperSection />
 
         {/* ─── Bottom CTA ───────────────────────────────────────────── */}
         <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative bg-black">
@@ -408,7 +427,7 @@ export default function LandingPage() {
             <div className="pt-2">
               <button
                 onClick={() => router.push("/welcome")}
-                className="btn-cyber cursor-pointer px-8 h-12 text-sm font-semibold"
+                className="btn-primary cursor-pointer px-8 h-12 text-sm font-semibold"
               >
                 <span>Launch Developer Workspace</span>
                 <ArrowRight size={16} />
@@ -427,14 +446,15 @@ export default function LandingPage() {
               <span className="font-semibold text-foreground tracking-tight">CodeSaarthi</span>
               <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/[0.08]">v2</span>
             </div>
-            <div className="flex gap-6">
-              <Link href="/welcome" className="hover:text-foreground transition-colors">Dashboard</Link>
-              <Link href="/home" className="hover:text-foreground transition-colors">Playground</Link>
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <Link href="/home" className="hover:text-foreground transition-colors">11-Lang Playground</Link>
+              <Link href="/#pricing" className="hover:text-foreground transition-colors">Pricing</Link>
+              <Link href="/#developer" className="hover:text-foreground transition-colors">Developer</Link>
               <Link href="/dsa" className="hover:text-foreground transition-colors">DSA Arena</Link>
               <Link href="/blogs" className="hover:text-foreground transition-colors">Blog</Link>
               <Link href="/leaderboard" className="hover:text-foreground transition-colors">Leaderboard</Link>
             </div>
-            <p className="font-mono text-[11px] text-muted-foreground/60">© 2026 CodeSaarthi · All rights reserved</p>
+            <p className="font-mono text-[11px] text-muted-foreground/60">© 2026 CodeSaarthi · Built by Saurabh Singh Rajput</p>
           </div>
         </footer>
       </main>

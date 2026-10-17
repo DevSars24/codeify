@@ -4,12 +4,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Command, LogOut, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
-import ThemeToggle from "@/components/ThemeToggle";
 import { SignedIn, SignedOut, SignOutButton, UserButton, useUser } from "@clerk/nextjs";
 
 const PUBLIC_LINKS = [
   { label: "Features", href: "/#features" },
-  { label: "Playground", href: "/home" },
+  { label: "11-Lang Playground", href: "/home" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Developer", href: "/#developer" },
   { label: "Blogs", href: "/blogs" },
   { label: "Leaderboard", href: "/leaderboard" },
 ];
@@ -92,8 +93,11 @@ export default function Navbar() {
 
           {/* Right Action Buttons */}
           <div className="hidden md:flex items-center gap-2.5">
-            <ThemeToggle />
-            
+            <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Beta Free
+            </span>
+
             <SignedOut>
               <Link
                 href="/sign-in"
@@ -103,7 +107,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/sign-up"
-                className="h-8 px-3.5 rounded-lg text-xs font-semibold bg-white/[0.08] text-white border border-white/[0.18] hover:bg-white/[0.15] backdrop-blur-md inline-flex items-center justify-center transition-all shadow-md shadow-black/40"
+                className="h-8 px-3.5 rounded-xl text-xs font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md inline-flex items-center justify-center transition-all shadow-md shadow-emerald-500/5 hover:border-emerald-500/50"
               >
                 Get started
               </Link>
@@ -112,7 +116,7 @@ export default function Navbar() {
             <SignedIn>
               <Link
                 href="/welcome"
-                className="h-8 px-3 rounded-lg text-xs font-medium text-white border border-white/[0.16] bg-white/[0.06] hover:bg-white/[0.12] backdrop-blur-md inline-flex items-center justify-center transition-all duration-200 shadow-sm"
+                className="h-8 px-3 rounded-xl text-xs font-medium text-white border border-white/[0.16] bg-white/[0.06] hover:bg-white/[0.12] backdrop-blur-md inline-flex items-center justify-center transition-all duration-200 shadow-sm"
                 style={{
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
                 }}
@@ -121,7 +125,7 @@ export default function Navbar() {
               </Link>
               <SignOutButton>
                 <button
-                  className="h-8 inline-flex items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.08] backdrop-blur-md transition-all duration-200 cursor-pointer"
+                  className="h-8 inline-flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.08] backdrop-blur-md transition-all duration-200 cursor-pointer"
                   title="Sign out"
                 >
                   <LogOut size={12} />
@@ -134,9 +138,8 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
             <button
-              className="p-1.5 rounded-lg border border-white/[0.07] bg-white/[0.03] text-muted-foreground hover:text-foreground transition-colors"
+              className="p-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] text-muted-foreground hover:text-foreground backdrop-blur-md transition-colors"
               onClick={() => setIsOpen((v) => !v)}
               aria-label="Toggle menu"
             >
@@ -150,28 +153,18 @@ export default function Navbar() {
           <div
             className="md:hidden mt-2 rounded-2xl border border-white/[0.1] bg-black/95 backdrop-blur-2xl p-4 flex flex-col gap-2.5 shadow-2xl shadow-black/80"
           >
-            {PUBLIC_LINKS.map(({ label, href }) => {
-              if (!isSignedIn) {
-                return (
-                  <span
+            {!isSignedIn
+              ? PUBLIC_LINKS.map(({ label, href }) => (
+                  <Link
                     key={label}
-                    className="py-2 px-3 text-xs text-muted-foreground/40 cursor-not-allowed select-none"
+                    href={href}
+                    onClick={() => setIsOpen(false)}
+                    className="py-2 px-3 text-xs text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-colors"
                   >
                     {label}
-                  </span>
-                );
-              }
-              return (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={() => setIsOpen(false)}
-                  className="py-2 px-3 text-xs text-muted-foreground hover:text-foreground rounded-lg hover:bg-white/[0.04] transition-colors"
-                >
-                  {label}
-                </Link>
-              );
-            })}
+                  </Link>
+                ))
+              : null}
 
             <SignedIn>
               {PROTECTED_LINKS.map(({ label, href }) => (
