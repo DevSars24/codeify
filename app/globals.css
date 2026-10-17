@@ -26,54 +26,15 @@
   --input: rgba(255, 255, 255, 0.08);
   --ring: #ffffff;
 
-  /* Pure Pitch Black UI - Zero Gradients, Zero Glows */
-  --glass-bg: #000000;
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-highlight: transparent;
-  --glass-shadow: none;
+  /* Pure Pitch Dark Glassmorphism Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 
-  --glow-purple: transparent;
-  --glow-cyan: transparent;
-  --glow-blue: transparent;
-  --glow-emerald: transparent;
-  --glow-rose: transparent;
-}
-
-[data-theme="light"] {
-  color-scheme: dark;
-  --bg: #000000;
-  --text: #f3f3f8;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.18);
-  --accent: #ffffff;
-  --muted: #0a0a0a;
-  --muted-text: #828296;
-  --background: #000000;
-  --foreground: #f3f3f8;
-  --card: #000000;
-  --card-foreground: #f3f3f8;
-  --popover: #000000;
-  --popover-foreground: #f3f3f8;
-  --primary: #ffffff;
-  --primary-foreground: #000000;
-  --secondary: #000000;
-  --secondary-foreground: #f3f3f8;
-  --muted-foreground: #828296;
-  --accent-foreground: #000000;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #ffffff;
-
-  --glass-bg: #000000;
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-highlight: transparent;
-  --glass-shadow: none;
-  --glow-purple: transparent;
-  --glow-cyan: transparent;
-  --glow-blue: transparent;
-  --glow-emerald: transparent;
-  --glow-rose: transparent;
+  --glow-emerald: rgba(16, 185, 129, 0.35);
+  --glow-cyan: rgba(6, 182, 212, 0.35);
+  --glow-purple: rgba(168, 85, 247, 0.35);
 }
 
 @theme {
@@ -121,42 +82,47 @@
   background-image: none !important;
 }
 
-/* ─── Pure Black Surfaces ────────────────────────────────────────── */
+/* ─── Natural Frosted Glass Surfaces ─────────────────────────────── */
 
 .glass-card {
-  background: #000000 !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 1rem;
-  box-shadow: none !important;
-  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  background: #000000 !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  box-shadow: none !important;
-  transform: none !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 36px rgba(0, 0, 0, 0.45) !important;
 }
 
 .glass-card-glow {
   position: relative;
-  background: #000000 !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 1.25rem;
-  box-shadow: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 40px rgba(0, 0, 0, 0.4) !important;
 }
 
 .surface-card {
-  background: #000000 !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 0.875rem;
-  box-shadow: none !important;
-  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.25s ease;
 }
 
 .surface-card:hover {
   border-color: rgba(255, 255, 255, 0.22) !important;
-  background: #000000 !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 /* ─── Typography (Zero Gradients, Crisp White) ───────────────────── */
@@ -176,47 +142,47 @@
 
 /* ─── Pure Black & White Buttons (Zero Gradients) ─────────────────── */
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #000000 !important;
-  background: #ffffff !important;
-  box-shadow: none !important;
-  transition: all 0.2s ease;
-  border: 1px solid #ffffff !important;
-}
+/* ─── Premium Tactile Glassmorphic Buttons & Badges ─────────────── */
 
-.btn-primary:hover {
-  background: #e5e5e5 !important;
-  box-shadow: none !important;
-}
-
+.btn-primary,
 .btn-cyber {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.75rem;
+  padding: 0.75rem 1.45rem;
+  min-height: 44px;
+  border-radius: 0.85rem;
   font-weight: 600;
   font-size: 0.875rem;
-  color: #000000 !important;
-  background: #ffffff !important;
-  box-shadow: none !important;
-  transition: all 0.2s ease;
-  border: 1px solid #ffffff !important;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.1) 45%, rgba(255, 255, 255, 0.04) 100%) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(52, 211, 153, 0.45) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 14px rgba(16, 185, 129, 0.14), 0 4px 20px -2px rgba(16, 185, 129, 0.28), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  position: relative;
 }
 
+.btn-primary:hover,
 .btn-cyber:hover {
-  background: #e5e5e5 !important;
-  box-shadow: none !important;
-  transform: none !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.18) 45%, rgba(255, 255, 255, 0.08) 100%) !important;
+  border-color: rgba(52, 211, 153, 0.75) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 0 18px rgba(16, 185, 129, 0.24), 0 6px 30px -2px rgba(16, 185, 129, 0.45), 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+  transform: translateY(-1.5px);
+  color: #ffffff !important;
+}
+
+.btn-primary:active,
+.btn-cyber:active {
+  transform: scale(0.97) translateY(0);
+  background: rgba(16, 185, 129, 0.2) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 10px rgba(0, 0, 0, 0.3) !important;
 }
 
 .btn-secondary {
@@ -224,34 +190,91 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.75rem;
+  padding: 0.7rem 1.4rem;
+  min-height: 44px;
+  border-radius: 0.85rem;
   font-weight: 500;
   font-size: 0.875rem;
-  color: #ffffff !important;
-  background: #000000 !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  transition: all 0.2s ease;
+  color: #f4f4f5 !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .btn-secondary:hover {
-  background: #0a0a0a !important;
-  border-color: rgba(255, 255, 255, 0.4) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.07) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
   color: #ffffff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97) translateY(0);
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.btn-glass-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  min-height: 44px;
+  border-radius: 0.85rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(167, 139, 250, 0.35) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 20px -2px rgba(139, 92, 246, 0.25) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.btn-glass-accent:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.18) 100%) !important;
+  border-color: rgba(167, 139, 250, 0.55) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 6px 26px -2px rgba(139, 92, 246, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+.btn-glass-accent:active {
+  transform: scale(0.97) translateY(0);
 }
 
 .badge-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
+  padding: 0.4rem 0.95rem;
   border-radius: 9999px;
-  background: #000000 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   font-family: var(--font-mono, monospace);
   font-size: 0.75rem;
-  color: #a1a1aa !important;
-  box-shadow: none !important;
+  color: #d4d4d8 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s ease;
+}
+
+.badge-pill:hover {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ─── Zero Glows ─────────────────────────────────────────────────── */
