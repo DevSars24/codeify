@@ -93,21 +93,21 @@ export default function Navbar() {
 
           {/* Right Action Buttons */}
           <div className="hidden md:flex items-center gap-2.5">
-            <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 backdrop-blur-md shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
               Beta Free
             </span>
 
             <SignedOut>
               <Link
                 href="/sign-in"
-                className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white transition-colors"
               >
                 Sign in
               </Link>
               <Link
                 href="/sign-up"
-                className="h-8 px-3.5 rounded-xl text-xs font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md inline-flex items-center justify-center transition-all shadow-md shadow-emerald-500/5 hover:border-emerald-500/50"
+                className="btn-luminous-primary h-8 px-3.5 text-xs font-semibold cursor-pointer"
               >
                 Get started
               </Link>
@@ -116,16 +116,13 @@ export default function Navbar() {
             <SignedIn>
               <Link
                 href="/welcome"
-                className="h-8 px-3 rounded-xl text-xs font-medium text-white border border-white/[0.16] bg-white/[0.06] hover:bg-white/[0.12] backdrop-blur-md inline-flex items-center justify-center transition-all duration-200 shadow-sm"
-                style={{
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
-                }}
+                className="btn-luminous-glass h-8 px-3 text-xs font-medium text-white cursor-pointer"
               >
                 Dashboard
               </Link>
               <SignOutButton>
                 <button
-                  className="h-8 inline-flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.08] backdrop-blur-md transition-all duration-200 cursor-pointer"
+                  className="h-8 inline-flex items-center gap-1.5 rounded-xl border border-white/[0.1] bg-white/[0.04] px-2.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.08] backdrop-blur-md transition-all duration-200 cursor-pointer"
                   title="Sign out"
                 >
                   <LogOut size={12} />

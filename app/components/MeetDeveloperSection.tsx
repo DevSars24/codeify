@@ -71,13 +71,13 @@ export default function MeetDeveloperSection() {
                 </p>
               </div>
 
-              {/* Social Links with Glass Buttons */}
+              {/* Social Links with Luminous Glass Buttons */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
                 <Link
                   href="https://www.linkedin.com/in/saurabh-singh-rajput-25639a306/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary h-9 px-3 text-xs flex items-center gap-1.5 rounded-xl hover:text-white"
+                  className="btn-luminous-glass h-9 px-3.5 text-xs flex items-center gap-1.5 rounded-xl cursor-pointer hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                 >
                   <Linkedin size={14} className="text-cyan-400" />
                   <span>LinkedIn</span>
@@ -88,7 +88,7 @@ export default function MeetDeveloperSection() {
                   href="https://github.com/DevSars24"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary h-9 px-3 text-xs flex items-center gap-1.5 rounded-xl hover:text-white"
+                  className="btn-luminous-glass h-9 px-3.5 text-xs flex items-center gap-1.5 rounded-xl cursor-pointer hover:border-white/50 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)]"
                 >
                   <Github size={14} className="text-white" />
                   <span>GitHub</span>
@@ -99,7 +99,7 @@ export default function MeetDeveloperSection() {
                   href="https://x.com/stark123474763"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary h-9 px-3 text-xs flex items-center gap-1.5 rounded-xl hover:text-white"
+                  className="btn-luminous-glass h-9 px-3.5 text-xs flex items-center gap-1.5 rounded-xl cursor-pointer hover:border-blue-400/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
                 >
                   <Twitter size={14} className="text-blue-400" />
                   <span>X (Twitter)</span>

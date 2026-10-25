@@ -97,7 +97,7 @@ export default function PricingSection() {
             <div className="pt-8">
               <Link
                 href="/home"
-                className="btn-primary w-full text-xs font-semibold flex items-center justify-center gap-2"
+                className="btn-luminous-primary w-full text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Start Practicing Now</span>
                 <ArrowRight size={14} />
@@ -106,21 +106,21 @@ export default function PricingSection() {
           </div>
 
           {/* Card 2: Developer Pro (In Planning - $10/mo) */}
-          <div className="glass-card rounded-3xl p-7 border border-white/[0.12] bg-black/60 flex flex-col justify-between relative group hover:border-violet-500/40 transition-all duration-300">
+          <div className="glass-card rounded-3xl p-7 border border-white/[0.12] bg-black/60 flex flex-col justify-between relative group hover:border-violet-500/50 transition-all duration-300">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-bold text-white mb-1">Developer Pro</h3>
-                  <p className="text-xs text-muted-foreground">For intense interview preparation & serious coders.</p>
+                  <p className="text-xs text-zinc-400">For intense interview preparation & serious coders.</p>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/25">
                   IN PLANNING
                 </span>
               </div>
 
               <div className="flex items-baseline gap-1.5">
                 <span className="text-4xl font-bold text-white">$10</span>
-                <span className="text-xs text-muted-foreground font-mono">/ month (Planned)</span>
+                <span className="text-xs text-zinc-400 font-mono">/ month (Planned)</span>
               </div>
 
               <div className="space-y-3 pt-2 text-xs text-zinc-300">
@@ -150,7 +150,7 @@ export default function PricingSection() {
             <div className="pt-8">
               <button
                 onClick={() => handleJoinWaitlist("Developer Pro ($10/mo)")}
-                className="btn-glass-accent w-full text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                className="btn-luminous-violet w-full text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
               >
                 <BellRing size={14} />
                 <span>Join Pro Waitlist ($10/mo)</span>
@@ -159,21 +159,21 @@ export default function PricingSection() {
           </div>
 
           {/* Card 3: Grandmaster / Team (In Planning - $20/mo) */}
-          <div className="glass-card rounded-3xl p-7 border border-white/[0.12] bg-black/60 flex flex-col justify-between relative group hover:border-cyan-500/40 transition-all duration-300">
+          <div className="glass-card rounded-3xl p-7 border border-white/[0.12] bg-black/60 flex flex-col justify-between relative group hover:border-cyan-500/50 transition-all duration-300">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-bold text-white mb-1">Grandmaster</h3>
-                  <p className="text-xs text-muted-foreground">For university coding clubs, teams, and elite aspirants.</p>
+                  <p className="text-xs text-zinc-400">For university coding clubs, teams, and elite aspirants.</p>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">
                   IN PLANNING
                 </span>
               </div>
 
               <div className="flex items-baseline gap-1.5">
                 <span className="text-4xl font-bold text-white">$20</span>
-                <span className="text-xs text-muted-foreground font-mono">/ month (Planned)</span>
+                <span className="text-xs text-zinc-400 font-mono">/ month (Planned)</span>
               </div>
 
               <div className="space-y-3 pt-2 text-xs text-zinc-300">
@@ -203,7 +203,7 @@ export default function PricingSection() {
             <div className="pt-8">
               <button
                 onClick={() => handleJoinWaitlist("Grandmaster Team ($20/mo)")}
-                className="btn-secondary w-full text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer hover:border-cyan-400/50"
+                className="btn-luminous-glass w-full text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer hover:border-cyan-400/50 hover:text-cyan-300"
               >
                 <Crown size={14} className="text-yellow-400" />
                 <span>Reserve Team Slot ($20/mo)</span>
