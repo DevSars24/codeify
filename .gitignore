@@ -25,6 +25,7 @@ Thumbs.db
 .idea
 
 /app/generated/prisma
-echo "dev.db" >> .gitignore
+dev.db
+*.tsbuildinfo
 # clerk configuration (can include secrets)
 /.clerk/

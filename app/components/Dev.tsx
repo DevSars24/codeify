@@ -26,7 +26,7 @@ export default function DevPracticePlatform() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen bg-transparent text-foreground">
         <main className="max-w-6xl mx-auto pt-28 pb-20 px-4 md:px-6">
           <div className="mb-12 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted border border-border text-xs font-medium text-muted-foreground mb-4">

@@ -584,6 +584,7 @@ flowchart TD
 
 | Component | Role |
 |---|---|
+| `AmbientBackground.tsx` | Particle canvas and ambient lighting backdrop |
 | `Home.tsx` | Playground: templates, Monaco state, AI actions, streamed output |
 | `Navbar.tsx` | Global navigation with Clerk profile and admin link |
 | `ContestDsa.tsx` | Contest engine: pagination, timer, submission modal |
