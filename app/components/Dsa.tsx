@@ -24,7 +24,7 @@ export default function DsaPracticeArena() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-black text-foreground pt-28 pb-20 px-4 md:px-6">
+      <div className="min-h-screen bg-transparent text-foreground pt-28 pb-20 px-4 md:px-6">
         <main className="max-w-6xl mx-auto space-y-10">
           {/* Header */}
           <div className="max-w-2xl space-y-3">

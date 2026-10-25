@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Terminal,
   Cpu,
@@ -239,108 +240,136 @@ export default function LandingPage() {
         />
 
         {/* ─── Hero Section ─────────────────────────────────────────── */}
-        <section className="pt-32 pb-20 md:pt-44 md:pb-28 px-4 sm:px-6 max-w-6xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <section className="pt-28 pb-16 sm:pt-36 sm:pb-20 md:pt-40 md:pb-24 px-4 sm:px-6 max-w-6xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             
             {/* Left Content */}
-            <div className="lg:col-span-6 space-y-7">
-              {/* Badge with Specular Edge Light */}
-              <div className="hero-line badge-luminous inline-flex items-center gap-2.5 px-3.5 py-1.5 border-white/[0.16] shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+            <div className="lg:col-span-6 space-y-5">
+              {/* Welcome Introduction Header */}
+              <div className="hero-line inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E8A33D] animate-pulse" />
+                <span className="text-[#EDEAE3] font-semibold tracking-wide text-xs">
+                  Welcome to CodeSaarthi
                 </span>
-                <span className="text-white font-mono font-medium">CodeSaarthi v2</span>
-                <span className="text-white/25">|</span>
-                <span className="text-emerald-300 font-mono">Multi-Model Groq LPU</span>
-                <ChevronRight size={13} className="text-zinc-400" />
+                <span className="text-white/20">·</span>
+                <span className="text-[#7C786F] text-[11px]">The AI Developer Arena</span>
+              </div>
+
+              {/* Intro Mobile Coding Visual (Compact Preview First) */}
+              <div className="hero-line relative w-full max-w-sm aspect-[16/9] rounded-2xl overflow-hidden border border-white/[0.12] shadow-xl bg-black/60 group">
+                <Image
+                  src="/assets/mobile_coder_intro.jpg"
+                  alt="Developer coding on mobile with CodeSaarthi"
+                  fill
+                  priority
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 384px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                
+                {/* Top Badge Overlay */}
+                <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-medium text-[#EDEAE3] flex items-center gap-1.5 pointer-events-none">
+                  <Sparkles size={11} className="text-[#E8A33D]" />
+                  <span>Welcome to CodeSaarthi</span>
+                </div>
+
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/10 font-mono text-[10px] text-[#EDEAE3]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E8A33D] animate-pulse" />
+                    CodeSaarthi Mobile
+                  </span>
+                  <span className="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-white/10 text-[#7C786F] text-[10px]">
+                    Touch-Optimized
+                  </span>
+                </div>
+              </div>
+
+              {/* Clean Minimal Badge */}
+              <div className="hero-line badge-luminous inline-flex items-center gap-2 px-3 py-1.5 border-white/[0.08] bg-white/[0.03]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E8A33D]" />
+                <span className="text-[#EDEAE3] font-medium text-xs">CodeSaarthi v2</span>
+                <span className="text-white/20">·</span>
+                <span className="text-[#7C786F] text-xs font-mono">Groq LPU</span>
+                <ChevronRight size={13} className="text-[#7C786F]" />
               </div>
 
               {/* Main Headline */}
-              <h1 className="hero-line text-4xl sm:text-5xl lg:text-[3.6rem] font-bold tracking-tight leading-[1.08] text-white">
+              <h1 className="hero-line text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-[-0.02em] leading-[1.12] text-[#EDEAE3]">
                 Practice, compete, and{" "}
-                <span className="gradient-text-cyber underline decoration-emerald-500/40 underline-offset-8">
+                <span className="text-[#E8A33D] underline decoration-[#E8A33D] underline-offset-4 decoration-1 font-semibold">
                   master code
                 </span>{" "}
                 without noise.
               </h1>
 
-              {/* Subtitle */}
-              <p className="hero-line text-base sm:text-lg text-zinc-300/90 max-w-xl leading-relaxed font-normal">
-                An ultra-fast developer arena built for deep algorithmic flow. Real-time sub-200ms AI code simulation across 11 languages, mobile-optimized practice rounds, and live tournament leaderboards.
+              {/* Short, Left-Aligned Copy */}
+              <p className="hero-line text-sm sm:text-base text-[#A8A49B] max-w-lg leading-[1.6] font-normal">
+                An ultra-fast developer arena built for deep algorithmic flow with instant sub-200ms AI simulation across 11 languages.
               </p>
 
-              {/* Luminous Call-to-Action Buttons */}
-              <div className="hero-line flex flex-col sm:flex-row gap-3 pt-2">
+              {/* Action Buttons (Mobile Responsive: Full-width on phone, inline on desktop) */}
+              <div className="hero-line flex flex-col sm:flex-row gap-3 pt-1 w-full sm:w-auto">
                 <button
                   onClick={() => router.push("/welcome")}
-                  className="btn-luminous-primary cursor-pointer text-sm font-semibold flex items-center justify-center gap-2.5 group"
+                  className="btn-primary w-full sm:w-auto text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span className="flex h-2 w-2 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-950 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-900" />
-                  </span>
                   <span>Start Practicing Free</span>
-                  <ArrowRight size={16} className="text-emerald-950 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={15} />
                 </button>
 
                 <button
                   onClick={() => router.push("/home")}
-                  className="btn-luminous-glass group cursor-pointer text-sm font-medium flex items-center justify-center gap-2.5"
+                  className="btn-secondary w-full sm:w-auto text-sm font-medium flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Code2 size={16} className="text-violet-400 group-hover:scale-110 transition-transform" />
+                  <Code2 size={15} className="text-[#7C786F]" />
                   <span>11-Language Playground</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                    Free · No Login
-                  </span>
                 </button>
               </div>
 
-              {/* Trust Metrics */}
-              <div className="hero-line pt-2 flex flex-wrap items-center gap-6 text-xs text-zinc-400 font-mono">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck size={15} className="text-emerald-400" />
+              {/* Trust Metrics (Clean sans & secondary color #7C786F) */}
+              <div className="hero-line pt-2 flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-[#7C786F]">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck size={14} className="text-[#7C786F]" />
                   <span>Sub-200ms AI simulation</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]" />
-                  <span>11 Languages supported</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#7C786F]" />
+                  <span>11 Languages</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Smartphone size={14} className="text-violet-400" />
+                <div className="flex items-center gap-1.5">
+                  <Smartphone size={14} className="text-[#7C786F]" />
                   <span>Mobile & Desktop ready</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Hero: Real Interactive Glassmorphic Developer Workbench */}
-            <div className="lg:col-span-6 hero-workbench">
-              <div className="relative group rounded-2xl glass-card-glow border border-white/[0.14] overflow-hidden shadow-[0_0_60px_-15px_rgba(99,102,241,0.2)]">
+            {/* Right Hero: Real Interactive Developer Workbench (Mobile overflow protected) */}
+            <div className="lg:col-span-6 hero-workbench w-full max-w-full min-w-0">
+              <div className="relative rounded-2xl glass-card-glow border border-white/[0.1] overflow-hidden shadow-2xl shadow-black/80">
                 
                 {/* Window Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-black/40 backdrop-blur-md">
                   {/* Traffic Light Buttons */}
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500/80 border border-red-500/90 shadow-[0_0_6px_rgba(239,68,68,0.4)]" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/80 border border-yellow-500/90 shadow-[0_0_6px_rgba(234,179,8,0.4)]" />
-                    <div className="w-3 h-3 rounded-full bg-emerald-500/80 border border-emerald-500/90 shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
-                    <span className="ml-2 text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
-                      <Terminal size={12} className="text-violet-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#5E5B54]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#5E5B54]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#5E5B54]" />
+                    <span className="ml-2 text-[11px] font-mono text-[#7C786F] flex items-center gap-1.5">
+                      <Terminal size={12} className="text-[#7C786F]" />
                       {snippet.filename}
                     </span>
                   </div>
 
-                  {/* LPU Status Pill */}
+                  {/* LPU Status Pill (Muted without neon glow) */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.15)]">
-                      <Zap size={10} className="text-yellow-400" />
-                      <span>Groq LPU {snippet.latency}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.03] text-[#7C786F] border border-white/[0.08] flex items-center gap-1">
+                      <span>LPU {snippet.latency}</span>
                     </span>
                   </div>
                 </div>
 
-                {/* Language Switcher Tabs inside Workbench */}
-                <div className="flex items-center gap-1 px-3 py-2 border-b border-white/[0.06] bg-white/[0.02] overflow-x-auto scrollbar-none">
+                {/* Language Switcher Tabs inside Workbench (Horizontal touch-scrollable on mobile) */}
+                <div className="flex items-center gap-1 px-3 py-2 border-b border-white/[0.06] bg-white/[0.02] overflow-x-auto scrollbar-none flex-nowrap">
                   {Object.keys(HERO_SNIPPETS).map((key) => {
                     const item = HERO_SNIPPETS[key];
                     const isActive = activeTab === key;
@@ -348,10 +377,10 @@ export default function LandingPage() {
                       <button
                         key={key}
                         onClick={() => setActiveTab(key)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all duration-200 cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-mono shrink-0 transition-colors cursor-pointer ${
                           isActive
-                            ? "bg-white/15 text-white border border-white/30 shadow-[0_0_12px_rgba(255,255,255,0.1)]"
-                            : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
+                            ? "bg-white/10 text-[#EDEAE3] border border-white/20"
+                            : "text-[#7C786F] hover:text-[#EDEAE3] hover:bg-white/[0.04]"
                         }`}
                       >
                         {item.lang}
@@ -360,24 +389,26 @@ export default function LandingPage() {
                   })}
                 </div>
 
-                {/* Editor Code Canvas */}
-                <div className="p-4 bg-black/60 font-mono text-xs overflow-x-auto">
-                  <pre className="text-zinc-200 leading-relaxed">
+                {/* Editor Code Canvas with Muted Syntax Colors (30% toned down saturation) */}
+                <div className="p-4 bg-[#05070d]/92 border-y border-white/[0.06] font-mono text-xs overflow-x-auto max-w-full">
+                  <pre className="text-[#EDEAE3] leading-relaxed">
                     <code>
                       {snippet.code.split("\n").map((line, idx) => (
                         <div key={idx} className="table-row">
-                          <span className="table-cell pr-4 select-none text-zinc-600 text-[11px] text-right">
+                          <span className="table-cell pr-4 select-none text-[#5E5B54] text-[11px] text-right">
                             {idx + 1}
                           </span>
                           <span className="table-cell whitespace-pre">
                             {line.startsWith("#") || line.startsWith("//") ? (
-                              <span className="text-zinc-500 italic">{line}</span>
+                              <span className="text-[#5E5B54] italic">{line}</span>
                             ) : line.includes("def ") || line.includes("function ") || line.includes("pub fn ") ? (
-                              <span className="text-violet-300 font-semibold">{line}</span>
+                              <span className="text-[#D6D2C8] font-semibold">{line}</span>
                             ) : line.includes("return") || line.includes("assert") ? (
-                              <span className="text-cyan-300">{line}</span>
+                              <span className="text-[#C9A66B]">{line}</span>
+                            ) : line.includes('"') || line.includes("'") ? (
+                              <span className="text-[#8FAF9A]">{line}</span>
                             ) : (
-                              <span>{line}</span>
+                              <span className="text-[#EDEAE3]">{line}</span>
                             )}
                           </span>
                         </div>
@@ -386,28 +417,29 @@ export default function LandingPage() {
                   </pre>
                 </div>
 
-                {/* Interactive Simulated Execution Console Bar */}
+                {/* Simulated Execution Console Bar */}
                 <div className="p-3.5 border-t border-white/[0.08] bg-black/80 backdrop-blur-xl space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-2.5">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={handleSimulateRun}
                         disabled={isRunning}
-                        className="btn-luminous-primary h-8 px-3 text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        className="btn-primary h-8 px-3 text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                       >
-                        <Play size={12} className={isRunning ? "animate-spin" : "fill-current"} />
+                        <Play size={11} className={isRunning ? "animate-spin" : "fill-current"} />
                         <span>{isRunning ? "Simulating..." : "Run Simulation"}</span>
                       </button>
-                      <span className="text-[11px] font-mono text-zinc-400">
-                        {isRunning ? "Executing on Groq LPUs..." : "Sub-200ms Instant Sandbox"}
+                      <span className="text-[11px] text-[#7C786F]">
+                        {isRunning ? "Evaluating on LPU..." : "Sub-200ms Instant Sandbox"}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2 text-[10px] font-mono">
-                      <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                      {/* Success state: muted sage #7FB08A */}
+                      <span className="px-2 py-0.5 rounded bg-[#7FB08A]/10 text-[#7FB08A] border border-[#7FB08A]/20">
                         ✓ 15/15 Passed
                       </span>
-                      <span className="px-2 py-0.5 rounded bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                      <span className="px-2 py-0.5 rounded bg-white/[0.04] text-[#A8A49B] border border-white/[0.08]">
                         {snippet.complexity}
                       </span>
                     </div>
@@ -415,27 +447,27 @@ export default function LandingPage() {
 
                   {/* Telemetry Result Drawer */}
                   {hasRun && (
-                    <div className="grid grid-cols-3 gap-2 pt-1 text-[11px] font-mono">
-                      <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.08] text-center">
-                        <span className="text-zinc-500 block text-[9px]">LPU LATENCY</span>
-                        <span className="text-emerald-300 font-semibold">{snippet.latency}</span>
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-1 text-[10px] sm:text-[11px] font-mono">
+                      <div className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.06] text-center">
+                        <span className="text-[#7C786F] block text-[9px]">LPU LATENCY</span>
+                        <span className="text-[#EDEAE3] font-semibold">{snippet.latency}</span>
                       </div>
-                      <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.08] text-center">
-                        <span className="text-zinc-500 block text-[9px]">PEAK MEMORY</span>
-                        <span className="text-cyan-300 font-semibold">{snippet.memory}</span>
+                      <div className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.06] text-center">
+                        <span className="text-[#7C786F] block text-[9px]">PEAK MEMORY</span>
+                        <span className="text-[#EDEAE3] font-semibold">{snippet.memory}</span>
                       </div>
-                      <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.08] text-center">
-                        <span className="text-zinc-500 block text-[9px]">AST REVIEW</span>
-                        <span className="text-violet-300 font-semibold">Optimal O(N)</span>
+                      <div className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.06] text-center">
+                        <span className="text-[#7C786F] block text-[9px]">AST REVIEW</span>
+                        <span className="text-[#7FB08A] font-semibold">Optimal O(N)</span>
                       </div>
                     </div>
                   )}
 
                   {/* Mentor Feedback Bar */}
-                  <div className="pt-1 flex items-center gap-2 text-xs font-mono text-zinc-300">
-                    <Sparkles size={13} className="text-emerald-400 shrink-0" />
-                    <span className="text-zinc-500">Mentor:</span>
-                    <div className="text-emerald-300 text-[11px] truncate">
+                  <div className="pt-1 flex items-center gap-2 text-xs text-[#7C786F]">
+                    <Sparkles size={13} className="text-[#7C786F] shrink-0" />
+                    <span className="text-[#7C786F]">Mentor:</span>
+                    <div className="text-[#A8A49B] text-[11px] truncate">
                       <TypingText
                         text={[
                           "Zero auxiliary allocations detected. Benchmark optimal.",
@@ -457,28 +489,27 @@ export default function LandingPage() {
         <PlaygroundPreviewSection />
 
         {/* ─── Platform Capabilities Grid ────────────────────────────── */}
-        <section ref={featuresRef} id="features" className="py-24 px-4 sm:px-6 border-t border-white/[0.08] relative z-10">
+        <section ref={featuresRef} id="features" className="py-20 sm:py-24 px-4 sm:px-6 border-t border-white/[0.08] relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-14 max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-violet-400 mb-3 font-mono text-xs uppercase tracking-wider">
+            <div className="mb-12 max-w-2xl">
+              <div className="inline-flex items-center gap-2 text-[#7C786F] mb-3 text-xs uppercase tracking-wider">
                 <Layers size={13} /> Platform Capabilities
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-[#EDEAE3] mb-3">
                 Engineered for deliberate practice
               </h2>
-              <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-[#A8A49B] leading-[1.6]">
                 Contests, complexity diagnostics, and mentor explanations built for developers who take their craft seriously.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {[
                 {
                   icon: Terminal,
                   title: "Simulated Execution",
                   desc: "Test custom inputs without waiting for heavy sandbox containers. AI predicts exact console output in sub-200ms.",
                   tag: "Groq Powered",
-                  iconColor: "text-emerald-400",
                   stat: "18ms Latency",
                 },
                 {
@@ -486,7 +517,6 @@ export default function LandingPage() {
                   title: "Algorithmic Review",
                   desc: "Submissions receive instant asymptotic complexity analysis (O(N) time/space) and concrete edge-case diagnostics.",
                   tag: "Smart Review",
-                  iconColor: "text-violet-400",
                   stat: "AST Analysis",
                 },
                 {
@@ -494,34 +524,33 @@ export default function LandingPage() {
                   title: "11-Language Playground",
                   desc: "Instant code review, auto-fix, and logic explanations across Python, Java, C++, JS, TS, Go, Rust, and more.",
                   tag: "11 Runtimes",
-                  iconColor: "text-cyan-400",
                   stat: "Zero Setup",
                 },
-              ].map(({ icon: Icon, title, desc, tag, iconColor, stat }) => (
+              ].map(({ icon: Icon, title, desc, tag, stat }) => (
                 <div
                   key={title}
-                  className="feature-card glass-card p-6 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1 hover:border-white/25"
+                  className="feature-card glass-card p-6 flex flex-col justify-between group transition-all duration-200 hover:border-white/20"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-5">
-                      <div className="w-11 h-11 rounded-xl border border-white/[0.1] bg-white/[0.04] flex items-center justify-center transition-all group-hover:scale-105 group-hover:border-white/[0.25] group-hover:shadow-[0_0_15px_rgba(255,255,255,0.08)]">
-                        <Icon size={20} className={iconColor} />
+                      <div className="w-10 h-10 rounded-xl border border-white/[0.08] bg-white/[0.03] flex items-center justify-center text-[#7C786F] group-hover:text-[#EDEAE3] transition-colors">
+                        <Icon size={18} />
                       </div>
-                      <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-white/[0.1] bg-white/[0.03] text-zinc-300">
+                      <span className="text-[11px] px-2.5 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-[#7C786F]">
                         {tag}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-lg mb-2 text-white group-hover:text-emerald-300 transition-colors">
+                    <h3 className="font-semibold text-lg mb-2 text-[#EDEAE3]">
                       {title}
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed">
+                    <p className="text-xs text-[#A8A49B] leading-[1.6]">
                       {desc}
                     </p>
                   </div>
 
-                  <div className="pt-5 mt-5 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                  <div className="pt-5 mt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-[#7C786F]">
                     <span>Performance tier:</span>
-                    <span className="text-white font-medium">{stat}</span>
+                    <span className="text-[#EDEAE3] font-medium font-mono">{stat}</span>
                   </div>
                 </div>
               ))}
@@ -529,72 +558,72 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ─── Handcrafted Bespoke Feature Showcase (Real Developer Workbenches) ─ */}
-        <section ref={showcaseRef} className="py-24 px-4 sm:px-6 border-t border-white/[0.08] relative z-10">
-          <div className="max-w-6xl mx-auto space-y-16">
-            <div className="text-center max-w-2xl mx-auto space-y-3">
-              <div className="badge-luminous inline-flex mx-auto border-violet-500/30 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
-                <Sparkles size={12} className="text-violet-400" /> Platform Architecture Tour
+        {/* ─── Feature Showcase (Real Developer Workbenches) ─────────── */}
+        <section ref={showcaseRef} className="py-20 sm:py-24 px-4 sm:px-6 border-t border-white/[0.08] relative z-10">
+          <div className="max-w-6xl mx-auto space-y-14">
+            <div className="text-left sm:text-center max-w-2xl sm:mx-auto space-y-3">
+              <div className="badge-luminous inline-flex sm:mx-auto border-white/[0.08] text-[#7C786F]">
+                <Sparkles size={12} className="text-[#E8A33D]" /> Platform Architecture Tour
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-[#EDEAE3]">
                 Built for Elite Problem Solvers
               </h2>
-              <p className="text-sm text-zinc-300 leading-relaxed">
-                Take a look at the developer workspace designed for deep focus, rich obsidian dark aesthetics, and zero distractions.
+              <p className="text-sm text-[#A8A49B] leading-[1.6]">
+                Developer workspace designed for deep focus, quiet contrast, and zero distractions.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-7">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7">
               
               {/* Showcase Card 1: Sub-200ms Execution Pipeline */}
-              <div className="glass-card-glow p-6 sm:p-7 flex flex-col justify-between group hover:border-emerald-500/40 transition-all duration-300">
+              <div className="glass-card-glow p-5 sm:p-7 flex flex-col justify-between group transition-colors">
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
-                      01 / REAL-TIME SIMULATION
+                    <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white/[0.03] text-[#7C786F] border border-white/[0.08]">
+                      01 / SIMULATION
                     </span>
-                    <span className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
-                      <Zap size={12} className="text-yellow-400" /> 130x Faster than Docker
+                    <span className="text-xs text-[#7C786F] flex items-center gap-1.5">
+                      <span>Sub-200ms In-Memory</span>
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
+                    <h3 className="text-xl font-semibold text-[#EDEAE3] mb-2">
                       Sub-200ms Simulated Execution
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed">
-                      Instead of spinning up 2-second Linux containers, our fine-tuned Groq LPU engine compiles and evaluates your logic in memory, streaming verified test output in milliseconds.
+                    <p className="text-xs text-[#A8A49B] leading-[1.6]">
+                      Instead of spinning up slow containers, our fine-tuned LPU engine evaluates logic in memory, streaming verified test output in milliseconds.
                     </p>
                   </div>
 
                   {/* Interactive Visual AST Diagram */}
-                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-3">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-zinc-400">
+                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-3 max-w-full overflow-hidden">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-[#7C786F]">
                       <span>EXECUTION PIPELINE</span>
-                      <span className="text-emerald-400">STATUS: ZERO LATENCY</span>
+                      <span className="text-[#7FB08A]">STATUS: VERIFIED</span>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
-                      <div className="p-2 rounded bg-white/[0.03] border border-white/[0.08]">
-                        <span className="text-zinc-500 block">PARSER</span>
-                        <span className="text-white">Tree-sitter AST</span>
+                      <div className="p-2 rounded bg-white/[0.02] border border-white/[0.06]">
+                        <span className="text-[#7C786F] block">PARSER</span>
+                        <span className="text-[#EDEAE3]">Tree-sitter</span>
                       </div>
-                      <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-semibold shadow-[0_0_8px_rgba(16,185,129,0.2)]">
-                        <span className="text-emerald-400/70 block">SIMULATOR</span>
-                        <span>Groq LPUs (18ms)</span>
+                      <div className="p-2 rounded bg-white/[0.04] border border-white/[0.1] text-[#EDEAE3]">
+                        <span className="text-[#7C786F] block">SIMULATOR</span>
+                        <span>LPU (18ms)</span>
                       </div>
-                      <div className="p-2 rounded bg-white/[0.03] border border-white/[0.08]">
-                        <span className="text-zinc-500 block">TESTS</span>
-                        <span className="text-white">15/15 Passed</span>
+                      <div className="p-2 rounded bg-white/[0.02] border border-white/[0.06]">
+                        <span className="text-[#7C786F] block">TESTS</span>
+                        <span className="text-[#7FB08A]">15/15 Passed</span>
                       </div>
                     </div>
 
-                    <div className="p-2.5 rounded bg-black/80 text-[11px] text-emerald-300 flex items-center justify-between border border-emerald-500/20">
+                    <div className="p-2.5 rounded bg-black/80 text-[11px] text-[#7FB08A] flex items-center justify-between border border-white/[0.06]">
                       <span className="flex items-center gap-1.5">
-                        <CheckCircle2 size={13} className="text-emerald-400" />
-                        All hidden edge-case assertions validated.
+                        <CheckCircle2 size={13} className="text-[#7FB08A]" />
+                        All assertions validated.
                       </span>
-                      <span className="text-[10px] text-zinc-400">0.018s</span>
+                      <span className="text-[10px] text-[#7C786F]">0.018s</span>
                     </div>
                   </div>
                 </div>
@@ -602,7 +631,7 @@ export default function LandingPage() {
                 <div className="pt-6">
                   <Link
                     href="/home"
-                    className="btn-luminous-glass w-full text-xs font-semibold flex items-center justify-center gap-2 group-hover:border-emerald-500/40"
+                    className="btn-secondary w-full text-xs font-semibold flex items-center justify-center gap-2"
                   >
                     <span>Test Instant Execution</span>
                     <ArrowRight size={14} />
@@ -611,54 +640,54 @@ export default function LandingPage() {
               </div>
 
               {/* Showcase Card 2: Asymptotic Complexity Engine */}
-              <div className="glass-card-glow p-6 sm:p-7 flex flex-col justify-between group hover:border-violet-500/40 transition-all duration-300">
+              <div className="glass-card-glow p-5 sm:p-7 flex flex-col justify-between group transition-colors">
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/25">
-                      02 / ASYMPTOTIC DIAGNOSTICS
+                    <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white/[0.03] text-[#7C786F] border border-white/[0.08]">
+                      02 / DIAGNOSTICS
                     </span>
-                    <span className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
-                      <Gauge size={12} className="text-violet-400" /> Big-O Profiler
+                    <span className="text-xs text-[#7C786F] flex items-center gap-1.5">
+                      <Gauge size={12} className="text-[#7C786F]" /> Big-O Profiler
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition-colors">
+                    <h3 className="text-xl font-semibold text-[#EDEAE3] mb-2">
                       Deep Asymptotic Review
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed">
-                      Beyond simple test pass/fail checks, understand whether your algorithm scales. Automatic asymptotic complexity analysis gives precise Big-O guarantees and hints on sub-optimal loops.
+                    <p className="text-xs text-[#A8A49B] leading-[1.6]">
+                      Beyond test pass/fail checks, understand whether your algorithm scales. Automatic asymptotic analysis gives precise Big-O guarantees.
                     </p>
                   </div>
 
-                  {/* Visual Big-O Scale */}
-                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-3">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-zinc-400">
+                  {/* Visual Big-O Scale (Scrollable on small mobile) */}
+                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-3 max-w-full overflow-hidden">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-[#7C786F]">
                       <span>TIME COMPLEXITY SPECTRUM</span>
-                      <span className="text-violet-300">O(N) DETECTED</span>
+                      <span className="text-[#E8A33D]">O(N) DETECTED</span>
                     </div>
 
-                    <div className="flex items-center gap-1 text-[10px]">
-                      <div className="flex-1 p-1.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-center">
+                    <div className="flex items-center gap-1 text-[10px] overflow-x-auto">
+                      <div className="flex-1 min-w-[44px] p-1.5 rounded bg-white/[0.02] border border-white/[0.06] text-[#7C786F] text-center">
                         O(1)
                       </div>
-                      <div className="flex-1 p-1.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-center">
+                      <div className="flex-1 min-w-[44px] p-1.5 rounded bg-white/[0.02] border border-white/[0.06] text-[#7C786F] text-center">
                         O(log N)
                       </div>
-                      <div className="flex-1 p-1.5 rounded bg-violet-500/30 border border-violet-400 text-white font-bold text-center shadow-[0_0_10px_rgba(167,139,250,0.3)]">
+                      <div className="flex-1 min-w-[44px] p-1.5 rounded bg-white/10 border border-[#E8A33D]/60 text-[#EDEAE3] font-semibold text-center">
                         O(N) ★
                       </div>
-                      <div className="flex-1 p-1.5 rounded bg-white/[0.03] border border-white/[0.08] text-zinc-500 text-center">
+                      <div className="flex-1 min-w-[44px] p-1.5 rounded bg-white/[0.02] border border-white/[0.06] text-[#7C786F] text-center">
                         O(N log N)
                       </div>
-                      <div className="flex-1 p-1.5 rounded bg-white/[0.03] border border-white/[0.08] text-zinc-600 text-center">
+                      <div className="flex-1 min-w-[44px] p-1.5 rounded bg-white/[0.02] border border-white/[0.06] text-[#7C786F] text-center">
                         O(N²)
                       </div>
                     </div>
 
-                    <div className="p-2.5 rounded bg-white/[0.02] text-[11px] text-zinc-300 flex items-center justify-between border border-white/[0.08]">
+                    <div className="p-2.5 rounded bg-white/[0.02] text-[11px] text-[#A8A49B] flex items-center justify-between border border-white/[0.06]">
                       <span>Space: O(1) Auxiliary heap</span>
-                      <span className="text-emerald-400 font-semibold">Optimal</span>
+                      <span className="text-[#7FB08A] font-semibold">Optimal</span>
                     </div>
                   </div>
                 </div>
@@ -666,7 +695,7 @@ export default function LandingPage() {
                 <div className="pt-6">
                   <Link
                     href="/dsa"
-                    className="btn-luminous-glass w-full text-xs font-semibold flex items-center justify-center gap-2 group-hover:border-violet-500/40"
+                    className="btn-secondary w-full text-xs font-semibold flex items-center justify-center gap-2"
                   >
                     <span>Explore DSA Arena</span>
                     <ArrowRight size={14} />
@@ -675,49 +704,49 @@ export default function LandingPage() {
               </div>
 
               {/* Showcase Card 3: Live Tournament Leaderboards */}
-              <div className="glass-card-glow p-6 sm:p-7 flex flex-col justify-between group hover:border-cyan-500/40 transition-all duration-300">
+              <div className="glass-card-glow p-5 sm:p-7 flex flex-col justify-between group transition-colors">
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">
-                      03 / COMPETITIVE BATTLES
+                    <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white/[0.03] text-[#7C786F] border border-white/[0.08]">
+                      03 / COMPETITIVE
                     </span>
-                    <span className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
-                      <Trophy size={12} className="text-yellow-400" /> Global Rankings
+                    <span className="text-xs text-[#7C786F] flex items-center gap-1.5">
+                      <Trophy size={12} className="text-[#E8A33D]" /> Global Rankings
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                    <h3 className="text-xl font-semibold text-[#EDEAE3] mb-2">
                       Live Tournament Arena
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed">
-                      Battle against peers in timed algorithmic rounds. Test against randomized hidden stress cases and climb global tiers from Knight to Grandmaster with verified telemetry.
+                    <p className="text-xs text-[#A8A49B] leading-[1.6]">
+                      Battle against peers in timed algorithmic rounds. Test against randomized hidden stress cases and climb global tiers.
                     </p>
                   </div>
 
                   {/* Leaderboard Mockup Card */}
-                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-2.5">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-zinc-400">
+                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-2.5 max-w-full overflow-hidden">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-[#7C786F]">
                       <span>WEEKLY ARENA #42</span>
-                      <span className="text-cyan-300 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" /> LIVE
+                      <span className="text-[#EDEAE3] flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#E8A33D]" /> LIVE
                       </span>
                     </div>
 
                     {[
-                      { rank: "#1", name: "Saurabh (Maintainer)", score: "2,840 pts", time: "04:12", tier: "Grandmaster", color: "text-yellow-400" },
-                      { rank: "#2", name: "Elena_K", score: "2,710 pts", time: "05:40", tier: "Master", color: "text-violet-300" },
-                      { rank: "#3", name: "Alex_Code", score: "2,590 pts", time: "06:15", tier: "Knight", color: "text-cyan-300" },
+                      { rank: "#1", name: "Saurabh", score: "2,840 pts", time: "04:12", tier: "Grandmaster" },
+                      { rank: "#2", name: "Elena_K", score: "2,710 pts", time: "05:40", tier: "Master" },
+                      { rank: "#3", name: "Alex_Code", score: "2,590 pts", time: "06:15", tier: "Knight" },
                     ].map((user) => (
                       <div key={user.name} className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/[0.06] text-[11px]">
                         <div className="flex items-center gap-2">
-                          <span className={`font-bold ${user.color}`}>{user.rank}</span>
-                          <span className="text-white font-medium">{user.name}</span>
-                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/[0.06] text-zinc-400">{user.tier}</span>
+                          <span className="font-semibold text-[#EDEAE3]">{user.rank}</span>
+                          <span className="text-[#EDEAE3] font-medium">{user.name}</span>
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/[0.04] text-[#7C786F]">{user.tier}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-emerald-400 font-semibold">{user.score}</span>
-                          <span className="text-zinc-500 text-[10px]">{user.time}</span>
+                          <span className="text-[#7FB08A] font-medium">{user.score}</span>
+                          <span className="text-[#7C786F] text-[10px]">{user.time}</span>
                         </div>
                       </div>
                     ))}
@@ -727,7 +756,7 @@ export default function LandingPage() {
                 <div className="pt-6">
                   <Link
                     href="/leaderboard"
-                    className="btn-luminous-glass w-full text-xs font-semibold flex items-center justify-center gap-2 group-hover:border-cyan-500/40"
+                    className="btn-secondary w-full text-xs font-semibold flex items-center justify-center gap-2"
                   >
                     <span>View Global Leaderboard</span>
                     <ArrowRight size={14} />
@@ -736,47 +765,47 @@ export default function LandingPage() {
               </div>
 
               {/* Showcase Card 4: Mobile & Desktop Algorithmic Studio */}
-              <div className="glass-card-glow p-6 sm:p-7 flex flex-col justify-between group hover:border-white/35 transition-all duration-300">
+              <div className="glass-card-glow p-5 sm:p-7 flex flex-col justify-between group transition-colors">
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-white/[0.08] text-white border border-white/20">
-                      04 / DUAL-DEVICE WORKSPACE
+                    <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white/[0.03] text-[#7C786F] border border-white/[0.08]">
+                      04 / DUAL-DEVICE
                     </span>
-                    <span className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
-                      <Smartphone size={12} className="text-emerald-400" /> Touch Optimized
+                    <span className="text-xs text-[#7C786F] flex items-center gap-1.5">
+                      <Smartphone size={12} className="text-[#7C786F]" /> Touch Optimized
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
+                    <h3 className="text-xl font-semibold text-[#EDEAE3] mb-2">
                       Mobile & Desktop Algorithmic Flow
                     </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed">
-                      Practice coding rounds anywhere. Custom mobile code keyboard ribbons, fast gesture bracket injection, and instant test evaluation tailored for on-the-go practice.
+                    <p className="text-xs text-[#A8A49B] leading-[1.6]">
+                      Practice coding rounds anywhere. Custom mobile code keyboard ribbons, fast gesture bracket injection, and instant test evaluation.
                     </p>
                   </div>
 
                   {/* Mobile Preview UI Mockup */}
-                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-3">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-zinc-400">
+                  <div className="p-4 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-xs space-y-3 max-w-full overflow-hidden">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/[0.06] text-[11px] text-[#7C786F]">
                       <span>MOBILE QUICK-ACTION BAR</span>
-                      <span className="text-emerald-400">TOUCH READY</span>
+                      <span className="text-[#EDEAE3]">TOUCH READY</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 overflow-x-auto text-[11px]">
+                    <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] scrollbar-none">
                       {["tab", "( )", "{ }", "[ ]", "=>", ":", ";", "=="].map((symbol) => (
-                        <div key={symbol} className="px-2.5 py-1 rounded bg-white/[0.05] border border-white/[0.1] text-zinc-300 hover:text-white hover:bg-white/10 transition-colors">
+                        <div key={symbol} className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/[0.08] text-[#A8A49B] shrink-0">
                           {symbol}
                         </div>
                       ))}
                     </div>
 
-                    <div className="p-2.5 rounded bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between text-[11px] text-emerald-300">
+                    <div className="p-2.5 rounded bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-[11px] text-[#A8A49B]">
                       <span className="flex items-center gap-1.5">
-                        <Check size={13} className="text-emerald-400" />
+                        <Check size={13} className="text-[#7FB08A]" />
                         Synced to cloud profile.
                       </span>
-                      <span className="text-[10px] text-zinc-400">Auto-saved</span>
+                      <span className="text-[10px] text-[#7C786F]">Auto-saved</span>
                     </div>
                   </div>
                 </div>
@@ -784,7 +813,7 @@ export default function LandingPage() {
                 <div className="pt-6">
                   <Link
                     href="/welcome"
-                    className="btn-luminous-glass w-full text-xs font-semibold flex items-center justify-center gap-2 group-hover:border-white/35"
+                    className="btn-secondary w-full text-xs font-semibold flex items-center justify-center gap-2"
                   >
                     <span>Launch Mobile Workspace</span>
                     <ArrowRight size={14} />
@@ -802,29 +831,25 @@ export default function LandingPage() {
         {/* ─── Meet the Developer Behind CodeSaarthi ─────────────────── */}
         <MeetDeveloperSection />
 
-        {/* ─── Bottom CTA with Luminous Halo ────────────────────────── */}
-        <section className="py-28 px-4 sm:px-6 border-t border-white/[0.08] relative bg-natural-dark overflow-hidden z-10">
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none"
-          />
-
-          <div className="max-w-xl mx-auto text-center relative z-10 space-y-6">
-            <div className="badge-luminous inline-flex mx-auto border-emerald-500/30 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-              <Trophy size={13} /> Join Thousands of Developers
+        {/* ─── Bottom CTA ───────────────────────────────────────────── */}
+        <section className="py-24 sm:py-28 px-4 sm:px-6 border-t border-white/[0.08] relative overflow-hidden z-10">
+          <div className="max-w-xl mx-auto text-center relative z-10 space-y-5">
+            <div className="badge-luminous inline-flex mx-auto border-white/[0.08] text-[#7C786F]">
+              <Trophy size={13} className="text-[#E8A33D]" /> Join Thousands of Developers
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-[#EDEAE3]">
               Ready to elevate your code?
             </h2>
-            <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
+            <p className="text-sm sm:text-base text-[#A8A49B] leading-[1.6]">
               Step into the arena, solve challenges across 11 languages, and track your engineering progress on your personal dashboard.
             </p>
-            <div className="pt-3">
+            <div className="pt-2">
               <button
                 onClick={() => router.push("/welcome")}
-                className="btn-luminous-primary cursor-pointer px-9 h-13 text-sm font-semibold flex items-center justify-center gap-2.5 mx-auto"
+                className="btn-primary cursor-pointer px-8 h-11 text-sm font-semibold flex items-center justify-center gap-2 mx-auto w-full sm:w-auto"
               >
                 <span>Launch Developer Workspace</span>
-                <ArrowRight size={16} />
+                <ArrowRight size={15} />
               </button>
             </div>
           </div>
@@ -832,25 +857,25 @@ export default function LandingPage() {
 
         {/* ─── Footer ──────────────────────────────────────────────── */}
         <footer className="py-12 px-4 sm:px-6 border-t border-white/[0.08] bg-black/60 relative z-10">
-          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-zinc-400">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-[#7C786F]">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg border border-white/[0.12] bg-white/[0.04] flex items-center justify-center shadow-[0_0_12px_rgba(255,255,255,0.06)]">
-                <Command size={14} className="text-white" />
+              <div className="w-7 h-7 rounded-lg border border-white/[0.1] bg-white/[0.03] flex items-center justify-center">
+                <Command size={14} className="text-[#EDEAE3]" />
               </div>
-              <span className="font-semibold text-white tracking-tight">CodeSaarthi</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-400">
+              <span className="font-semibold text-[#EDEAE3] tracking-tight">CodeSaarthi</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/[0.08] text-[#7C786F]">
                 v2
               </span>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-6">
-              <Link href="/home" className="hover:text-white transition-colors">11-Lang Playground</Link>
-              <Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link>
-              <Link href="/#developer" className="hover:text-white transition-colors">Developer</Link>
-              <Link href="/dsa" className="hover:text-white transition-colors">DSA Arena</Link>
-              <Link href="/blogs" className="hover:text-white transition-colors">Blog</Link>
-              <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
+            <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
+              <Link href="/home" className="hover:text-[#EDEAE3] transition-colors">11-Lang Playground</Link>
+              <Link href="/#pricing" className="hover:text-[#EDEAE3] transition-colors">Pricing</Link>
+              <Link href="/#developer" className="hover:text-[#EDEAE3] transition-colors">Developer</Link>
+              <Link href="/dsa" className="hover:text-[#EDEAE3] transition-colors">DSA Arena</Link>
+              <Link href="/blogs" className="hover:text-[#EDEAE3] transition-colors">Blog</Link>
+              <Link href="/leaderboard" className="hover:text-[#EDEAE3] transition-colors">Leaderboard</Link>
             </div>
-            <p className="font-mono text-[11px] text-zinc-500">
+            <p className="text-[11px] text-[#7C786F]">
               © 2026 CodeSaarthi · Built by Saurabh Singh Rajput
             </p>
           </div>

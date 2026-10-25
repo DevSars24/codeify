@@ -13,7 +13,7 @@ export default function HomePage() {
   const { isSignedIn, isLoaded } = useUser();
 
   return (
-    <div className="min-h-screen bg-black text-foreground flex flex-col">
+    <div className="min-h-screen bg-transparent text-foreground flex flex-col">
       <Navbar />
       <div className="pt-18 flex-1 min-h-0 flex flex-col">
         {isLoaded && !isSignedIn && (
