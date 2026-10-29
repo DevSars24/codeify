@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import {
@@ -20,12 +20,6 @@ import { Button } from "@/components/ui/button";
 export default function WelcomePage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
       router.replace("/sign-in");
@@ -80,41 +74,32 @@ export default function WelcomePage() {
     <div className="min-h-screen bg-black text-foreground overflow-hidden relative">
       <Navbar />
 
-      {/* Main Content */}
       <main className="relative z-10 pt-28 md:pt-36 pb-20 px-4 md:px-6">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Hero Section */}
-          <div
-            className={`text-center space-y-4 transition-all duration-700 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
-          >
+          <div className="surface-enter text-center space-y-4">
             {/* Status Pill */}
             <div className="badge-pill inline-flex items-center gap-2 border-white/[0.14]">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-              <span>Workspace Active · Cloud Database Connected</span>
+              <span>Your workspace is ready</span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white">
-              Hello, <span>{user?.firstName || "Developer"}</span>
+            <h1 className="font-serif text-4xl font-normal tracking-tight text-white sm:text-5xl md:text-6xl">
+              Good to see you, <span className="text-[#c9d0be]">{user?.firstName || "Developer"}</span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Your practice queue is ready. Step into the arena, solve challenges, and hone your algorithmic instincts.
+              Pick up where curiosity takes you: practice a concept, build a project, or explore a new idea.
             </p>
           </div>
 
           {/* Quick Stats */}
-          <div
-            className={`flex justify-center gap-6 md:gap-14 transition-all duration-700 delay-150 flex-wrap ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
-          >
+          <div className="surface-enter glass-card grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 md:gap-6 md:p-5" style={{ animationDelay: "120ms" }}>
             {stats.map((stat, i) => (
-              <div key={i} className="text-center group cursor-default">
+              <div key={i} className="text-center group cursor-default py-2">
                 <div className="flex items-center justify-center gap-1.5 text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
                   {stat.icon}
                   <span className="text-[11px] font-mono uppercase tracking-wider">{stat.label}</span>
@@ -125,11 +110,7 @@ export default function WelcomePage() {
           </div>
 
           {/* Action Cards with Real Asset Previews */}
-          <div
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 transition-all duration-700 delay-300 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
-          >
+          <div className="surface-enter grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" style={{ animationDelay: "220ms" }}>
             {quickActions.map((action, idx) => (
               <button
                 key={idx}
@@ -156,7 +137,7 @@ export default function WelcomePage() {
                 </div>
 
                 {/* Card Content */}
-                <div className="p-5 flex-1 flex flex-col justify-between bg-black">
+                <div className="p-5 flex-1 flex flex-col justify-between bg-transparent">
                   <div>
                     <h3 className="text-base font-semibold text-foreground mb-1.5 group-hover:text-white transition-colors">
                       {action.title}
@@ -176,11 +157,7 @@ export default function WelcomePage() {
           </div>
 
           {/* Bottom CTA */}
-          <div
-            className={`text-center space-y-4 pt-4 transition-all duration-700 delay-500 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
-          >
+          <div className="surface-enter text-center space-y-4 pt-4" style={{ animationDelay: "320ms" }}>
             <Button
               onClick={() => router.push("/dsa")}
               className="btn-cyber cursor-pointer px-8 h-12 text-sm font-semibold"

@@ -99,22 +99,21 @@ export default function LandingPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
-                <span className="text-white/90 font-mono">CodeSaarthi v2</span>
+                <span className="text-white/90 font-mono">A workspace for the long game</span>
                 <span className="text-white/20">|</span>
-                <span className="text-violet-300 font-mono">Multi-Model Groq LPU</span>
+                <span className="text-[#c9d0be] font-mono">Learn by building</span>
                 <ChevronRight size={13} className="text-muted-foreground/60" />
               </div>
 
               {/* Main Headline */}
-              <h1 className="hero-line text-4xl sm:text-5xl lg:text-[3.6rem] font-bold tracking-tight leading-[1.08] text-white">
-                Practice, compete, and{" "}
-                <span className="text-white underline decoration-white/20 underline-offset-8">master code</span>{" "}
-                without noise.
+              <h1 className="hero-line max-w-2xl font-serif text-4xl font-normal leading-[1.08] tracking-[-0.045em] text-white sm:text-5xl lg:text-[4.15rem]">
+                Get better at the parts of code that{" "}
+                <span className="text-[#c5ceb9]">take practice.</span>
               </h1>
 
               {/* Subtitle */}
               <p className="hero-line text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
-                A high-octane algorithmic workspace for coders. Real-time AI code simulation across 11 programming languages, mobile-optimized practice rounds, and live tournament leaderboards.
+                A calm place to work through problems, try ideas in code, and see how far you&apos;ve come. Pick a challenge, open the editor, and start where you are.
               </p>
 
               {/* CTA Buttons */}
@@ -123,7 +122,7 @@ export default function LandingPage() {
                   onClick={() => router.push("/welcome")}
                   className="btn-cyber cursor-pointer text-sm font-semibold flex items-center justify-center gap-2"
                 >
-                  <span>Start Practicing Free</span>
+                  <span>Find your next challenge</span>
                   <ArrowRight size={16} />
                 </button>
                 <button
@@ -131,7 +130,7 @@ export default function LandingPage() {
                   className="btn-secondary cursor-pointer text-sm font-medium flex items-center justify-center gap-2"
                 >
                   <Code2 size={16} className="text-violet-400" />
-                  <span>11-Language Playground</span>
+                  <span>Open the coding studio</span>
                 </button>
               </div>
 
@@ -139,15 +138,15 @@ export default function LandingPage() {
               <div className="hero-line pt-2 flex flex-wrap items-center gap-6 text-xs text-muted-foreground font-mono">
                 <div className="flex items-center gap-2">
                   <ShieldCheck size={15} className="text-emerald-400" />
-                  <span>Sub-200ms AI simulation</span>
+                  <span>Practice with instant feedback</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  <span>11 Languages supported</span>
+                  <span>11 languages to explore</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Smartphone size={14} className="text-violet-400" />
-                  <span>Mobile & Desktop ready</span>
+                  <span>Pick up on any screen</span>
                 </div>
               </div>
             </div>
@@ -214,14 +213,14 @@ export default function LandingPage() {
         <section ref={featuresRef} id="features" className="py-24 px-4 sm:px-6 border-t border-white/[0.06] relative">
           <div className="max-w-6xl mx-auto">
             <div className="mb-14 max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-violet-400 mb-3 font-mono text-xs uppercase tracking-wider">
-                <Layers size={13} /> Platform Capabilities
+              <div className="inline-flex items-center gap-2 text-[#b8c5a6] mb-3 font-mono text-xs uppercase tracking-wider">
+                <Layers size={13} /> Made for learning by doing
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-frost mb-3">
-                Engineered for deliberate practice
+              <h2 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-frost mb-3">
+                A little structure goes a long way.
               </h2>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Contests, complexity diagnostics, and mentor explanations built for developers who take their craft seriously.
+                Practice, experiment, and learn from useful feedback—without turning every session into a race.
               </p>
             </div>
 
@@ -231,7 +230,7 @@ export default function LandingPage() {
                   icon: Terminal,
                   title: "Simulated Execution",
                   desc: "Test custom inputs without waiting for heavy sandbox containers. AI predicts exact console output in sub-200ms.",
-                  tag: "Groq Powered",
+                  tag: "Try your own inputs",
                   border: "hover:border-white/30",
                   iconColor: "text-white",
                 },
@@ -239,7 +238,7 @@ export default function LandingPage() {
                   icon: Cpu,
                   title: "Algorithmic Review",
                   desc: "Submissions receive instant asymptotic complexity analysis (O(N) time/space) and concrete edge-case diagnostics.",
-                  tag: "Smart Review",
+                  tag: "Reason about tradeoffs",
                   border: "hover:border-white/30",
                   iconColor: "text-white",
                 },
@@ -247,7 +246,7 @@ export default function LandingPage() {
                   icon: Zap,
                   title: "11-Language Playground",
                   desc: "Instant code review, auto-fix, and logic explanations across Python, Java, C++, JS, TS, Go, Rust, and more.",
-                  tag: "11 Languages",
+                  tag: "Room to experiment",
                   border: "hover:border-white/30",
                   iconColor: "text-white",
                 },
@@ -308,7 +307,7 @@ export default function LandingPage() {
                     01 / Mobile Coding Rounds
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-transparent">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Solve Coding Rounds Anywhere
                   </h3>
@@ -332,7 +331,7 @@ export default function LandingPage() {
                     02 / Competitive Battles
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-transparent">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Live Tournament & Leaderboard
                   </h3>
@@ -356,7 +355,7 @@ export default function LandingPage() {
                     03 / 11-Language Studio
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-transparent">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Multi-Language AI Code Studio
                   </h3>
@@ -380,7 +379,7 @@ export default function LandingPage() {
                     04 / Algorithmic Arena
                   </span>
                 </div>
-                <div className="p-6 bg-black">
+                <div className="p-6 bg-transparent">
                   <h3 className="text-lg font-semibold mb-2 group-hover:text-white transition-colors">
                     Structured Topic Tracks
                   </h3>
@@ -399,18 +398,18 @@ export default function LandingPage() {
             <div className="badge-pill inline-flex mx-auto border-white/20 text-white">
               <Trophy size={13} /> Join Thousands of Developers
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              Ready to elevate your code?
+            <h2 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-white">
+              Make a little progress today.
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Step into the arena, solve challenges across 11 languages, and track your engineering progress on your personal dashboard.
+              Choose a problem, make a small attempt, and leave with something new to think about.
             </p>
             <div className="pt-2">
               <button
                 onClick={() => router.push("/welcome")}
                 className="btn-cyber cursor-pointer px-8 h-12 text-sm font-semibold"
               >
-                <span>Launch Developer Workspace</span>
+                <span>Open your workspace</span>
                 <ArrowRight size={16} />
               </button>
             </div>

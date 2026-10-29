@@ -2,19 +2,18 @@
 
 import TypingText from "@/components/TypingText";
 import Counter from "@/components/Counter";
+import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function AboutDeveloperPage() {
   return (
-    <main className="relative min-h-screen bg-black text-white overflow-hidden">
-
-      {/* Top & Bottom Header space */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 h-16 z-10 bg-black" />
+    <main className="relative min-h-screen overflow-hidden bg-black text-white">
+      <Navbar />
 
       {/* ===== CONTENT ===== */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-24 space-y-24">
+      <div className="relative z-10 mx-auto max-w-6xl space-y-24 px-4 pb-24 pt-28 sm:px-6 md:pt-32">
 
         {/* ================= HERO ================= */}
         <section className="grid md:grid-cols-2 gap-12 items-center">
@@ -24,9 +23,9 @@ export default function AboutDeveloperPage() {
             transition={{ duration: 0.5 }}
             className="space-y-5"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
+            <h1 className="font-serif text-4xl font-normal leading-tight sm:text-5xl md:text-6xl">
               Welcome to{" "}
-              <span className="text-white">
+              <span className="text-[#c9d0be]">
                 Sars Workspace
               </span>
             </h1>
@@ -72,7 +71,7 @@ export default function AboutDeveloperPage() {
         </section>
 
         {/* ================= STATS ================= */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <section className="glass-card grid grid-cols-2 gap-6 p-6 text-center md:grid-cols-4 md:gap-8">
           <Counter value={500} label="DSA Problems" />
           <Counter value={500} label="GitHub Commits" />
           <Counter value={65} label="Repositories" />
@@ -83,7 +82,7 @@ export default function AboutDeveloperPage() {
         <section className="space-y-10">
           <SectionTitle>What I Work On</SectionTitle>
 
-          <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="mx-auto grid max-w-4xl gap-3 sm:grid-cols-2">
             {[
               "Data Structures & Algorithms",
               "MERN Stack Applications",
@@ -97,9 +96,9 @@ export default function AboutDeveloperPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="flex items-start gap-3 text-zinc-200"
+                className="glass-card flex items-start gap-3 p-4 text-zinc-200"
               >
-                <span className="mt-2 h-2 w-2 rounded-full bg-purple-400" />
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#c9d0be]" />
                 <span>{item}</span>
               </motion.div>
             ))}
@@ -132,12 +131,12 @@ export default function AboutDeveloperPage() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-xl sm:text-2xl text-zinc-200 font-medium"
+            className="font-serif text-xl font-normal text-zinc-200 sm:text-2xl"
           >
             Focused on{" "}
-            <span className="text-purple-400">skills</span>,{" "}
-            <span className="text-pink-400">systems</span>, and{" "}
-            <span className="text-cyan-400">long-term growth</span>.
+            <span className="text-[#c9d0be]">skills</span>,{" "}
+            <span className="text-[#c9d0be]">systems</span>, and{" "}
+            <span className="text-[#c9d0be]">long-term growth</span>.
           </motion.p>
 
           <pre className="bg-zinc-900/40 border border-zinc-700/40 rounded-lg p-3 text-xs inline-block">

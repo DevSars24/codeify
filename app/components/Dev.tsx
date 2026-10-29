@@ -1,21 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Cpu, Layers, ListOrdered, Target, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Image from "next/image";
 
 export default function DevPracticePlatform() {
   const router = useRouter();
   const [category, setCategory] = useState("web");
   const [level, setLevel] = useState("Basic");
   const [count, setCount] = useState(5);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return <div className="min-h-screen bg-background" />;
-
   const tracks = [
     { id: "web", label: "Web Development" },
     { id: "app", label: "App Development" },
@@ -29,11 +24,11 @@ export default function DevPracticePlatform() {
       <div className="min-h-screen bg-background text-foreground">
         <main className="max-w-6xl mx-auto pt-28 pb-20 px-4 md:px-6">
           <div className="mb-12 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted border border-border text-xs font-medium text-muted-foreground mb-4">
-              <Target size={14} className="text-primary" /> Dev Arena
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.045] px-3.5 py-1.5 text-xs font-medium text-muted-foreground mb-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
+              <Target size={14} className="text-[#c9d0be]" /> Project practice
             </div>
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">Configure your dev challenge</h1>
-            <p className="text-muted-foreground">Pick a track, difficulty, and task count to start practicing.</p>
+            <h1 className="font-serif text-3xl font-normal tracking-tight mb-4 md:text-4xl">Learn by making something.</h1>
+            <p className="text-muted-foreground">Choose a track, set a comfortable pace, and work through a practical build.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -117,7 +112,13 @@ export default function DevPracticePlatform() {
                   <Play size={12} className="text-violet-400" /> Lab Preview
                 </h4>
                 <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-white/[0.08] bg-black/60">
-                  <img src="/assets/webdev.jpeg" alt="Dev Lab Workspace Preview" className="object-cover w-full h-full opacity-80" />
+                  <Image
+                    src="/assets/webdev.jpeg"
+                    alt="Dev Lab Workspace Preview"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 33vw"
+                    className="object-cover opacity-80"
+                  />
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-2.5 leading-relaxed">
                   Real-world sandbox environment featuring custom test suites, server consoles, and side-by-side spec panels.

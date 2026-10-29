@@ -1,25 +1,21 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Cpu, Zap, Layers, ListOrdered, Play, Code2, Sparkles, Sliders } from "lucide-react";
+import { Cpu, Zap, Layers, ListOrdered, Play, Code2, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Image from "next/image";
 
 const TOPICS = ["Arrays", "Strings", "Stack", "Queue", "LinkedList", "BinarySearch", "Recursion", "DP"];
 
 export default function DsaPracticeArena() {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState({
     topic: "Arrays",
     level: "Basic",
     count: 5,
     language: "Python",
   });
-
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return <div className="min-h-screen bg-background" />;
 
   return (
     <>
@@ -28,15 +24,15 @@ export default function DsaPracticeArena() {
         <main className="max-w-6xl mx-auto space-y-10">
           {/* Header */}
           <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-mono text-muted-foreground shadow-xs">
-              <Zap size={13} className="text-primary" />
-              <span>DSA Practice Arena</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.045] px-3.5 py-1.5 text-xs font-medium text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
+              <Zap size={13} className="text-[#c9d0be]" />
+              <span>Data structures & algorithms</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-frost">
-              Configure your practice round
+            <h1 className="font-serif text-3xl font-normal tracking-tight text-frost md:text-4xl">
+              Make room to think.
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Select topic, programming language, difficulty, and problem count to launch your AI practice contest.
+              Choose a topic and a pace that feels right. Your next useful problem is a few choices away.
             </p>
           </div>
 
@@ -126,10 +122,12 @@ export default function DsaPracticeArena() {
 
               {/* Visual Arena Preview */}
               <div className="glass-card overflow-hidden p-0 relative aspect-[16/7] rounded-xl border border-white/[0.08] bg-black">
-                <img
+                <Image
                   src="/assets/DSA-arena.jpg"
                   alt="DSA Arena Live Preview"
-                  className="object-cover w-full h-full opacity-70"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                  className="object-cover opacity-70"
                 />
                 <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs font-mono">
                   <span className="text-white font-semibold flex items-center gap-1.5 bg-black/80 px-2 py-0.5 rounded border border-white/10">
